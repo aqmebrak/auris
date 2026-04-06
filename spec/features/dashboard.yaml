@@ -1,0 +1,124 @@
+feature:
+  name: dashboard
+  title: Dashboard
+  description: |
+    The home page of Auris. Displays all four exercise modules as cards showing
+    overall progress, accuracy, and streak. Acts as the entry point to each module
+    and provides a global view of the user's training progress.
+  priority: 7
+  phase: dashboard
+
+user-stories:
+  - id: US-dashboard-01
+    as: sound engineer
+    i-want: to see all training modules at a glance with my current progress
+    so-that: I can quickly decide what to practice next
+    acceptance-criteria:
+      - Dashboard shows one card per module (decibel, eq, panning, compression)
+      - Each card shows the module name and an icon or graphic
+      - Each card shows overall accuracy percentage
+      - Each card shows current streak
+      - Each card has a "Start" button that navigates to the exercise page
+      - Dashboard loads with no audio playback
+
+  - id: US-dashboard-02
+    as: sound engineer
+    i-want: to see my overall progress across all modules
+    so-that: I understand my general training level
+    acceptance-criteria:
+      - An overall accuracy is displayed (average across all modules)
+      - Total exercises attempted is shown
+      - Total points earned is shown
+      - If no exercises have been done yet, a welcoming empty state is shown
+
+  - id: US-dashboard-03
+    as: sound engineer
+    i-want: the app to feel like a professional audio tool
+    so-that: I am motivated to use it during studio sessions
+    acceptance-criteria:
+      - Dark studio/DAW aesthetic is applied throughout
+      - Module cards reference their audio domain visually (e.g. waveform, spectrum, pan knob, compressor)
+      - Navigation between dashboard and exercises is instant (SPA routing)
+      - App title "Auris" is shown in the navigation
+
+components:
+  - name: ModuleCard.svelte
+    location: src/lib/components/
+    props:
+      - name: moduleId
+        type: ModuleId
+        required: true
+        description: Which module this card represents
+      - name: title
+        type: string
+        required: true
+        description: Human-readable module name (e.g. "Decibel Training")
+      - name: description
+        type: string
+        required: true
+        description: Short module description (1 sentence)
+      - name: href
+        type: string
+        required: true
+        description: Navigation target (e.g. "/exercise/decibel")
+    events: []
+    description: |
+      Dashboard card showing module name, description, accuracy, streak, and Start button.
+      Reads score data from the scores store internally using moduleId.
+      Styled like a rack unit or hardware module.
+
+  - name: ProgressBar.svelte
+    location: src/lib/components/
+    props:
+      - name: value
+        type: number
+        required: true
+        description: Progress value 0-1
+      - name: label
+        type: string
+        required: false
+        description: Optional label to show above or beside the bar
+      - name: color
+        type: string
+        required: false
+        description: Tailwind color class override (default is accent cyan)
+    events: []
+    description: Horizontal progress bar. Shows fill proportional to value (0-1).
+
+routes:
+  - path: /
+    file: src/routes/+page.svelte
+    description: |
+      Dashboard page. Renders four ModuleCards in a grid layout.
+      Shows overall stats above or below the grid.
+      Reads all score data from the scores store.
+
+  - path: "layout: /"
+    file: src/routes/+layout.svelte
+    description: |
+      Root app shell. Contains the top navigation bar with "Auris" title and
+      links to dashboard and each exercise. Applies the dark theme wrapper.
+      Initializes the audio engine (loads samples) in onMount.
+
+  - path: "layout: /exercise"
+    file: src/routes/exercise/+layout.svelte
+    description: |
+      Exercise chrome layout. Contains back-to-dashboard link, module title,
+      DifficultySelector, and ScoreDisplay. Wraps all four exercise pages.
+
+stores: []
+
+schemas: []
+
+dependencies:
+  features:
+    - score-storage
+    - decibel-training
+    - eq-training
+    - panning-training
+    - compression-training
+  npm: []
+
+x-design-status: pending
+x-build-status: pending
+x-qa-status: pending

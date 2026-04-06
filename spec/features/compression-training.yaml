@@ -1,0 +1,111 @@
+feature:
+  name: compression-training
+  title: Compression Training Exercise
+  description: |
+    Exercise module for identifying compression. On easy, the user detects whether
+    compression is applied. On medium, identifies the compression ratio. On hard,
+    identifies both threshold and ratio. Makeup gain is applied to compensate for
+    level reduction so the user hears timbral difference, not just level reduction.
+  priority: 6
+  phase: exercise
+
+user-stories:
+  - id: US-compression-01
+    as: sound engineer
+    i-want: to hear audio with compression applied and identify the effect
+    so-that: I develop an ear for compression artifacts and dynamics reduction
+    acceptance-criteria:
+      - A plays the sample uncompressed
+      - B plays the sample with DynamicsCompressorNode applied
+      - Makeup gain is applied after the compressor to match the level of A
+      - On easy, the user answers yes/no: "Is compression applied?"
+      - On medium, the user selects the compression ratio (2:1, 4:1, 8:1, 20:1)
+      - On hard, the user selects both threshold (-10, -20, -30, -40 dBFS) and ratio
+      - Feedback reveals the exact compression settings applied
+
+  - id: US-compression-02
+    as: sound engineer
+    i-want: difficulty to control how complex the compression settings are
+    so-that: I develop from basic detection to nuanced identification
+    acceptance-criteria:
+      - Easy: threshold fixed at -20dBFS, ratio randomly 4:1 or 1:1 (no compression). User answers yes/no. Always 100% accurate or 0%.
+      - Medium: threshold fixed at -20dBFS, ratio randomly chosen from [2, 4, 8, 20]. User selects ratio. Binary correct/wrong.
+      - Hard: threshold randomly from [-10, -20, -30, -40] dBFS. Ratio from [2, 4, 8, 20]. User selects both. Binary per parameter.
+      - On easy when answer is "no compression," A and B should sound identical (ratio = 1:1, effectively bypass)
+
+  - id: US-compression-03
+    as: sound engineer
+    i-want: the compressed audio to feel level-matched with the dry signal
+    so-that: I am hearing the compression character, not just a volume difference
+    acceptance-criteria:
+      - The makeup gain compensates for the compressor's gain reduction
+      - A and B sound at approximately the same loudness
+      - The compressor's reduction amount is readable via node.reduction property and applied as compensating gain
+
+components:
+  - name: AnswerSelect.svelte
+    location: src/lib/components/
+    props:
+      - name: options
+        type: "{ label: string; value: unknown }[]"
+        required: true
+        description: |
+          Easy: [{ label: 'Yes', value: true }, { label: 'No', value: false }]
+          Medium: ratio options [{ label: '2:1', value: 2 }, ...]
+          Hard: two separate selects for threshold and ratio
+      - name: selected
+        type: unknown
+        required: true
+        description: Currently selected value
+      - name: disabled
+        type: boolean
+        required: false
+        description: Disables interaction post-submit
+    events:
+      - name: select
+        payload: unknown
+        description: Fires with selected value
+    description: Reused from panning-training. No changes needed for compression use.
+
+stores:
+  - name: compression.svelte.ts
+    location: src/lib/exercises/
+    exports:
+      - name: generateExercise
+        type: "(difficulty: Difficulty, sampleId?: string) => Exercise"
+        description: |
+          Easy: randomly applies compression (ratio 4:1) or not (ratio 1:1) at threshold -20.
+          Medium: always applies compression at -20dBFS, picks a random ratio from [2,4,8,20].
+          Hard: picks random threshold from [-10,-20,-30,-40] and ratio from [2,4,8,20].
+      - name: evaluateAnswer
+        type: "(exercise: Exercise, userAnswer: { detected?: boolean; ratio?: number; threshold?: number }) => AnswerResult"
+        description: |
+          Easy: accuracy = 1 if detected matches whether compression was applied, else 0.
+          Medium: accuracy = 1 if ratio matches exactly, else 0.
+          Hard: accuracy = average of threshold and ratio accuracy (each binary correct/wrong).
+      - name: DIFFICULTY_CONFIG
+        type: "Record<Difficulty, { thresholdOptions: number[], ratioOptions: number[], fixedThreshold: number | null, task: 'detect' | 'ratio' | 'threshold-and-ratio' }>"
+        description: |
+          Easy: { thresholdOptions: [-20], ratioOptions: [1, 4], fixedThreshold: -20, task: 'detect' }
+          Medium: { thresholdOptions: [-20], ratioOptions: [2, 4, 8, 20], fixedThreshold: -20, task: 'ratio' }
+          Hard: { thresholdOptions: [-10,-20,-30,-40], ratioOptions: [2, 4, 8, 20], fixedThreshold: null, task: 'threshold-and-ratio' }
+    persisted: false
+
+routes:
+  - path: /exercise/compression
+    file: src/routes/exercise/compression/+page.svelte
+    description: |
+      Compression training page. Adapts answer UI based on difficulty:
+      yes/no buttons on easy, single ratio selector on medium, dual selectors
+      (threshold + ratio) on hard. Shows DynamicsCompressor reduction tip in feedback.
+
+dependencies:
+  features:
+    - audio-engine
+    - score-storage
+    - decibel-training
+  npm: []
+
+x-design-status: pending
+x-build-status: pending
+x-qa-status: pending

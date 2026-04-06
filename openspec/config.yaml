@@ -1,0 +1,46 @@
+schema: spec-driven
+
+context: |
+  Project: Auris — a SvelteKit audio ear-training app for sound engineers.
+
+  Tech stack:
+  - SvelteKit + Svelte 5 (runes: $state, $derived, $effect, $props, $bindable)
+  - TypeScript throughout
+  - Tailwind CSS — dark DAW aesthetic (bg-zinc-950 base, text-zinc-100, cyan-400 accents)
+  - Web Audio API — AudioContext, GainNode, BiquadFilterNode, StereoPannerNode, DynamicsCompressorNode
+  - localStorage for ALL persistence (key: "auris_state", schema version 1)
+  - adapter-static — pure SPA, no SSR, no backend (ssr = false everywhere)
+
+  Audio samples:
+  - Bundled in static/samples/ as MP3, 44.1kHz, 192kbps
+  - Files: pink-noise.mp3, drums-loop.mp3, guitar-loop.mp3, speech-male.mp3, speech-female.mp3
+
+  Key conventions:
+  - Files using Svelte 5 runes outside .svelte files must use .svelte.ts extension
+  - No Svelte 4 stores (writable/readable) — use $state objects exported from .svelte.ts files
+  - No inline styles — Tailwind only
+  - AudioContext created lazily on first user gesture, ctx.resume() before every play
+  - AudioBufferSourceNode is single-use: create new one per play call, loop = true
+  - 5ms gain ramp before stop to prevent click artifacts
+  - Exercise loop pattern: generate → play A/B → answer → evaluateAnswer → scores.recordAnswer → feedback → next
+
+  File structure:
+  - src/lib/audio/      — engine.svelte.ts, effects.svelte.ts, utils.ts
+  - src/lib/stores/     — scores.svelte.ts, settings.svelte.ts
+  - src/lib/exercises/  — types.ts, decibel.svelte.ts, eq.svelte.ts, panning.svelte.ts, compression.svelte.ts
+  - src/lib/components/ — shared UI components
+  - src/routes/         — +layout.svelte, +page.svelte, exercise/[module]/+page.svelte
+
+  Build order: audio-engine → score-storage → decibel-training → eq-training → panning-training → compression-training → dashboard
+
+rules:
+  proposal:
+    - Keep the "Why" section to 2-3 sentences maximum
+    - Each new capability in the proposal must have a matching spec file created
+  design:
+    - Always include a "Decisions" section with rationale for the most important technical choice
+    - Reference Tailwind class names directly — no custom CSS variable names
+  tasks:
+    - Group tasks into phases matching the natural build order (types first, then logic, then UI, then pages)
+    - Each task must be completable in a single focused coding session
+    - Include at least one verification/test task per group

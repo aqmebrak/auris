@@ -1,0 +1,139 @@
+feature:
+  name: panning-training
+  title: Stereo Panning Training Exercise
+  description: |
+    Exercise module for identifying stereo pan position. Applies a StereoPannerNode
+    to the audio sample and asks the user to identify the pan position. Easy uses
+    three positions, medium uses five, hard uses continuous 10% increments.
+  priority: 5
+  phase: exercise
+
+user-stories:
+  - id: US-panning-01
+    as: sound engineer
+    i-want: to hear a panned audio source and identify its stereo position
+    so-that: I develop stereo field awareness
+    acceptance-criteria:
+      - A plays the sample at center (pan = 0)
+      - B plays the sample at a random pan position for the current difficulty
+      - The user inputs a pan position using a slider (or buttons on easy)
+      - Submitting shows whether the answer was within tolerance
+      - Feedback shows the exact pan value applied
+      - A visual stereo field indicator shows A (center) vs B (panned) position
+
+  - id: US-panning-02
+    as: sound engineer
+    i-want: difficulty to control position granularity and tolerance
+    so-that: I progressively develop finer stereo perception
+    acceptance-criteria:
+      - Easy: 3 fixed positions (full left -1, center 0, full right +1) — multiple choice, no tolerance needed
+      - Medium: 5 positions [-1, -0.5, 0, 0.5, 1] — slider, ±0.2 tolerance
+      - Hard: 10% increments (-1 to +1 in 0.1 steps) — slider, ±0.1 tolerance
+      - Slider shows L/R labels at extremes and C at center
+
+  - id: US-panning-03
+    as: sound engineer
+    i-want: to use good quality headphones for this exercise
+    so-that: I can accurately hear the stereo field
+    acceptance-criteria:
+      - A headphones recommendation notice is shown on the panning exercise page
+      - The notice is dismissible and does not reappear once dismissed (persisted in settings)
+
+components:
+  - name: AnswerSlider.svelte
+    location: src/lib/components/
+    props:
+      - name: min
+        type: number
+        required: true
+        description: "-1 for panning"
+      - name: max
+        type: number
+        required: true
+        description: "1 for panning"
+      - name: step
+        type: number
+        required: true
+        description: "0.1 for hard, 0.5 for medium"
+      - name: unit
+        type: string
+        required: true
+        description: "Empty string for panning (L/C/R labels instead)"
+      - name: label
+        type: string
+        required: true
+        description: Accessible label
+      - name: value
+        type: number
+        required: true
+        description: Bindable current pan value
+    events:
+      - name: change
+        payload: number
+        description: Fires on value change
+    description: |
+      Reused from decibel-training feature. For panning, min=-1, max=1.
+      The page renders L/C/R labels alongside the slider instead of a dB unit.
+
+  - name: AnswerSelect.svelte
+    location: src/lib/components/
+    props:
+      - name: options
+        type: "{ label: string; value: unknown }[]"
+        required: true
+        description: List of selectable options
+      - name: selected
+        type: unknown
+        required: true
+        description: Currently selected value
+      - name: disabled
+        type: boolean
+        required: false
+        description: Disables selection (post-submit)
+    events:
+      - name: select
+        payload: unknown
+        description: Fires with the selected value on click
+    description: |
+      Multiple-choice button group. Used for easy panning (L/C/R buttons)
+      and compression detection. Buttons highlight on selection.
+
+stores:
+  - name: panning.svelte.ts
+    location: src/lib/exercises/
+    exports:
+      - name: generateExercise
+        type: "(difficulty: Difficulty, sampleId?: string) => Exercise"
+        description: |
+          Generates a random panning exercise. Picks a pan value from the
+          difficulty-appropriate set.
+      - name: evaluateAnswer
+        type: "(exercise: Exercise, userAnswer: number) => AnswerResult"
+        description: |
+          Grades the pan answer. Accuracy = max(0, 1 - abs(user - correct) / tolerance).
+          On easy, binary correct/wrong (position must match exactly).
+      - name: DIFFICULTY_CONFIG
+        type: "Record<Difficulty, { positions: number[], tolerance: number, inputType: 'select' | 'slider' }>"
+        description: |
+          Easy: { positions: [-1, 0, 1], tolerance: 0, inputType: 'select' }
+          Medium: { positions: [-1, -0.5, 0, 0.5, 1], tolerance: 0.2, inputType: 'slider' }
+          Hard: { positions: [-1, -0.9, ..., 0.9, 1] (0.1 steps), tolerance: 0.1, inputType: 'slider' }
+    persisted: false
+
+routes:
+  - path: /exercise/panning
+    file: src/routes/exercise/panning/+page.svelte
+    description: |
+      Panning training exercise page. Uses AnswerSelect on easy, AnswerSlider on
+      medium/hard. Shows headphones notice. Composes standard exercise components.
+
+dependencies:
+  features:
+    - audio-engine
+    - score-storage
+    - decibel-training
+  npm: []
+
+x-design-status: pending
+x-build-status: pending
+x-qa-status: pending
