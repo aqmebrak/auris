@@ -15,7 +15,7 @@ To recreate this project with the same configuration:
 
 ```sh
 # recreate this project
-pnpm dlx sv@0.15.0 create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" playwright tailwindcss="plugins:forms,typography" sveltekit-adapter="adapter:vercel" better-auth="demo:password" mcp="ide:claude-code+setup:local" storybook paraglide="languageTags:en, fr+demo:yes" drizzle="database:postgresql+postgresql:neon" --install pnpm .
+pnpm dlx sv@0.15.0 create --template minimal --types ts --add prettier eslint playwright tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:vercel" mcp="ide:claude-code+setup:local" drizzle="database:postgresql+postgresql:neon" --install pnpm .
 ```
 
 ## Developing
