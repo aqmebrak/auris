@@ -41,7 +41,7 @@
         "Verify in browser: top bar is visible at http://localhost:5173, wordmark 'AURIS' renders, clicking wordmark navigates to /"
       ],
       "priority": 2,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
