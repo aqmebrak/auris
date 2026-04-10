@@ -11,6 +11,13 @@ Started: Fri Apr 10 18:03:39 CEST 2026
 
 ---
 
+## 2026-04-10 19:00 - US-003
+- Created src/routes/+page.svelte with <svelte:head> title "Auris", <main> with max-w-3xl layout, and two placeholder divs for stats panel and game card grid
+- Files changed: src/routes/+page.svelte
+- Learnings for future iterations:
+  - US-003 is a minimal scaffold; no imports or script block needed
+---
+
 ## 2026-04-10 18:30 - US-002
 - Added `class="dark"` to `<html>` in `src/app.html`
 - Created `src/lib/components/top-bar.svelte` — sticky header with AURIS wordmark

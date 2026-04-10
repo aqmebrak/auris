@@ -61,7 +61,7 @@
         "Verify in browser: http://localhost:5173 shows a dark page with the top bar from US-002, page title is 'Auris'"
       ],
       "priority": 3,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {
