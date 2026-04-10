@@ -87,7 +87,7 @@
         "Verify in browser: stats panel renders on http://localhost:5173 with all three fields showing '—' on a fresh session (clear localStorage first)"
       ],
       "priority": 4,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

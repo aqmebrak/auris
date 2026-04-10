@@ -11,6 +11,16 @@ Started: Fri Apr 10 18:03:39 CEST 2026
 
 ---
 
+## 2026-04-10 19:30 - US-004
+- Created src/lib/components/stats-panel.svelte with $state + $effect pattern (browser-only localStorage read)
+- Updated src/routes/+page.svelte to import and render StatsPanel
+- Files changed: src/lib/components/stats-panel.svelte, src/routes/+page.svelte
+- Learnings for future iterations:
+  - The $state + $effect (browser-guard) pattern is the AC-mandated approach for localStorage reads; svelte-autofixer may suggest $derived but ignore it when PRD explicitly requires this pattern
+  - dl/dt/dd semantic structure: each stat cell is a <dl> with the layout flex classes directly on it; no extra wrapper div needed
+  - aria-label on <dd> with undefined when not empty state is the correct approach (no aria-label on normal values)
+---
+
 ## 2026-04-10 19:00 - US-003
 - Created src/routes/+page.svelte with <svelte:head> title "Auris", <main> with max-w-3xl layout, and two placeholder divs for stats panel and game card grid
 - Files changed: src/routes/+page.svelte
