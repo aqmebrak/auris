@@ -1,3 +1,19 @@
+- In all interactions, be extremely concise and sacrifice grammar for the sake of concision.
+- if available use Serena MCP as your semantic code retrieval and editing tools. 
+
+## Golden Rule
+
+**Always prefix commands with `rtk`**. If RTK has a dedicated filter, it uses it. If not, it passes through unchanged. This means RTK is always safe to use.
+
+**Important**: Even in command chains with `&&`, use `rtk`:
+```bash
+# ❌ Wrong
+git add . && git commit -m "msg" && git push
+
+# ✅ Correct
+rtk git add . && rtk git commit -m "msg" && rtk git push
+```
+
 ## Tech Stack
 
 | Layer      | Technology                             |
@@ -28,8 +44,8 @@ This repo uses a four-stage pipeline. Each stage produces an artifact the next s
 
 1. **PRD** — User runs `/prd <feature>` (skill at [.claude/skills/prd/](.claude/skills/prd/)). Output: `tasks/prd-<feature>.md`. The user fills the Product Owner role directly — there is no PO subagent.
 2. **Design** — `/design <feature>` invokes the [designer subagent](.claude/agents/designer.md). Output: `tasks/design-<feature>.md`.
-3. **Build** — `/ralphize <feature>` runs the [ralph skill](.claude/skills/ralph/) to convert the PRD into [scripts/ralph/prd.json](scripts/ralph/prd.json). Then run `./scripts/ralph/ralph.sh --tool claude <iterations>` from a terminal. Each iteration is a fresh Claude Code instance that implements ONE story, runs quality checks, commits, and marks the story passed. UI stories MUST read `tasks/design-<feature>.md` before implementing. Ralph's per-iteration prompt lives at [scripts/ralph/CLAUDE.md](scripts/ralph/CLAUDE.md).
-4. **QA** — `/qa <feature>` invokes the [qa subagent](.claude/agents/qa.md). Output: `tasks/qa-<feature>.md`. User decides what to fix from the report and may flip stories back to `passes: false` to re-run Ralph.
+3. **Build** — `/ralphize <feature>` converts the PRD into [scripts/ralph/prd.json](scripts/ralph/prd.json) (ordered story list). Then `/build <feature>` invokes the [fullstack subagent](.claude/agents/fullstack.md), which implements all stories in one context window, running quality checks and committing per story.
+4. **QA** — `/qa <feature>` invokes the [qa subagent](.claude/agents/qa.md). Output: `tasks/qa-<feature>.md`. User decides what to fix from the report and may flip stories back to `passes: false` to re-run `/build`.
 
 ## Svelte MCP (mandatory for Svelte/SvelteKit work)
 
