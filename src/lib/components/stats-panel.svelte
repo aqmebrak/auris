@@ -26,30 +26,30 @@
 	}
 </script>
 
-<section aria-label="Training statistics" class="bg-card border border-border rounded-lg p-5">
-	<div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border">
-		<dl class="flex flex-col gap-1 py-3 sm:py-0 sm:px-5 first:pl-0 last:pr-0">
-			<dt class="text-xs tracking-widest uppercase text-muted-foreground">Sessions Played</dt>
+<section aria-label="Training statistics" class="rounded-lg border border-border bg-card p-5">
+	<div class="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+		<dl class="flex flex-col gap-1 py-3 first:pl-0 last:pr-0 sm:px-5 sm:py-0">
+			<dt class="text-xs tracking-widest text-muted-foreground uppercase">Sessions Played</dt>
 			<dd
-				class="text-2xl font-semibold tabular-nums text-foreground"
+				class="text-2xl font-semibold text-foreground tabular-nums"
 				aria-label={sessionDisplay(stats) === '—' ? 'Sessions played: no data' : undefined}
 			>
 				{sessionDisplay(stats)}
 			</dd>
 		</dl>
-		<dl class="flex flex-col gap-1 py-3 sm:py-0 sm:px-5 first:pl-0 last:pr-0">
-			<dt class="text-xs tracking-widest uppercase text-muted-foreground">Best Score</dt>
+		<dl class="flex flex-col gap-1 py-3 first:pl-0 last:pr-0 sm:px-5 sm:py-0">
+			<dt class="text-xs tracking-widest text-muted-foreground uppercase">Best Score</dt>
 			<dd
-				class="text-2xl font-semibold tabular-nums text-foreground"
+				class="text-2xl font-semibold text-foreground tabular-nums"
 				aria-label={scoreDisplay(stats) === '—' ? 'Best score: no data' : undefined}
 			>
 				{scoreDisplay(stats)}
 			</dd>
 		</dl>
-		<dl class="flex flex-col gap-1 py-3 sm:py-0 sm:px-5 first:pl-0 last:pr-0">
-			<dt class="text-xs tracking-widest uppercase text-muted-foreground">Last Played</dt>
+		<dl class="flex flex-col gap-1 py-3 first:pl-0 last:pr-0 sm:px-5 sm:py-0">
+			<dt class="text-xs tracking-widest text-muted-foreground uppercase">Last Played</dt>
 			<dd
-				class="text-2xl font-semibold tabular-nums text-foreground"
+				class="text-2xl font-semibold text-foreground tabular-nums"
 				aria-label={lastPlayedDisplay(stats) === '—' ? 'Last played: no data' : undefined}
 			>
 				{lastPlayedDisplay(stats)}

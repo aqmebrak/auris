@@ -1,120 +1,120 @@
 {
-  "project": "Auris",
-  "branchName": "ralph/dashboard",
-  "description": "Dashboard — Auris home screen. Main entry point displaying training stats and a game-card launchpad. Monochrome DAW aesthetic, no auth, localStorage only.",
-  "userStories": [
-    {
-      "id": "US-001",
-      "title": "LocalStorage stats helper",
-      "description": "As a developer, I need a typed helper to read and write the AurisStats object from localStorage so every future game can share the same data structure.",
-      "acceptanceCriteria": [
-        "File src/lib/stats.ts exports: type AurisStats = { sessionsPlayed: number; bestScore: number; lastPlayed: string | null }",
-        "getStats(): AurisStats reads from localStorage key 'auris:stats', returns { sessionsPlayed: 0, bestScore: 0, lastPlayed: null } as default when missing or malformed",
-        "saveStats(stats: AurisStats): void serialises and writes to localStorage key 'auris:stats'",
-        "Both functions guard against SSR: if localStorage is not available (typeof window === 'undefined'), getStats returns defaults and saveStats is a no-op",
-        "Unit test file src/lib/stats.test.ts covers: (1) getStats returns defaults on empty localStorage, (2) saveStats then getStats round-trips all fields correctly",
-        "stats.ts must NOT be imported from any file under src/lib/server/",
-        "pnpm check passes",
-        "pnpm lint passes",
-        "Tests pass"
-      ],
-      "priority": 1,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-002",
-      "title": "App shell — root layout and top bar",
-      "description": "As a user, I want a persistent top bar with the Auris wordmark on every page so I always know which app I'm in and can navigate home.",
-      "acceptanceCriteria": [
-        "src/app.html has class=\"dark\" on the <html> element",
-        "src/routes/+layout.svelte renders a <TopBar /> component above a <slot /> (Svelte 5: use {@render children()} instead of <slot />)",
-        "TopBar component lives at src/lib/components/top-bar.svelte",
-        "TopBar is a <header> with: h-12, sticky top-0 z-10, bg-background border-b border-border",
-        "TopBar contains the wordmark as <a href=\"/\"> with text 'AURIS', styled: text-sm font-semibold tracking-widest uppercase text-foreground no-underline hover:opacity-80",
-        "TopBar has no login button, avatar, or any other interactive element",
-        "Read tasks/design-dashboard.md section '3. Components > Custom Components Needed > TopBar' before implementing",
-        "Use the Svelte MCP (list-sections then get-documentation) before writing any .svelte file",
-        "Run svelte-autofixer on every .svelte file written and fix all reported issues",
-        "pnpm check passes",
-        "pnpm lint passes",
-        "Verify in browser: top bar is visible at http://localhost:5173, wordmark 'AURIS' renders, clicking wordmark navigates to /"
-      ],
-      "priority": 2,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-003",
-      "title": "Dashboard route — page scaffold",
-      "description": "As a user, I want a home page at / so I have a starting point when I open the app.",
-      "acceptanceCriteria": [
-        "src/routes/+page.svelte exists and renders without runtime errors",
-        "<svelte:head> sets <title>Auris</title>",
-        "Page has a <main> element with: max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8",
-        "Background is dark via the .dark class applied to <html> (from US-002)",
-        "Page renders two placeholder sections: one for stats panel, one for game card grid (can be empty divs at this stage)",
-        "Use the Svelte MCP (list-sections then get-documentation) before writing any .svelte file",
-        "Run svelte-autofixer on every .svelte file written and fix all reported issues",
-        "pnpm check passes",
-        "pnpm lint passes",
-        "Verify in browser: http://localhost:5173 shows a dark page with the top bar from US-002, page title is 'Auris'"
-      ],
-      "priority": 3,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-004",
-      "title": "Stats summary panel with empty states",
-      "description": "As a user, I want to see my training stats (sessions played, best score, last played) on the dashboard so I can track my progress over time.",
-      "acceptanceCriteria": [
-        "StatsPanel component lives at src/lib/components/stats-panel.svelte",
-        "Component imports getStats from src/lib/stats.ts and AurisStats type",
-        "Internal state: one $state variable of type AurisStats | null, initialised to null",
-        "A $effect reads localStorage via getStats() on mount (browser-only: import { browser } from '$app/environment' and guard the call)",
-        "Displays three stat readouts: 'SESSIONS PLAYED', 'BEST SCORE', 'LAST PLAYED'",
-        "Display rules: sessionsPlayed === 0 → show '—'; bestScore === 0 → show '—'; lastPlayed === null → show '—'; otherwise show the stored YYYY-MM-DD string as-is",
-        "Layout: <section aria-label=\"Training statistics\"> with bg-card border border-border rounded-lg p-5; inner grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border",
-        "Each stat uses a <dl> with <dt> (label, text-xs tracking-widest uppercase text-muted-foreground) and <dd> (value, text-2xl font-semibold tabular-nums text-foreground)",
-        "When value is '—', the <dd> has aria-label describing the field and 'no data', e.g. aria-label=\"Sessions played: no data\"",
-        "StatsPanel is rendered inside the <main> of src/routes/+page.svelte",
-        "Read tasks/design-dashboard.md section '3. Components > Custom Components Needed > StatsPanel' before implementing",
-        "Use the Svelte MCP (list-sections then get-documentation) before writing any .svelte file",
-        "Run svelte-autofixer on every .svelte file written and fix all reported issues",
-        "pnpm check passes",
-        "pnpm lint passes",
-        "Verify in browser: stats panel renders on http://localhost:5173 with all three fields showing '—' on a fresh session (clear localStorage first)"
-      ],
-      "priority": 4,
-      "passes": true,
-      "notes": ""
-    },
-    {
-      "id": "US-005",
-      "title": "Game card grid",
-      "description": "As a user, I want to see the available training games in a card grid so I know what I can practice and what is coming.",
-      "acceptanceCriteria": [
-        "shadcn-svelte card and button components are present in src/lib/components/ui/; if missing, run: pnpm dlx shadcn-svelte@latest add card button",
-        "GameCard component lives at src/lib/components/game-card.svelte",
-        "GameCard props: title: string, description: string, href: string, available: boolean (default false)",
-        "When available is false: Button variant='outline' size='sm' is disabled with label 'COMING SOON', tracking-widest uppercase text-xs; Card.Root has no hover classes (completely inert)",
-        "When available is true: Button is enabled with label 'PLAY' and links to href",
-        "Uses Card.Root, Card.Header, Card.Title, Card.Description, Card.Footer, Button from shadcn-svelte",
-        "Card.Root class: flex flex-col justify-between h-full",
-        "src/routes/+page.svelte defines a static GAMES array: [{ title: 'EQ Matching', description: 'Match the EQ curve by ear', href: '/games/eq-matching', available: false }, { title: 'Frequency ID', description: 'Identify the boosted frequency band', href: '/games/frequency-id', available: false }, { title: 'Dynamics', description: 'Recognize compression characteristics', href: '/games/dynamics', available: false }]",
-        "Grid renders as <section aria-label=\"Training modules\"> > <ul role=\"list\" class=\"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4\"> with each card in a <li>",
-        "A section heading <h2> with text 'TRAINING MODULES' styled text-xs font-medium tracking-widest uppercase text-muted-foreground appears above the grid",
-        "Read tasks/design-dashboard.md section '3. Components > Custom Components Needed > GameCard' before implementing",
-        "Use the Svelte MCP (list-sections then get-documentation) before writing any .svelte file",
-        "Run svelte-autofixer on every .svelte file written and fix all reported issues",
-        "pnpm check passes",
-        "pnpm lint passes",
-        "Verify in browser: three game cards render at http://localhost:5173, each shows title, description, and a disabled 'COMING SOON' button; no hover effect on cards"
-      ],
-      "priority": 5,
-      "passes": false,
-      "notes": ""
-    }
-  ]
+	"project": "Auris",
+	"branchName": "ralph/dashboard",
+	"description": "Dashboard — Auris home screen. Main entry point displaying training stats and a game-card launchpad. Monochrome DAW aesthetic, no auth, localStorage only.",
+	"userStories": [
+		{
+			"id": "US-001",
+			"title": "LocalStorage stats helper",
+			"description": "As a developer, I need a typed helper to read and write the AurisStats object from localStorage so every future game can share the same data structure.",
+			"acceptanceCriteria": [
+				"File src/lib/stats.ts exports: type AurisStats = { sessionsPlayed: number; bestScore: number; lastPlayed: string | null }",
+				"getStats(): AurisStats reads from localStorage key 'auris:stats', returns { sessionsPlayed: 0, bestScore: 0, lastPlayed: null } as default when missing or malformed",
+				"saveStats(stats: AurisStats): void serialises and writes to localStorage key 'auris:stats'",
+				"Both functions guard against SSR: if localStorage is not available (typeof window === 'undefined'), getStats returns defaults and saveStats is a no-op",
+				"Unit test file src/lib/stats.test.ts covers: (1) getStats returns defaults on empty localStorage, (2) saveStats then getStats round-trips all fields correctly",
+				"stats.ts must NOT be imported from any file under src/lib/server/",
+				"pnpm check passes",
+				"pnpm lint passes",
+				"Tests pass"
+			],
+			"priority": 1,
+			"passes": true,
+			"notes": ""
+		},
+		{
+			"id": "US-002",
+			"title": "App shell — root layout and top bar",
+			"description": "As a user, I want a persistent top bar with the Auris wordmark on every page so I always know which app I'm in and can navigate home.",
+			"acceptanceCriteria": [
+				"src/app.html has class=\"dark\" on the <html> element",
+				"src/routes/+layout.svelte renders a <TopBar /> component above a <slot /> (Svelte 5: use {@render children()} instead of <slot />)",
+				"TopBar component lives at src/lib/components/top-bar.svelte",
+				"TopBar is a <header> with: h-12, sticky top-0 z-10, bg-background border-b border-border",
+				"TopBar contains the wordmark as <a href=\"/\"> with text 'AURIS', styled: text-sm font-semibold tracking-widest uppercase text-foreground no-underline hover:opacity-80",
+				"TopBar has no login button, avatar, or any other interactive element",
+				"Read tasks/design-dashboard.md section '3. Components > Custom Components Needed > TopBar' before implementing",
+				"Use the Svelte MCP (list-sections then get-documentation) before writing any .svelte file",
+				"Run svelte-autofixer on every .svelte file written and fix all reported issues",
+				"pnpm check passes",
+				"pnpm lint passes",
+				"Verify in browser: top bar is visible at http://localhost:5173, wordmark 'AURIS' renders, clicking wordmark navigates to /"
+			],
+			"priority": 2,
+			"passes": true,
+			"notes": ""
+		},
+		{
+			"id": "US-003",
+			"title": "Dashboard route — page scaffold",
+			"description": "As a user, I want a home page at / so I have a starting point when I open the app.",
+			"acceptanceCriteria": [
+				"src/routes/+page.svelte exists and renders without runtime errors",
+				"<svelte:head> sets <title>Auris</title>",
+				"Page has a <main> element with: max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8",
+				"Background is dark via the .dark class applied to <html> (from US-002)",
+				"Page renders two placeholder sections: one for stats panel, one for game card grid (can be empty divs at this stage)",
+				"Use the Svelte MCP (list-sections then get-documentation) before writing any .svelte file",
+				"Run svelte-autofixer on every .svelte file written and fix all reported issues",
+				"pnpm check passes",
+				"pnpm lint passes",
+				"Verify in browser: http://localhost:5173 shows a dark page with the top bar from US-002, page title is 'Auris'"
+			],
+			"priority": 3,
+			"passes": true,
+			"notes": ""
+		},
+		{
+			"id": "US-004",
+			"title": "Stats summary panel with empty states",
+			"description": "As a user, I want to see my training stats (sessions played, best score, last played) on the dashboard so I can track my progress over time.",
+			"acceptanceCriteria": [
+				"StatsPanel component lives at src/lib/components/stats-panel.svelte",
+				"Component imports getStats from src/lib/stats.ts and AurisStats type",
+				"Internal state: one $state variable of type AurisStats | null, initialised to null",
+				"A $effect reads localStorage via getStats() on mount (browser-only: import { browser } from '$app/environment' and guard the call)",
+				"Displays three stat readouts: 'SESSIONS PLAYED', 'BEST SCORE', 'LAST PLAYED'",
+				"Display rules: sessionsPlayed === 0 → show '—'; bestScore === 0 → show '—'; lastPlayed === null → show '—'; otherwise show the stored YYYY-MM-DD string as-is",
+				"Layout: <section aria-label=\"Training statistics\"> with bg-card border border-border rounded-lg p-5; inner grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border",
+				"Each stat uses a <dl> with <dt> (label, text-xs tracking-widest uppercase text-muted-foreground) and <dd> (value, text-2xl font-semibold tabular-nums text-foreground)",
+				"When value is '—', the <dd> has aria-label describing the field and 'no data', e.g. aria-label=\"Sessions played: no data\"",
+				"StatsPanel is rendered inside the <main> of src/routes/+page.svelte",
+				"Read tasks/design-dashboard.md section '3. Components > Custom Components Needed > StatsPanel' before implementing",
+				"Use the Svelte MCP (list-sections then get-documentation) before writing any .svelte file",
+				"Run svelte-autofixer on every .svelte file written and fix all reported issues",
+				"pnpm check passes",
+				"pnpm lint passes",
+				"Verify in browser: stats panel renders on http://localhost:5173 with all three fields showing '—' on a fresh session (clear localStorage first)"
+			],
+			"priority": 4,
+			"passes": true,
+			"notes": ""
+		},
+		{
+			"id": "US-005",
+			"title": "Game card grid",
+			"description": "As a user, I want to see the available training games in a card grid so I know what I can practice and what is coming.",
+			"acceptanceCriteria": [
+				"shadcn-svelte card and button components are present in src/lib/components/ui/; if missing, run: pnpm dlx shadcn-svelte@latest add card button",
+				"GameCard component lives at src/lib/components/game-card.svelte",
+				"GameCard props: title: string, description: string, href: string, available: boolean (default false)",
+				"When available is false: Button variant='outline' size='sm' is disabled with label 'COMING SOON', tracking-widest uppercase text-xs; Card.Root has no hover classes (completely inert)",
+				"When available is true: Button is enabled with label 'PLAY' and links to href",
+				"Uses Card.Root, Card.Header, Card.Title, Card.Description, Card.Footer, Button from shadcn-svelte",
+				"Card.Root class: flex flex-col justify-between h-full",
+				"src/routes/+page.svelte defines a static GAMES array: [{ title: 'EQ Matching', description: 'Match the EQ curve by ear', href: '/games/eq-matching', available: false }, { title: 'Frequency ID', description: 'Identify the boosted frequency band', href: '/games/frequency-id', available: false }, { title: 'Dynamics', description: 'Recognize compression characteristics', href: '/games/dynamics', available: false }]",
+				"Grid renders as <section aria-label=\"Training modules\"> > <ul role=\"list\" class=\"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4\"> with each card in a <li>",
+				"A section heading <h2> with text 'TRAINING MODULES' styled text-xs font-medium tracking-widest uppercase text-muted-foreground appears above the grid",
+				"Read tasks/design-dashboard.md section '3. Components > Custom Components Needed > GameCard' before implementing",
+				"Use the Svelte MCP (list-sections then get-documentation) before writing any .svelte file",
+				"Run svelte-autofixer on every .svelte file written and fix all reported issues",
+				"pnpm check passes",
+				"pnpm lint passes",
+				"Verify in browser: three game cards render at http://localhost:5173, each shows title, description, and a disabled 'COMING SOON' button; no hover effect on cards"
+			],
+			"priority": 5,
+			"passes": true,
+			"notes": ""
+		}
+	]
 }

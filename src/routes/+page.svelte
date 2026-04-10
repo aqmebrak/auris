@@ -28,14 +28,14 @@
 	<title>Auris</title>
 </svelte:head>
 
-<main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<main class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
 	<StatsPanel />
 
 	<section aria-label="Training modules" class="mt-8">
-		<h2 class="text-xs font-medium tracking-widest uppercase text-muted-foreground mb-4">
+		<h2 class="mb-4 text-xs font-medium tracking-widest text-muted-foreground uppercase">
 			TRAINING MODULES
 		</h2>
-		<ul role="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+		<ul role="list" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{#each GAMES as game (game.href)}
 				<li>
 					<GameCard

@@ -2,11 +2,11 @@
 	import { resolve } from '$app/paths';
 </script>
 
-<header class="h-12 sticky top-0 z-10 bg-background border-b border-border">
-	<div class="max-w-3xl mx-auto px-4 h-full flex items-center">
+<header class="sticky top-0 z-10 h-12 border-b border-border bg-background">
+	<div class="mx-auto flex h-full max-w-3xl items-center px-4">
 		<a
 			href={resolve('/')}
-			class="text-sm font-semibold tracking-widest uppercase text-foreground no-underline hover:opacity-80"
+			class="text-sm font-semibold tracking-widest text-foreground uppercase no-underline hover:opacity-80"
 		>
 			AURIS
 		</a>

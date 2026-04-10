@@ -15,7 +15,7 @@
 	} = $props();
 </script>
 
-<Card.Root class="flex flex-col justify-between h-full">
+<Card.Root class="flex h-full flex-col justify-between">
 	<Card.Header>
 		<Card.Title class="text-sm font-semibold">{title}</Card.Title>
 		<Card.Description>{description}</Card.Description>
@@ -24,7 +24,9 @@
 		{#if available}
 			<Button variant="outline" size="sm" {href} class="w-full">PLAY</Button>
 		{:else}
-			<Button variant="outline" size="sm" disabled class="w-full tracking-widest uppercase text-xs">COMING SOON</Button>
+			<Button variant="outline" size="sm" disabled class="w-full text-xs tracking-widest uppercase"
+				>COMING SOON</Button
+			>
 		{/if}
 	</Card.Footer>
 </Card.Root>
