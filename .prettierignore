@@ -8,3 +8,6 @@ bun.lockb
 # Miscellaneous
 /static/
 /drizzle/
+
+# Claude Code config + vendored skills (managed externally, do not reformat)
+.claude/

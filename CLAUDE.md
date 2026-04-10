@@ -1,31 +1,53 @@
-## Project Configuration
+## Tech Stack
 
-- **Language**: TypeScript
-- **Package Manager**: pnpm
-- **Add-ons**: prettier, eslint, playwright, tailwindcss, sveltekit-adapter, mcp, drizzle
+| Layer      | Technology                             |
+| ---------- | -------------------------------------- | --- |
+| Framework  | SvelteKit 2 + Svelte 5                 |
+| Language   | TypeScript (strict mode)               |
+| Build      | Vite 7                                 |
+| Styling    | Tailwind CSS 4 + PostCSS               |
+| Deployment | Vercel (`adapter-vercel`)              |
+| Components | Bits UI, Melt UI (headless/accessible) |
+| Icons      | Lucide Svelte                          |
+| Audio      | Web Audio API (native browser)         |
+| Testing    | Vitest (unit), Playwright (E2E)        |
+| i18n       | Paraglide                              | --- |
 
----
+You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation.
+You also have access to Serena MCP.
 
-You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
+## Quality checks (must pass before any commit)
 
-## Available Svelte MCP Tools:
+- `pnpm check` — svelte-check / typecheck
+- `pnpm lint` — prettier + eslint
+- `pnpm test:e2e` — Playwright
 
-### 1. list-sections
+## Multi-agent workflow
 
-Use this FIRST to discover all available documentation sections. Returns a structured list with titles, use_cases, and paths.
-When asked about Svelte or SvelteKit topics, ALWAYS use this tool at the start of the chat to find relevant sections.
+This repo uses a four-stage pipeline. Each stage produces an artifact the next stage reads:
 
-### 2. get-documentation
+1. **PRD** — User runs `/prd <feature>` (skill at [.claude/skills/prd/](.claude/skills/prd/)). Output: `tasks/prd-<feature>.md`. The user fills the Product Owner role directly — there is no PO subagent.
+2. **Design** — `/design <feature>` invokes the [designer subagent](.claude/agents/designer.md). Output: `tasks/design-<feature>.md`.
+3. **Build** — `/ralphize <feature>` runs the [ralph skill](.claude/skills/ralph/) to convert the PRD into [scripts/ralph/prd.json](scripts/ralph/prd.json). Then run `./scripts/ralph/ralph.sh --tool claude <iterations>` from a terminal. Each iteration is a fresh Claude Code instance that implements ONE story, runs quality checks, commits, and marks the story passed. UI stories MUST read `tasks/design-<feature>.md` before implementing. Ralph's per-iteration prompt lives at [scripts/ralph/CLAUDE.md](scripts/ralph/CLAUDE.md).
+4. **QA** — `/qa <feature>` invokes the [qa subagent](.claude/agents/qa.md). Output: `tasks/qa-<feature>.md`. User decides what to fix from the report and may flip stories back to `passes: false` to re-run Ralph.
 
-Retrieves full documentation content for specific sections. Accepts single or multiple sections.
-After calling the list-sections tool, you MUST analyze the returned documentation sections (especially the use_cases field) and then use the get-documentation tool to fetch ALL documentation sections that are relevant for the user's task.
+## Svelte MCP (mandatory for Svelte/SvelteKit work)
 
-### 3. svelte-autofixer
+When writing or modifying Svelte components, you MUST use the `svelte` MCP server:
 
-Analyzes Svelte code and returns issues and suggestions.
-You MUST use this tool whenever writing Svelte code before sending it to the user. Keep calling it until no issues or suggestions are returned.
+1. Call `list-sections` first to discover relevant docs
+2. Call `get-documentation` for every section whose `use_cases` matches the task
+3. After writing any `.svelte` file, run `svelte-autofixer` and re-fix until clean
+4. Never call `playground-link` for code that lives in this repo
 
-### 4. playground-link
+## Component libraries
 
-Generates a Svelte Playground link with the provided code.
-After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.
+- **shadcn-svelte** ([docs](https://www.shadcn-svelte.com/)) is the preferred component library. Components are copied into `src/lib/components/ui/` (not installed as deps). Built on Bits UI primitives + Tailwind. Add components with `pnpm dlx shadcn-svelte@latest add <component>`. If `components.json` does not exist yet, run `pnpm dlx shadcn-svelte@latest init` first.
+- Style with Tailwind v4 `@theme` tokens, not legacy `tailwind.config`.
+- Prefer existing shadcn-svelte components before hand-rolling new UI primitives.
+
+## Conventions
+
+- Drizzle schemas live under `src/lib/server/db/`
+- Server-only code under `src/lib/server/` and never imported from client modules
+- Use Svelte 5 runes (`$state`, `$derived`, `$effect`); do not introduce legacy `$:` reactive statements
