@@ -1,115 +1,53 @@
 <script lang="ts">
-	let {
-		result,
-		targetFreq,
-		targetGainDb,
-		targetQ,
-		userFreq,
-		userGainDb,
-		userQ,
-		errorMarginPct,
-		isLastRound,
-		onnext
-	}: {
-		result: 'correct' | 'incorrect';
-		targetFreq: number;
-		targetGainDb: number;
-		targetQ: number;
-		userFreq: number;
-		userGainDb: number;
-		userQ: number;
-		errorMarginPct: number;
+	import { Button } from '$lib/components/ui/button/index.js';
+	import FreqStrip from '$lib/components/freq-strip.svelte';
+	import { formatFreq } from '$lib/format.js';
+	import type { Round } from '$lib/game-frequency-id.js';
+
+	interface Props {
+		round: Round;
 		isLastRound: boolean;
-		onnext: () => void;
-	} = $props();
-
-	function formatHz(hz: number): string {
-		if (hz >= 1000) return `${(hz / 1000).toFixed(1)} kHz`;
-		return `${Math.round(hz)} Hz`;
+		onNext: () => void;
 	}
 
-	function formatDb(db: number): string {
-		return `${db >= 0 ? '+' : ''}${db.toFixed(1)} dB`;
-	}
-
-	const marginHz = $derived(Math.round(targetFreq * errorMarginPct));
-	const marginPct = $derived(Math.round(errorMarginPct * 100));
+	let { round, isLastRound, onNext }: Props = $props();
 </script>
 
-<div class="space-y-4">
-	<!-- Verdict -->
-	<p
-		aria-live="assertive"
-		class="text-2xl font-semibold tracking-wide uppercase {result === 'correct'
-			? 'text-primary'
-			: 'text-destructive'}"
+<div class="flex flex-col gap-8">
+	<div
+		class="rounded border p-5 {round.result === 'correct'
+			? 'border-green-700 bg-green-950/30'
+			: 'border-red-700 bg-red-950/30'}"
 	>
-		{result === 'correct' ? 'Correct ✓' : 'Incorrect ✗'}
-	</p>
-
-	<!-- Comparison table -->
-	<div class="rounded-lg border border-border bg-card p-4">
-		<table aria-label="Round result comparison" class="w-full">
-			<thead>
-				<tr>
-					<th
-						scope="col"
-						class="py-1 text-left text-xs tracking-widest text-muted-foreground uppercase"
-					></th>
-					<th
-						scope="col"
-						class="py-1 text-right text-xs tracking-widest text-muted-foreground uppercase"
-						>YOUR GUESS</th
-					>
-					<th
-						scope="col"
-						class="py-1 text-right text-xs tracking-widest text-muted-foreground uppercase"
-						>TARGET</th
-					>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td class="py-1 text-xs tracking-widest text-muted-foreground uppercase">FREQ</td>
-					<td class="py-1 text-right font-mono text-sm tabular-nums">{formatHz(userFreq)}</td>
-					<td class="py-1 text-right font-mono text-sm text-primary tabular-nums"
-						>{formatHz(targetFreq)}</td
-					>
-				</tr>
-				<tr>
-					<td class="py-1 text-xs tracking-widest text-muted-foreground uppercase">GAIN</td>
-					<td class="py-1 text-right font-mono text-sm tabular-nums">{formatDb(userGainDb)}</td>
-					<td class="py-1 text-right font-mono text-sm text-primary tabular-nums"
-						>{formatDb(targetGainDb)}</td
-					>
-				</tr>
-				<tr>
-					<td class="py-1 text-xs tracking-widest text-muted-foreground uppercase">Q</td>
-					<td class="py-1 text-right font-mono text-sm tabular-nums">{userQ.toFixed(1)}</td>
-					<td class="py-1 text-right font-mono text-sm text-primary tabular-nums"
-						>{targetQ.toFixed(1)}</td
-					>
-				</tr>
-				<tr>
-					<td class="py-1 text-xs tracking-widest text-muted-foreground uppercase">MARGIN</td>
-					<td
-						class="py-1 text-right font-mono text-sm text-muted-foreground tabular-nums"
-						colspan="2"
-					>
-						±{marginPct}% = ±{marginHz} Hz
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<p class="text-xl font-semibold tracking-wide">
+			{round.result === 'correct' ? 'CORRECT ✓' : 'WRONG ✗'}
+		</p>
+		<div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+			<span>
+				Target: <span class="font-mono text-foreground">{formatFreq(round.targetFreq)}</span>
+			</span>
+			{#if round.guess !== null}
+				<span>
+					Your guess: <span class="font-mono text-foreground">{formatFreq(round.guess)}</span>
+				</span>
+			{/if}
+			<span class="rounded border border-border px-2 py-0.5 font-mono text-xs uppercase">
+				{round.gainDb > 0 ? 'BOOST' : 'CUT'}
+				{Math.abs(round.gainDb)} dB
+			</span>
+		</div>
 	</div>
 
-	<!-- Action button -->
-	<div class="flex justify-end">
-		<button
-			class="h-8 rounded-none border border-border px-4 text-xs font-semibold tracking-widest uppercase transition-colors hover:bg-muted"
-			onclick={onnext}
-		>
-			{isLastRound ? 'SEE RESULTS' : 'NEXT ROUND'}
-		</button>
+	<FreqStrip
+		onSelect={() => {}}
+		disabled={true}
+		targetFreq={round.targetFreq}
+		guessFreq={round.guess}
+	/>
+
+	<div class="flex justify-center">
+		<Button size="lg" class="px-12 tracking-widest" onclick={onNext}>
+			{isLastRound ? 'FINISH' : 'NEXT ROUND'}
+		</Button>
 	</div>
 </div>

@@ -57,3 +57,13 @@ Never call `playground-link` for code that lives in this repo.
 - Drizzle schemas live under `src/lib/server/db/`
 - Server-only code under `src/lib/server/` and never imported from client modules
 - Use Svelte 5 runes (`$state`, `$derived`, `$effect`); do not introduce legacy `$:` reactive statements
+
+## Architecture principles
+
+**Business logic in `.ts`, UI in `.svelte`.** State machines, pure functions, formatting helpers, audio control, math utilities — all live in `src/lib/*.ts`. Pages and components only wire things together.
+
+**Small, focused components.** A component renders one thing. If a page branches on 4+ states, extract each branch into its own component with typed props. Target: pages under ~150 lines, components under ~100.
+
+**No duplicate logic.** Before writing a helper, check `src/lib/` for an existing one. `format.ts` owns formatting, `frequency.ts` owns log-scale math. Add to existing modules; do not copy-paste.
+
+**Composable by default.** Components receive data and callbacks via props — no internal fetching, no tight coupling to parent state. This makes them reusable across game modes without rewiring.

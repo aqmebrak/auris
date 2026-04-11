@@ -5,6 +5,8 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import FreqStrip from '$lib/components/freq-strip.svelte';
 	import AbToggle from '$lib/components/ab-toggle.svelte';
+	import RoundResult from '$lib/components/round-result.svelte';
+	import GameOver from '$lib/components/game-over.svelte';
 	import { FrequencyIdEngine } from '$lib/audio/frequency-id-engine.js';
 	import {
 		newGame,
@@ -39,13 +41,7 @@
 	});
 
 	const currentRound = $derived(game.rounds[game.currentRound]);
-
-	function formatFreq(freq: number): string {
-		if (freq >= 1000) {
-			return `${(freq / 1000).toFixed(1)} kHz`;
-		}
-		return `${Math.round(freq)} Hz`;
-	}
+	const score = $derived(scoreCorrect(game));
 
 	async function handleStart() {
 		if (!browser || !engine) return;
@@ -103,8 +99,6 @@
 		isPaused = true;
 		game = newGame();
 	}
-
-	const score = $derived(scoreCorrect(game));
 </script>
 
 <svelte:head>
@@ -156,15 +150,13 @@
 	{:else if game.phase === 'guessing'}
 		<!-- GUESSING phase -->
 		<div class="flex flex-col gap-8">
-			<div class="flex items-center justify-between">
-				<p class="text-sm text-muted-foreground">
-					{#if isTouchDevice}
-						Hold to aim, release to submit
-					{:else}
-						Click the frequency you hear
-					{/if}
-				</p>
-			</div>
+			<p class="text-sm text-muted-foreground">
+				{#if isTouchDevice}
+					Hold to aim, release to submit
+				{:else}
+					Click the frequency you hear
+				{/if}
+			</p>
 
 			<FreqStrip onSelect={handleSelect} disabled={false} />
 
@@ -182,85 +174,12 @@
 			</p>
 		</div>
 	{:else if game.phase === 'roundResult'}
-		<!-- ROUND RESULT phase -->
-		<div class="flex flex-col gap-8">
-			<div
-				class="rounded border p-5 {currentRound.result === 'correct'
-					? 'border-green-700 bg-green-950/30'
-					: 'border-red-700 bg-red-950/30'}"
-			>
-				<p class="text-xl font-semibold tracking-wide">
-					{currentRound.result === 'correct' ? 'CORRECT ✓' : 'WRONG ✗'}
-				</p>
-				<div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-					<span>
-						Target: <span class="font-mono text-foreground"
-							>{formatFreq(currentRound.targetFreq)}</span
-						>
-					</span>
-					{#if currentRound.guess !== null}
-						<span>
-							Your guess:
-							<span class="font-mono text-foreground">{formatFreq(currentRound.guess)}</span>
-						</span>
-					{/if}
-					<span class="rounded border border-border px-2 py-0.5 font-mono text-xs uppercase">
-						{currentRound.gainDb > 0 ? 'BOOST' : 'CUT'}
-						{Math.abs(currentRound.gainDb)} dB
-					</span>
-				</div>
-			</div>
-
-			<FreqStrip
-				onSelect={() => {}}
-				disabled={true}
-				targetFreq={currentRound.targetFreq}
-				guessFreq={currentRound.guess}
-			/>
-
-			<div class="flex justify-center">
-				{#if game.currentRound >= 4}
-					<Button size="lg" class="px-12 tracking-widest" onclick={handleNextRound}>FINISH</Button>
-				{:else}
-					<Button size="lg" class="px-12 tracking-widest" onclick={handleNextRound}
-						>NEXT ROUND</Button
-					>
-				{/if}
-			</div>
-		</div>
+		<RoundResult
+			round={currentRound}
+			isLastRound={game.currentRound >= 4}
+			onNext={handleNextRound}
+		/>
 	{:else if game.phase === 'gameOver'}
-		<!-- GAME OVER phase -->
-		<div class="flex flex-col gap-8">
-			<div class="text-center">
-				<h2 class="font-mono text-3xl font-bold tracking-widest uppercase">GAME OVER</h2>
-				<p class="mt-4 font-mono text-6xl font-bold text-primary">{score} / 5</p>
-			</div>
-
-			<ul class="flex flex-col gap-2" role="list">
-				{#each game.rounds as round, i (i)}
-					<li
-						class="flex items-center justify-between rounded border border-border px-4 py-3 text-sm"
-					>
-						<span class="text-muted-foreground">Round {i + 1}</span>
-						<span class="font-mono">{formatFreq(round.targetFreq)}</span>
-						{#if round.guess !== null}
-							<span class="font-mono text-muted-foreground">→ {formatFreq(round.guess)}</span>
-						{/if}
-						<span
-							class="rounded px-2 py-0.5 text-xs font-semibold {round.result === 'correct'
-								? 'bg-green-900 text-green-300'
-								: 'bg-red-900 text-red-300'}"
-						>
-							{round.result === 'correct' ? 'CORRECT' : 'WRONG'}
-						</span>
-					</li>
-				{/each}
-			</ul>
-
-			<div class="flex justify-center">
-				<Button size="lg" class="px-12 tracking-widest" onclick={handlePlayAgain}>PLAY AGAIN</Button
-				>
-			</div>
-		</div>
+		<GameOver rounds={game.rounds} {score} onPlayAgain={handlePlayAgain} />
 	{/if}
 </main>

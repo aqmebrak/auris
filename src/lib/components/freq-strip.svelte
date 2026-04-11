@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { ERROR_MARGIN_OCTAVES } from '$lib/game-frequency-id.js';
+	import { formatFreq } from '$lib/format.js';
+	import { LOG_RANGE, posToFreq, freqToPct } from '$lib/frequency.js';
 
 	interface Props {
 		onSelect: (freq: number) => void;
@@ -29,25 +31,9 @@
 		20000: '20k'
 	};
 
-	const LOG_RANGE = Math.log(20000 / 20);
 	const MARGIN_RATIO = 2 ** ERROR_MARGIN_OCTAVES; // 2^(1/3) ≈ 1.26
 	// Band half-width as a fraction of strip width (log scale — constant regardless of position)
 	const MARGIN_HALF_PCT = (Math.log(MARGIN_RATIO) / LOG_RANGE) * 100;
-
-	function posToFreq(x: number, width: number): number {
-		return 20 * Math.pow(20000 / 20, x / width);
-	}
-
-	function freqToPct(freq: number): number {
-		return (Math.log(freq / 20) / LOG_RANGE) * 100;
-	}
-
-	function formatFreq(freq: number): string {
-		if (freq >= 1000) {
-			return `${(freq / 1000).toFixed(1)} kHz`;
-		}
-		return `${Math.round(freq)} Hz`;
-	}
 
 	function handleMousemove(e: MouseEvent) {
 		if (disabled) return;

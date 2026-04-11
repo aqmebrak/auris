@@ -1,5 +1,3 @@
-import type { Difficulty, Round } from '$lib/game/types.js';
-
 export type AurisStats = {
 	sessionsPlayed: number;
 	bestScore: number;
@@ -59,23 +57,4 @@ export function getStats(): AurisStats {
 export function saveStats(stats: AurisStats): void {
 	if (typeof window === 'undefined') return;
 	localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-}
-
-export type FrequencyIdResult = {
-	timestamp: string;
-	difficulty: Difficulty;
-	score: number;
-	rounds: Round[];
-};
-
-export function saveFreqIdResult(result: FrequencyIdResult): void {
-	if (typeof window === 'undefined') return;
-	try {
-		const raw = localStorage.getItem(FREQ_ID_HISTORY_KEY);
-		const history: FrequencyIdResult[] = raw ? (JSON.parse(raw) as FrequencyIdResult[]) : [];
-		history.push(result);
-		localStorage.setItem(FREQ_ID_HISTORY_KEY, JSON.stringify(history));
-	} catch {
-		// ignore storage errors
-	}
 }

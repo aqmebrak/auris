@@ -45,6 +45,8 @@ Fixes found during first playthrough on a 33" screen.
 
 Make the game more educational and replayable.
 
+- [] bug : end round -> Uncaught TypeError: can't access property "rounds", $$props.session is undefined; Game_over
+game-over.svelte:55
 - [ ] **Difficulty levels** — Easy (±1 octave margin, ±6 dB), Medium (±1/3 oct, ±12 dB), Hard (±1/4 oct, ±6 dB)
 - [ ] **Frequency zones** — let user practice specific bands (lows, mids, highs) instead of full 20–20k
 - [ ] **Gain variety** — randomise dB between 6 / 9 / 12 instead of fixed ±12
