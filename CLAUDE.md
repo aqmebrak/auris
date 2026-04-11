@@ -47,14 +47,11 @@ This repo uses a four-stage pipeline. Each stage produces an artifact the next s
 3. **Build** — `/ralphize <feature>` converts the PRD into [scripts/ralph/prd.json](scripts/ralph/prd.json) (ordered story list). Then `/build <feature>` invokes the [fullstack subagent](.claude/agents/fullstack.md), which implements all stories in one context window, running quality checks and committing per story.
 4. **QA** — `/qa <feature>` invokes the [qa subagent](.claude/agents/qa.md). Output: `tasks/qa-<feature>.md`. User decides what to fix from the report and may flip stories back to `passes: false` to re-run `/build`.
 
-## Svelte MCP (mandatory for Svelte/SvelteKit work)
+## Svelte MCP (optional lookup)
 
-When writing or modifying Svelte components, you MUST use the `svelte` MCP server:
+The `svelte` MCP server is available if you are unsure about a specific Svelte 5 / SvelteKit API. Use it sparingly — only look up the exact section you need. Do not call `list-sections` or `get-documentation` as a routine step for every file.
 
-1. Call `list-sections` first to discover relevant docs
-2. Call `get-documentation` for every section whose `use_cases` matches the task
-3. After writing any `.svelte` file, run `svelte-autofixer` and re-fix until clean
-4. Never call `playground-link` for code that lives in this repo
+Never call `playground-link` for code that lives in this repo.
 
 ## Component libraries
 
