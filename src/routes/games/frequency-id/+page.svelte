@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
+	import { onDestroy } from 'svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import FreqStrip from '$lib/components/freq-strip.svelte';
-	import { audioEngine } from '$lib/audio.js';
+	import AbToggle from '$lib/components/ab-toggle.svelte';
+	import { FrequencyIdEngine } from '$lib/audio/frequency-id-engine.js';
 	import {
 		newGame,
 		startRound,
-		markPlaying,
 		submitGuess,
 		nextRound,
 		scoreCorrect
@@ -16,11 +17,24 @@
 
 	let game = $state<GameState>(newGame());
 
-	// Detect touch device for instruction text
 	let isTouchDevice = $state(false);
+	let isPaused = $state(true);
+	let isLoading = $state(false);
+	let abMode = $state<'A' | 'B'>('B');
+
+	let engine: FrequencyIdEngine | null = null;
+
 	$effect(() => {
 		if (browser) {
 			isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+			if (!engine) engine = new FrequencyIdEngine();
+		}
+	});
+
+	onDestroy(() => {
+		if (engine) {
+			engine.destroy();
+			engine = null;
 		}
 	});
 
@@ -33,33 +47,60 @@
 		return `${Math.round(freq)} Hz`;
 	}
 
-	function handlePlay() {
-		game = startRound(game);
-		if (browser) {
+	async function handleStart() {
+		if (!browser || !engine) return;
+		isLoading = true;
+		try {
 			const round = game.rounds[game.currentRound];
-			audioEngine.play(round.targetFreq, round.gainDb);
-			setTimeout(() => {
-				game = markPlaying(game);
-			}, 3100);
+			await engine.load(round.sampleUrl);
+			engine.setFilter(round.targetFreq, round.gainDb, 2.5);
+			abMode = 'B';
+			engine.play('B');
+			isPaused = false;
+			game = startRound(game);
+		} finally {
+			isLoading = false;
 		}
 	}
 
+	function handlePlayPause() {
+		if (!engine) return;
+		if (isPaused) {
+			engine.resume();
+			isPaused = false;
+		} else {
+			engine.pause();
+			isPaused = true;
+		}
+	}
+
+	function handleAbChange(mode: 'A' | 'B') {
+		if (!engine) return;
+		engine.setMode(mode);
+		abMode = mode;
+	}
+
 	function handleReplay() {
-		if (!browser) return;
-		const round = game.rounds[game.currentRound];
-		audioEngine.play(round.targetFreq, round.gainDb);
+		if (!engine) return;
+		engine.play(abMode);
+		isPaused = false;
 	}
 
 	function handleSelect(freq: number) {
+		if (engine) engine.stop();
+		isPaused = true;
 		game = submitGuess(game, freq);
 	}
 
 	function handleNextRound() {
+		if (engine) engine.stop();
+		isPaused = true;
 		game = nextRound(game);
 	}
 
 	function handlePlayAgain() {
-		audioEngine.stop();
+		if (engine) engine.stop();
+		isPaused = true;
 		game = newGame();
 	}
 
@@ -70,9 +111,9 @@
 	<title>Frequency ID — Auris</title>
 </svelte:head>
 
-<main class="mx-auto max-w-2xl px-4 py-8">
+<main class="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-14">
 	<!-- Header -->
-	<div class="mb-6 flex items-center justify-between">
+	<div class="mb-10 flex items-center justify-between">
 		<a
 			href={resolve('/')}
 			class="text-xs tracking-widest text-muted-foreground uppercase hover:text-foreground"
@@ -80,12 +121,12 @@
 			← Back
 		</a>
 		{#if game.phase !== 'gameOver'}
-			<div class="flex items-center gap-4">
-				<span class="font-mono text-xs text-muted-foreground">
-					SCORE {score} / 5
+			<div class="flex items-center gap-6">
+				<span class="font-mono text-sm text-muted-foreground">
+					SCORE <span class="text-foreground">{score}</span> / 5
 				</span>
-				<span class="text-xs tracking-widest text-muted-foreground uppercase">
-					ROUND {game.currentRound + 1} / 5
+				<span class="text-sm tracking-widest text-muted-foreground uppercase">
+					ROUND <span class="font-mono text-foreground">{game.currentRound + 1}</span> / 5
 				</span>
 			</div>
 		{/if}
@@ -93,68 +134,65 @@
 
 	{#if game.phase === 'idle'}
 		<!-- IDLE phase -->
-		<div class="flex flex-col gap-6">
-			<p class="text-xs text-muted-foreground">Press PLAY to hear the audio</p>
-
-			<!-- Boost/Cut not shown in idle — revealed in guessing -->
-
-			<FreqStrip onSelect={handleSelect} disabled={true} />
-
-			<div class="flex justify-center">
-				<Button size="lg" onclick={handlePlay}>PLAY</Button>
-			</div>
-		</div>
-	{:else if game.phase === 'playing'}
-		<!-- PLAYING phase -->
-		<div class="flex flex-col gap-6">
-			<p class="text-xs text-muted-foreground">Listening...</p>
+		<div class="flex flex-col gap-8">
+			<p class="text-sm text-muted-foreground">
+				Press PLAY to hear the audio. Your task: identify the frequency band where the EQ is
+				applied.
+			</p>
 
 			<FreqStrip onSelect={handleSelect} disabled={true} />
 
 			<div class="flex justify-center">
-				<Button size="lg" disabled>PLAYING...</Button>
+				<Button
+					size="lg"
+					class="px-12 text-sm tracking-widest"
+					onclick={handleStart}
+					disabled={isLoading}
+				>
+					{isLoading ? 'LOADING…' : 'PLAY'}
+				</Button>
 			</div>
 		</div>
 	{:else if game.phase === 'guessing'}
 		<!-- GUESSING phase -->
-		<div class="flex flex-col gap-6">
+		<div class="flex flex-col gap-8">
 			<div class="flex items-center justify-between">
-				<p class="text-xs text-muted-foreground">
+				<p class="text-sm text-muted-foreground">
 					{#if isTouchDevice}
 						Hold to aim, release to submit
 					{:else}
 						Click the frequency you hear
 					{/if}
 				</p>
-				<span
-					class="rounded border border-border px-2 py-0.5 font-mono text-xs tracking-widest {currentRound.gainDb >
-					0
-						? 'text-foreground'
-						: 'text-muted-foreground'} uppercase"
-				>
-					{currentRound.gainDb > 0 ? 'BOOST' : 'CUT'}
-					{Math.abs(currentRound.gainDb)} dB
-				</span>
 			</div>
 
 			<FreqStrip onSelect={handleSelect} disabled={false} />
 
-			<div class="flex justify-center">
-				<Button variant="outline" onclick={handleReplay}>REPLAY</Button>
+			<div class="flex items-center justify-center gap-6">
+				<Button variant="outline" size="lg" class="px-6 tracking-widest" onclick={handlePlayPause}>
+					{isPaused ? 'PLAY' : 'PAUSE'}
+				</Button>
+				<AbToggle mode={abMode} onchange={handleAbChange} />
+				<Button variant="outline" size="lg" class="px-6 tracking-widest" onclick={handleReplay}>
+					REPLAY
+				</Button>
 			</div>
+			<p class="text-center text-xs tracking-widest text-muted-foreground uppercase">
+				A = dry signal &nbsp; · &nbsp; B = with EQ applied
+			</p>
 		</div>
 	{:else if game.phase === 'roundResult'}
 		<!-- ROUND RESULT phase -->
-		<div class="flex flex-col gap-6">
+		<div class="flex flex-col gap-8">
 			<div
-				class="rounded border border-border p-4 {currentRound.result === 'correct'
+				class="rounded border p-5 {currentRound.result === 'correct'
 					? 'border-green-700 bg-green-950/30'
 					: 'border-red-700 bg-red-950/30'}"
 			>
-				<p class="text-lg font-semibold">
+				<p class="text-xl font-semibold tracking-wide">
 					{currentRound.result === 'correct' ? 'CORRECT ✓' : 'WRONG ✗'}
 				</p>
-				<div class="mt-2 flex flex-col gap-1 text-xs text-muted-foreground">
+				<div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
 					<span>
 						Target: <span class="font-mono text-foreground"
 							>{formatFreq(currentRound.targetFreq)}</span
@@ -162,40 +200,46 @@
 					</span>
 					{#if currentRound.guess !== null}
 						<span>
-							Your guess: <span class="font-mono text-foreground"
-								>{formatFreq(currentRound.guess)}</span
-							>
+							Your guess:
+							<span class="font-mono text-foreground">{formatFreq(currentRound.guess)}</span>
 						</span>
 					{/if}
-					<span class="mt-1">
-						<span class="rounded border border-border px-1.5 py-0.5 font-mono text-xs uppercase">
-							{currentRound.gainDb > 0 ? 'BOOST' : 'CUT'}
-							{Math.abs(currentRound.gainDb)} dB
-						</span>
+					<span class="rounded border border-border px-2 py-0.5 font-mono text-xs uppercase">
+						{currentRound.gainDb > 0 ? 'BOOST' : 'CUT'}
+						{Math.abs(currentRound.gainDb)} dB
 					</span>
 				</div>
 			</div>
 
+			<FreqStrip
+				onSelect={() => {}}
+				disabled={true}
+				targetFreq={currentRound.targetFreq}
+				guessFreq={currentRound.guess}
+			/>
+
 			<div class="flex justify-center">
 				{#if game.currentRound >= 4}
-					<Button onclick={handleNextRound}>FINISH</Button>
+					<Button size="lg" class="px-12 tracking-widest" onclick={handleNextRound}>FINISH</Button>
 				{:else}
-					<Button onclick={handleNextRound}>NEXT ROUND</Button>
+					<Button size="lg" class="px-12 tracking-widest" onclick={handleNextRound}
+						>NEXT ROUND</Button
+					>
 				{/if}
 			</div>
 		</div>
 	{:else if game.phase === 'gameOver'}
 		<!-- GAME OVER phase -->
-		<div class="flex flex-col gap-6">
+		<div class="flex flex-col gap-8">
 			<div class="text-center">
-				<h2 class="font-mono text-2xl font-bold tracking-widest uppercase">GAME OVER</h2>
-				<p class="mt-2 font-mono text-4xl font-bold">{score} / 5</p>
+				<h2 class="font-mono text-3xl font-bold tracking-widest uppercase">GAME OVER</h2>
+				<p class="mt-4 font-mono text-6xl font-bold text-primary">{score} / 5</p>
 			</div>
 
 			<ul class="flex flex-col gap-2" role="list">
 				{#each game.rounds as round, i (i)}
 					<li
-						class="flex items-center justify-between rounded border border-border px-3 py-2 text-xs"
+						class="flex items-center justify-between rounded border border-border px-4 py-3 text-sm"
 					>
 						<span class="text-muted-foreground">Round {i + 1}</span>
 						<span class="font-mono">{formatFreq(round.targetFreq)}</span>
@@ -203,7 +247,7 @@
 							<span class="font-mono text-muted-foreground">→ {formatFreq(round.guess)}</span>
 						{/if}
 						<span
-							class="rounded px-1.5 py-0.5 text-xs font-semibold {round.result === 'correct'
+							class="rounded px-2 py-0.5 text-xs font-semibold {round.result === 'correct'
 								? 'bg-green-900 text-green-300'
 								: 'bg-red-900 text-red-300'}"
 						>
@@ -214,7 +258,8 @@
 			</ul>
 
 			<div class="flex justify-center">
-				<Button onclick={handlePlayAgain}>PLAY AGAIN</Button>
+				<Button size="lg" class="px-12 tracking-widest" onclick={handlePlayAgain}>PLAY AGAIN</Button
+				>
 			</div>
 		</div>
 	{/if}

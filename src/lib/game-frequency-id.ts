@@ -1,11 +1,14 @@
 // Game logic for Frequency ID exercise
 // Pure functions — no side effects
 
+import { pickTrack } from '$lib/audio/frequency-id-engine.js';
+
 export type RoundResult = 'correct' | 'wrong' | 'pending';
 
 export type Round = {
 	targetFreq: number;
 	gainDb: number;
+	sampleUrl: string;
 	guess: number | null;
 	result: RoundResult;
 };
@@ -13,7 +16,7 @@ export type Round = {
 export type GameState = {
 	rounds: Round[];
 	currentRound: number;
-	phase: 'idle' | 'playing' | 'guessing' | 'roundResult' | 'gameOver';
+	phase: 'idle' | 'guessing' | 'roundResult' | 'gameOver';
 };
 
 export const ERROR_MARGIN_OCTAVES = 1 / 3;
@@ -22,6 +25,7 @@ export function newGame(): GameState {
 	const rounds: Round[] = Array.from({ length: 5 }, () => ({
 		targetFreq: Math.round(20 * Math.pow(20000 / 20, Math.random())),
 		gainDb: Math.random() < 0.5 ? 12 : -12,
+		sampleUrl: pickTrack(),
 		guess: null,
 		result: 'pending' as RoundResult
 	}));
@@ -33,10 +37,6 @@ export function newGame(): GameState {
 }
 
 export function startRound(state: GameState): GameState {
-	return { ...state, phase: 'playing' };
-}
-
-export function markPlaying(state: GameState): GameState {
 	return { ...state, phase: 'guessing' };
 }
 

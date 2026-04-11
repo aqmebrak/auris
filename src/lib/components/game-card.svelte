@@ -15,16 +15,16 @@
 	} = $props();
 </script>
 
-<Card.Root class="flex h-full flex-col justify-between">
-	<Card.Header>
-		<Card.Title class="text-sm font-semibold">{title}</Card.Title>
-		<Card.Description>{description}</Card.Description>
+<Card.Root class="flex h-full flex-col justify-between gap-6 py-6 has-data-[slot=card-footer]:pb-6">
+	<Card.Header class="gap-2 px-6">
+		<Card.Title class="text-base font-semibold tracking-wide">{title}</Card.Title>
+		<Card.Description class="text-sm">{description}</Card.Description>
 	</Card.Header>
-	<Card.Footer class="pt-0">
+	<Card.Footer class="justify-center px-6 pt-4 pb-6">
 		{#if available}
-			<Button variant="outline" size="sm" {href} class="w-full">PLAY</Button>
+			<Button size="lg" {href} class="px-8 tracking-widest">PLAY</Button>
 		{:else}
-			<Button variant="outline" size="sm" disabled class="w-full text-xs tracking-widest uppercase"
+			<Button variant="outline" size="lg" disabled class="px-8 tracking-widest uppercase"
 				>COMING SOON</Button
 			>
 		{/if}

@@ -100,7 +100,7 @@ Be explicit and unambiguous.
 ### 5. Non-Goals (Out of Scope)
 What this feature will NOT include. Critical for managing scope.
 
-### 6. Design Considerations (Optional)
+### 6. Design Considerations
 - UI/UX requirements
 - Link to mockups if available
 - Relevant existing components to reuse

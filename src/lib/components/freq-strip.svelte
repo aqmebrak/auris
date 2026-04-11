@@ -1,10 +1,16 @@
 <script lang="ts">
+	import { ERROR_MARGIN_OCTAVES } from '$lib/game-frequency-id.js';
+
 	interface Props {
 		onSelect: (freq: number) => void;
 		disabled?: boolean;
+		/** When set, shows a persistent target marker (result phase). */
+		targetFreq?: number | null;
+		/** When set, shows a persistent guess marker (result phase). */
+		guessFreq?: number | null;
 	}
 
-	let { onSelect, disabled = false }: Props = $props();
+	let { onSelect, disabled = false, targetFreq = null, guessFreq = null }: Props = $props();
 
 	let hoveredFreq: number | null = $state(null);
 	let stripEl: HTMLDivElement | undefined = $state();
@@ -23,12 +29,17 @@
 		20000: '20k'
 	};
 
+	const LOG_RANGE = Math.log(20000 / 20);
+	const MARGIN_RATIO = 2 ** ERROR_MARGIN_OCTAVES; // 2^(1/3) ≈ 1.26
+	// Band half-width as a fraction of strip width (log scale — constant regardless of position)
+	const MARGIN_HALF_PCT = (Math.log(MARGIN_RATIO) / LOG_RANGE) * 100;
+
 	function posToFreq(x: number, width: number): number {
 		return 20 * Math.pow(20000 / 20, x / width);
 	}
 
-	function freqToPos(freq: number, width: number): number {
-		return width * (Math.log(freq / 20) / Math.log(20000 / 20));
+	function freqToPct(freq: number): number {
+		return (Math.log(freq / 20) / LOG_RANGE) * 100;
 	}
 
 	function formatFreq(freq: number): string {
@@ -77,11 +88,12 @@
 		hoveredFreq = null;
 	}
 
-	// Compute cursor line position as percentage
-	const cursorPct = $derived(
-		hoveredFreq !== null && stripEl
-			? (freqToPos(hoveredFreq, stripEl.clientWidth) / stripEl.clientWidth) * 100
-			: null
+	const cursorPct = $derived(hoveredFreq !== null ? freqToPct(hoveredFreq) : null);
+	const targetPct = $derived(
+		targetFreq !== null && targetFreq !== undefined ? freqToPct(targetFreq) : null
+	);
+	const guessPct = $derived(
+		guessFreq !== null && guessFreq !== undefined ? freqToPct(guessFreq) : null
 	);
 </script>
 
@@ -92,8 +104,8 @@
 	aria-valuemin={20}
 	aria-valuemax={20000}
 	aria-valuenow={hoveredFreq ?? 20}
-	class="relative min-h-[80px] w-full overflow-visible rounded border border-border bg-card pb-5
-		{disabled ? 'cursor-not-allowed opacity-40' : 'cursor-crosshair'}"
+	class="relative min-h-55 w-full overflow-visible rounded border border-border bg-card pb-8
+		{disabled ? 'cursor-not-allowed opacity-60' : 'cursor-crosshair'}"
 	onmousemove={handleMousemove}
 	onmouseleave={handleMouseleave}
 	onclick={handleClick}
@@ -105,31 +117,65 @@
 	ontouchend={handleTouchend}
 	tabindex={disabled ? -1 : 0}
 >
-	<!-- Cursor line -->
+	<!-- Hover: margin-of-error band -->
 	{#if cursorPct !== null}
+		{@const bandLeft = Math.max(0, cursorPct - MARGIN_HALF_PCT)}
+		{@const bandRight = Math.min(100, cursorPct + MARGIN_HALF_PCT)}
 		<div
-			class="pointer-events-none absolute top-0 bottom-5 z-10 w-px bg-foreground/70"
+			class="pointer-events-none absolute top-0 bottom-8 z-0 border-x border-primary/40 bg-primary/15"
+			style="left: {bandLeft}%; width: {bandRight - bandLeft}%;"
+		></div>
+
+		<!-- Cursor line -->
+		<div
+			class="pointer-events-none absolute top-0 bottom-8 z-10 w-px bg-primary"
 			style="left: {cursorPct}%"
 		></div>
 
 		<!-- Frequency badge -->
-		{@const badgePct = Math.min(Math.max(cursorPct, 0), 95)}
+		{@const badgePct = Math.min(Math.max(cursorPct, 2), 98)}
 		<div
-			class="pointer-events-none absolute top-1 z-20 -translate-x-1/2 rounded border border-border bg-background px-1.5 py-0.5 text-xs whitespace-nowrap"
+			class="pointer-events-none absolute top-2 z-20 -translate-x-1/2 rounded border border-primary/50 bg-background px-2 py-1 font-mono text-sm whitespace-nowrap text-primary"
 			style="left: {badgePct}%"
 		>
 			{formatFreq(hoveredFreq!)}
 		</div>
 	{/if}
 
+	<!-- Result phase: target marker (green) -->
+	{#if targetPct !== null}
+		<div
+			class="pointer-events-none absolute top-0 bottom-8 z-10 w-0.5 bg-green-500"
+			style="left: {targetPct}%"
+		></div>
+		<div
+			class="pointer-events-none absolute bottom-10 z-20 -translate-x-1/2 rounded border border-green-500/50 bg-background px-2 py-0.5 font-mono text-xs whitespace-nowrap text-green-400"
+			style="left: {Math.min(Math.max(targetPct, 2), 98)}%"
+		>
+			TARGET {formatFreq(targetFreq!)}
+		</div>
+	{/if}
+
+	<!-- Result phase: guess marker (fuchsia) -->
+	{#if guessPct !== null}
+		<div
+			class="pointer-events-none absolute top-0 bottom-8 z-10 w-0.5 bg-primary"
+			style="left: {guessPct}%"
+		></div>
+		<div
+			class="pointer-events-none absolute top-2 z-20 -translate-x-1/2 rounded border border-primary/50 bg-background px-2 py-0.5 font-mono text-xs whitespace-nowrap text-primary"
+			style="left: {Math.min(Math.max(guessPct, 2), 98)}%"
+		>
+			YOU {formatFreq(guessFreq!)}
+		</div>
+	{/if}
+
 	<!-- Tick marks -->
 	{#each TICKS as tick (tick)}
-		{@const pct = stripEl
-			? (freqToPos(tick, stripEl.clientWidth) / stripEl.clientWidth) * 100
-			: (Math.log(tick / 20) / Math.log(20000 / 20)) * 100}
-		<div class="absolute bottom-5 h-2 w-0.5 bg-border" style="left: {pct}%"></div>
+		{@const pct = freqToPct(tick)}
+		<div class="absolute bottom-8 h-3 w-0.5 bg-border" style="left: {pct}%"></div>
 		<div
-			class="absolute bottom-0 -translate-x-1/2 text-[10px] leading-none text-muted-foreground"
+			class="absolute bottom-1 -translate-x-1/2 font-mono text-xs leading-none text-muted-foreground"
 			style="left: {pct}%"
 		>
 			{TICK_LABELS[tick]}

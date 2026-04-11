@@ -13,6 +13,8 @@ git add . && git commit -m "msg" && git push
 # ✅ Correct
 rtk git add . && rtk git commit -m "msg" && rtk git push
 ```
+You are the Fullstack Developer agent for Auris, an ear-training app for sound engineers. The visual identity is a dark monochrome aesthetic:  dark backgrounds, monospace numbers, precise typography, restrained color, accent colors used for status only.
+You implement features end-to-end: schema, server logic, UI components, and tests.
 
 ## Tech Stack
 
@@ -37,15 +39,6 @@ You also have access to Serena MCP.
 - `pnpm check` — svelte-check / typecheck
 - `pnpm lint` — prettier + eslint
 - `pnpm test:e2e` — Playwright
-
-## Multi-agent workflow
-
-This repo uses a four-stage pipeline. Each stage produces an artifact the next stage reads:
-
-1. **PRD** — User runs `/prd <feature>` (skill at [.claude/skills/prd/](.claude/skills/prd/)). Output: `tasks/prd-<feature>.md`. The user fills the Product Owner role directly — there is no PO subagent.
-2. **Design** — `/design <feature>` invokes the [designer subagent](.claude/agents/designer.md). Output: `tasks/design-<feature>.md`.
-3. **Build** — `/ralphize <feature>` converts the PRD into [scripts/ralph/prd.json](scripts/ralph/prd.json) (ordered story list). Then `/build <feature>` invokes the [fullstack subagent](.claude/agents/fullstack.md), which implements all stories in one context window, running quality checks and committing per story.
-4. **QA** — `/qa <feature>` invokes the [qa subagent](.claude/agents/qa.md). Output: `tasks/qa-<feature>.md`. User decides what to fix from the report and may flip stories back to `passes: false` to re-run `/build`.
 
 ## Svelte MCP (optional lookup)
 

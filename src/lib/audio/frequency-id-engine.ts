@@ -3,12 +3,28 @@
  * SSR-safe: all AudioContext usage is guarded with typeof window !== 'undefined'.
  *
  * Graph topology:
- *   A mode: source → destination           (filter bypassed via disconnect/reconnect)
+ *   A mode: source → destination           (filter bypassed)
  *   B mode: source → filter → destination  (BiquadFilterNode type "peaking")
  */
+
+export const SAMPLES = [
+	'/audio/568755__badoink__rockin_140.wav',
+	'/audio/614732__bainmack__metal_song_short15.wav',
+	'/audio/566057__badoink__industrial-metal-fusion-120.wav',
+	'/audio/400993__theflakesmaster__drumbeat-120-bpm.wav',
+	'/audio/535231__badoink__sex-in-the-suburbs.wav',
+	'/audio/569299__badoink__rock-seq-170.wav',
+	'/audio/528906__johntrap__people-that-need-housing-loop-t130.wav'
+] as const;
+
+export function pickTrack(): string {
+	return SAMPLES[Math.floor(Math.random() * SAMPLES.length)];
+}
+
 export class FrequencyIdEngine {
 	private ctx: AudioContext | null = null;
-	private buffer: AudioBuffer | null = null;
+	private bufferCache = new Map<string, AudioBuffer>();
+	private currentBuffer: AudioBuffer | null = null;
 	private filter: BiquadFilterNode | null = null;
 	private sourceNode: AudioBufferSourceNode | null = null;
 	private currentMode: 'A' | 'B' = 'B';
@@ -25,29 +41,38 @@ export class FrequencyIdEngine {
 		return this.ctx;
 	}
 
+	/** Loads a sample URL, caches the decoded buffer, and sets it as the current buffer. */
 	async load(url: string): Promise<void> {
 		if (typeof window === 'undefined') return;
 		const ctx = this.getContext();
+
+		const cached = this.bufferCache.get(url);
+		if (cached) {
+			this.currentBuffer = cached;
+			return;
+		}
+
 		const response = await fetch(url);
 		const arrayBuffer = await response.arrayBuffer();
-		this.buffer = await ctx.decodeAudioData(arrayBuffer);
+		const decoded = await ctx.decodeAudioData(arrayBuffer);
+		this.bufferCache.set(url, decoded);
+		this.currentBuffer = decoded;
 	}
 
-	/** FR-11: creates a new AudioBufferSourceNode on every play() call */
+	/** Starts a new source node. */
 	play(mode: 'A' | 'B'): void {
 		if (typeof window === 'undefined') return;
-		if (!this.buffer) return;
+		if (!this.currentBuffer) return;
 
 		this.stop();
 
 		const ctx = this.getContext();
-		// Resume if suspended (browsers suspend AudioContext before user gesture)
 		if (ctx.state === 'suspended') {
 			ctx.resume();
 		}
 
 		const source = ctx.createBufferSource();
-		source.buffer = this.buffer;
+		source.buffer = this.currentBuffer;
 		source.loop = true;
 
 		this.currentMode = mode;
@@ -55,6 +80,26 @@ export class FrequencyIdEngine {
 
 		this._connect(source, mode);
 		source.start();
+	}
+
+	/** Pauses playback without tearing down the source node (context suspended). */
+	pause(): void {
+		if (!this.ctx) return;
+		if (this.ctx.state === 'running') {
+			this.ctx.suspend();
+		}
+	}
+
+	/** Resumes a paused context. */
+	resume(): void {
+		if (!this.ctx) return;
+		if (this.ctx.state === 'suspended') {
+			this.ctx.resume();
+		}
+	}
+
+	get isPlaying(): boolean {
+		return this.sourceNode !== null && this.ctx?.state === 'running';
 	}
 
 	stop(): void {
@@ -71,23 +116,25 @@ export class FrequencyIdEngine {
 
 	/** Updates BiquadFilter params in real-time */
 	setFilter(freq: number, gainDb: number, q: number): void {
+		if (!this.filter) {
+			// Ensure filter exists even if called before play
+			this.getContext();
+		}
 		if (!this.filter) return;
 		this.filter.frequency.value = freq;
 		this.filter.gain.value = gainDb;
 		this.filter.Q.value = q;
 	}
 
-	/** FR-1: switches routing without restarting audio */
+	/** Switches routing (dry vs filtered) without restarting audio */
 	setMode(mode: 'A' | 'B'): void {
 		if (typeof window === 'undefined') return;
 		if (this.currentMode === mode) return;
 		this.currentMode = mode;
 
 		if (!this.sourceNode) return;
-		// Ensure context is initialized before reconnecting
 		this.getContext();
 
-		// Disconnect everything and reconnect in new topology
 		this.sourceNode.disconnect();
 		if (this.filter) this.filter.disconnect();
 
@@ -97,10 +144,8 @@ export class FrequencyIdEngine {
 	private _connect(source: AudioBufferSourceNode, mode: 'A' | 'B'): void {
 		const ctx = this.getContext();
 		if (mode === 'A' || !this.filter) {
-			// A mode: source → destination (filter not in path)
 			source.connect(ctx.destination);
 		} else {
-			// B mode: source → filter → destination
 			source.connect(this.filter);
 			this.filter.connect(ctx.destination);
 		}
@@ -113,5 +158,7 @@ export class FrequencyIdEngine {
 			this.ctx = null;
 			this.filter = null;
 		}
+		this.bufferCache.clear();
+		this.currentBuffer = null;
 	}
 }
