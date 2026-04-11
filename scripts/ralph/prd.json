@@ -196,7 +196,7 @@
 				"Lint passes (pnpm lint)"
 			],
 			"priority": 8,
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		}
 	]
