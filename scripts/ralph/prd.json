@@ -121,7 +121,7 @@
 				"Verify in browser: http://localhost:5173 — Frequency ID card shows an enabled PLAY button; clicking it navigates to /games/frequency-id"
 			],
 			"priority": 5,
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		}
 	]
