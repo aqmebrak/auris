@@ -11,6 +11,7 @@
 	import { createGameSession, evaluateGuess } from '$lib/game/engine.js';
 	import type { Difficulty, GameSession, GameState } from '$lib/game/types.js';
 	import { FrequencyIdEngine } from '$lib/audio/frequency-id-engine.js';
+	import { saveFreqIdResult } from '$lib/stats.js';
 
 	let gameState = $state<GameState>('idle');
 	let session = $state<GameSession | null>(null);
@@ -105,6 +106,14 @@
 		if (isLast) {
 			session.endedAt = new Date().toISOString();
 			engine?.stop();
+			if (browser) {
+				saveFreqIdResult({
+					timestamp: new Date().toISOString(),
+					difficulty: session.difficulty,
+					score: session.score,
+					rounds: session.rounds
+				});
+			}
 			gameState = 'game_over';
 		} else {
 			session.currentRoundIndex += 1;

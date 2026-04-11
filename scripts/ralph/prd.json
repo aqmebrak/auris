@@ -45,7 +45,7 @@
 				"Verify in browser: navigate to /games/frequency-id — difficulty selection screen shows three cards"
 			],
 			"priority": 2,
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
@@ -67,7 +67,7 @@
 				"Typecheck passes (pnpm check)"
 			],
 			"priority": 3,
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
@@ -93,7 +93,7 @@
 				"Verify in browser: navigate to /games/frequency-id, select difficulty, check knobs render and respond to drag"
 			],
 			"priority": 4,
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
@@ -118,7 +118,7 @@
 				"Verify in browser: navigate to /games/frequency-id, select difficulty — frequency strip shows with tick labels and moving marker"
 			],
 			"priority": 5,
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
@@ -145,7 +145,7 @@
 				"Verify in browser: round UI shows with knobs, A/B toggle, frequency strip; Submit disabled until freq knob moved; A/B switch toggles audio mode"
 			],
 			"priority": 6,
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{
@@ -175,7 +175,7 @@
 				"Verify in browser: complete a round — result screen shows; complete all 5 — game over shows with score and round list"
 			],
 			"priority": 7,
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{

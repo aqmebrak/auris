@@ -13,7 +13,7 @@
 			title: 'Frequency ID',
 			description: 'Identify the boosted frequency band',
 			href: '/games/frequency-id',
-			available: false
+			available: true
 		},
 		{
 			title: 'Dynamics',
