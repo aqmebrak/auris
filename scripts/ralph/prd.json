@@ -103,7 +103,7 @@
 				"Verify in browser: http://localhost:5173/games/frequency-id — game renders, PLAY button triggers audio, freq strip is interactive after audio, submitting shows result, 5 rounds then game over"
 			],
 			"priority": 4,
-			"passes": false,
+			"passes": true,
 			"notes": ""
 		},
 		{

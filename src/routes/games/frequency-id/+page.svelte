@@ -1,247 +1,221 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
-	import AbToggle from '$lib/components/ab-toggle.svelte';
-	import DifficultyCard from '$lib/components/difficulty-card.svelte';
-	import FrequencyStrip from '$lib/components/FrequencyStrip.svelte';
-	import GameOver from '$lib/components/game-over.svelte';
-	import KnobStrip from '$lib/components/knob-strip.svelte';
-	import RoundResult from '$lib/components/round-result.svelte';
-	import { DIFFICULTY_CONFIG } from '$lib/game/config.js';
-	import { createGameSession, evaluateGuess } from '$lib/game/engine.js';
-	import type { Difficulty, GameSession, GameState } from '$lib/game/types.js';
-	import { FrequencyIdEngine } from '$lib/audio/frequency-id-engine.js';
-	import { saveFreqIdResult } from '$lib/stats.js';
+	import { Button } from '$lib/components/ui/button/index.js';
+	import FreqStrip from '$lib/components/freq-strip.svelte';
+	import { audioEngine } from '$lib/audio.js';
+	import {
+		newGame,
+		startRound,
+		markPlaying,
+		submitGuess,
+		nextRound,
+		scoreCorrect
+	} from '$lib/game-frequency-id.js';
+	import type { GameState } from '$lib/game-frequency-id.js';
 
-	let gameState = $state<GameState>('idle');
-	let session = $state<GameSession | null>(null);
-	let abMode = $state<'A' | 'B'>('B');
-	let freqKnobMoved = $state(false);
+	let game = $state<GameState>(newGame());
 
-	// Knob values
-	let freqValue = $state(1000);
-	let gainValue = $state(0);
-	let qValue = $state(1);
-
-	const difficulties: Difficulty[] = ['easy', 'medium', 'hard'];
-
-	// Audio engine — browser only
-	let engine: FrequencyIdEngine | null = null;
-	let engineLoaded = false;
-
-	const currentRound = $derived(
-		session && gameState !== 'idle' ? session.rounds[session.currentRoundIndex] : null
-	);
-
-	const diffConfig = $derived(
-		session ? DIFFICULTY_CONFIG[session.difficulty] : DIFFICULTY_CONFIG['easy']
-	);
-
-	function resetKnobs() {
-		freqValue = 1000;
-		gainValue = 0;
-		qValue = diffConfig.qMin + (diffConfig.qMax - diffConfig.qMin) / 2;
-		freqKnobMoved = false;
-	}
-
-	async function startRound() {
-		if (!session || !browser) return;
-		const round = session.rounds[session.currentRoundIndex];
-		if (!engine) {
-			engine = new FrequencyIdEngine();
+	// Detect touch device for instruction text
+	let isTouchDevice = $state(false);
+	$effect(() => {
+		if (browser) {
+			isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 		}
-		engine.setFilter(round.targetFreq, round.targetGainDb, round.targetQ);
-		if (!engineLoaded) {
-			await engine.load('/audio/freq-id-placeholder.wav');
-			engineLoaded = true;
+	});
+
+	const currentRound = $derived(game.rounds[game.currentRound]);
+
+	function formatFreq(freq: number): string {
+		if (freq >= 1000) {
+			return `${(freq / 1000).toFixed(1)} kHz`;
 		}
-		abMode = 'B';
-		engine.play('B');
+		return `${Math.round(freq)} Hz`;
 	}
 
-	function selectDifficulty(difficulty: Difficulty) {
-		session = createGameSession(difficulty);
-		resetKnobs();
-		gameState = 'round_active';
-		startRound();
-	}
-
-	function handleAbChange(mode: 'A' | 'B') {
-		abMode = mode;
-		engine?.setMode(mode);
-	}
-
-	function handleFreqChange(v: number) {
-		freqValue = v;
-		freqKnobMoved = true;
-	}
-
-	function handleGainChange(v: number) {
-		gainValue = v;
-	}
-
-	function handleQChange(v: number) {
-		qValue = v;
-	}
-
-	const submitDisabled = $derived(!freqKnobMoved);
-
-	function handleSubmit() {
-		if (!session || submitDisabled) return;
-		const round = session.rounds[session.currentRoundIndex];
-		const result = evaluateGuess(round, freqValue);
-		round.result = result;
-		round.userFreq = freqValue;
-		round.userGainDb = gainValue;
-		round.userQ = qValue;
-		if (result === 'correct') {
-			session.score += 1;
+	function handlePlay() {
+		game = startRound(game);
+		if (browser) {
+			const round = game.rounds[game.currentRound];
+			audioEngine.play(round.targetFreq, round.gainDb);
+			setTimeout(() => {
+				game = markPlaying(game);
+			}, 3100);
 		}
-		gameState = 'round_result';
+	}
+
+	function handleReplay() {
+		if (!browser) return;
+		const round = game.rounds[game.currentRound];
+		audioEngine.play(round.targetFreq, round.gainDb);
+	}
+
+	function handleSelect(freq: number) {
+		game = submitGuess(game, freq);
 	}
 
 	function handleNextRound() {
-		if (!session) return;
-		const isLast = session.currentRoundIndex >= 4;
-		if (isLast) {
-			session.endedAt = new Date().toISOString();
-			engine?.stop();
-			if (browser) {
-				saveFreqIdResult({
-					timestamp: new Date().toISOString(),
-					difficulty: session.difficulty,
-					score: session.score,
-					rounds: session.rounds
-				});
-			}
-			gameState = 'game_over';
-		} else {
-			session.currentRoundIndex += 1;
-			resetKnobs();
-			gameState = 'round_active';
-			startRound();
-		}
+		game = nextRound(game);
 	}
 
 	function handlePlayAgain() {
-		if (!session) return;
-		const difficulty = session.difficulty;
-		session = createGameSession(difficulty);
-		resetKnobs();
-		gameState = 'round_active';
-		startRound();
+		audioEngine.stop();
+		game = newGame();
 	}
 
-	function handleHome() {
-		engine?.stop();
-	}
+	const score = $derived(scoreCorrect(game));
 </script>
 
 <svelte:head>
 	<title>Frequency ID — Auris</title>
 </svelte:head>
 
-<main class="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-	{#if gameState === 'idle' || gameState === 'selecting_difficulty'}
+<main class="mx-auto max-w-2xl px-4 py-8">
+	<!-- Header -->
+	<div class="mb-6 flex items-center justify-between">
 		<a
 			href={resolve('/')}
-			class="mb-6 inline-block text-xs tracking-widest text-muted-foreground uppercase hover:text-foreground"
+			class="text-xs tracking-widest text-muted-foreground uppercase hover:text-foreground"
 		>
 			← Back
 		</a>
-
-		<h1 class="mb-1 text-sm font-semibold tracking-widest text-foreground uppercase">
-			Frequency ID
-		</h1>
-		<p class="mb-8 text-xs text-muted-foreground">Select difficulty</p>
-
-		<div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-			{#each difficulties as difficulty (difficulty)}
-				<DifficultyCard
-					{difficulty}
-					gainRange={DIFFICULTY_CONFIG[difficulty].gainRange}
-					errorMarginPct={DIFFICULTY_CONFIG[difficulty].errorMargin}
-					qMin={DIFFICULTY_CONFIG[difficulty].qMin}
-					qMax={DIFFICULTY_CONFIG[difficulty].qMax}
-					onselect={selectDifficulty}
-				/>
-			{/each}
-		</div>
-	{:else if gameState === 'round_active' && session && currentRound}
-		<!-- Round header -->
-		<div class="mb-4 flex items-center justify-between">
-			<span class="text-xs tracking-widest text-muted-foreground uppercase">
-				Round {session.currentRoundIndex + 1} / 5
-			</span>
-			<AbToggle mode={abMode} onchange={handleAbChange} />
-		</div>
-
-		<!-- Main layout: FrequencyStrip + KnobStrip -->
-		<div class="flex gap-4">
-			<div class="flex-none self-stretch">
-				<FrequencyStrip value={freqValue} />
+		{#if game.phase !== 'gameOver'}
+			<div class="flex items-center gap-4">
+				<span class="font-mono text-xs text-muted-foreground">
+					SCORE {score} / 5
+				</span>
+				<span class="text-xs tracking-widest text-muted-foreground uppercase">
+					ROUND {game.currentRound + 1} / 5
+				</span>
 			</div>
-			<div class="flex-1">
-				<KnobStrip
-					{freqValue}
-					{gainValue}
-					{qValue}
-					gainMin={-diffConfig.gainRange}
-					gainMax={diffConfig.gainRange}
-					qMin={diffConfig.qMin}
-					qMax={diffConfig.qMax}
-					onFreqChange={handleFreqChange}
-					onGainChange={handleGainChange}
-					onQChange={handleQChange}
-				/>
+		{/if}
+	</div>
+
+	{#if game.phase === 'idle'}
+		<!-- IDLE phase -->
+		<div class="flex flex-col gap-6">
+			<p class="text-xs text-muted-foreground">Press PLAY to hear the audio</p>
+
+			<!-- Boost/Cut not shown in idle — revealed in guessing -->
+
+			<FreqStrip onSelect={handleSelect} disabled={true} />
+
+			<div class="flex justify-center">
+				<Button size="lg" onclick={handlePlay}>PLAY</Button>
 			</div>
 		</div>
+	{:else if game.phase === 'playing'}
+		<!-- PLAYING phase -->
+		<div class="flex flex-col gap-6">
+			<p class="text-xs text-muted-foreground">Listening...</p>
 
-		<!-- Submit -->
-		<div class="mt-4 flex justify-end">
-			<button
-				class="h-8 rounded-none border border-border bg-primary px-4 text-xs font-semibold tracking-widest text-primary-foreground uppercase transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
-				disabled={submitDisabled}
-				aria-label="Submit frequency guess"
-				aria-disabled={submitDisabled}
-				onclick={handleSubmit}
+			<FreqStrip onSelect={handleSelect} disabled={true} />
+
+			<div class="flex justify-center">
+				<Button size="lg" disabled>PLAYING...</Button>
+			</div>
+		</div>
+	{:else if game.phase === 'guessing'}
+		<!-- GUESSING phase -->
+		<div class="flex flex-col gap-6">
+			<div class="flex items-center justify-between">
+				<p class="text-xs text-muted-foreground">
+					{#if isTouchDevice}
+						Hold to aim, release to submit
+					{:else}
+						Click the frequency you hear
+					{/if}
+				</p>
+				<span
+					class="rounded border border-border px-2 py-0.5 font-mono text-xs tracking-widest {currentRound.gainDb >
+					0
+						? 'text-foreground'
+						: 'text-muted-foreground'} uppercase"
+				>
+					{currentRound.gainDb > 0 ? 'BOOST' : 'CUT'}
+					{Math.abs(currentRound.gainDb)} dB
+				</span>
+			</div>
+
+			<FreqStrip onSelect={handleSelect} disabled={false} />
+
+			<div class="flex justify-center">
+				<Button variant="outline" onclick={handleReplay}>REPLAY</Button>
+			</div>
+		</div>
+	{:else if game.phase === 'roundResult'}
+		<!-- ROUND RESULT phase -->
+		<div class="flex flex-col gap-6">
+			<div
+				class="rounded border border-border p-4 {currentRound.result === 'correct'
+					? 'border-green-700 bg-green-950/30'
+					: 'border-red-700 bg-red-950/30'}"
 			>
-				SUBMIT
-			</button>
-		</div>
-	{:else if gameState === 'round_result' && session && currentRound}
-		<!-- Round result header -->
-		<div class="mb-4">
-			<span class="text-xs tracking-widest text-muted-foreground uppercase">
-				Round {session.currentRoundIndex + 1} / 5
-			</span>
-		</div>
+				<p class="text-lg font-semibold">
+					{currentRound.result === 'correct' ? 'CORRECT ✓' : 'WRONG ✗'}
+				</p>
+				<div class="mt-2 flex flex-col gap-1 text-xs text-muted-foreground">
+					<span>
+						Target: <span class="font-mono text-foreground"
+							>{formatFreq(currentRound.targetFreq)}</span
+						>
+					</span>
+					{#if currentRound.guess !== null}
+						<span>
+							Your guess: <span class="font-mono text-foreground"
+								>{formatFreq(currentRound.guess)}</span
+							>
+						</span>
+					{/if}
+					<span class="mt-1">
+						<span class="rounded border border-border px-1.5 py-0.5 font-mono text-xs uppercase">
+							{currentRound.gainDb > 0 ? 'BOOST' : 'CUT'}
+							{Math.abs(currentRound.gainDb)} dB
+						</span>
+					</span>
+				</div>
+			</div>
 
-		<!-- Main layout: FrequencyStrip + RoundResult -->
-		<div class="flex gap-4">
-			<div class="flex-none self-stretch">
-				<FrequencyStrip
-					value={currentRound.userFreq ?? freqValue}
-					targetValue={currentRound.targetFreq}
-					showTarget={true}
-				/>
-			</div>
-			<div class="flex-1">
-				<RoundResult
-					result={currentRound.result === 'pending' ? 'incorrect' : currentRound.result}
-					targetFreq={currentRound.targetFreq}
-					targetGainDb={currentRound.targetGainDb}
-					targetQ={currentRound.targetQ}
-					userFreq={currentRound.userFreq ?? freqValue}
-					userGainDb={currentRound.userGainDb ?? gainValue}
-					userQ={currentRound.userQ ?? qValue}
-					errorMarginPct={currentRound.errorMarginPct}
-					isLastRound={session.currentRoundIndex >= 4}
-					onnext={handleNextRound}
-				/>
+			<div class="flex justify-center">
+				{#if game.currentRound >= 4}
+					<Button onclick={handleNextRound}>FINISH</Button>
+				{:else}
+					<Button onclick={handleNextRound}>NEXT ROUND</Button>
+				{/if}
 			</div>
 		</div>
-	{:else if gameState === 'game_over' && session}
-		<GameOver {session} onPlayAgain={handlePlayAgain} onHome={handleHome} />
+	{:else if game.phase === 'gameOver'}
+		<!-- GAME OVER phase -->
+		<div class="flex flex-col gap-6">
+			<div class="text-center">
+				<h2 class="font-mono text-2xl font-bold tracking-widest uppercase">GAME OVER</h2>
+				<p class="mt-2 font-mono text-4xl font-bold">{score} / 5</p>
+			</div>
+
+			<ul class="flex flex-col gap-2" role="list">
+				{#each game.rounds as round, i (i)}
+					<li
+						class="flex items-center justify-between rounded border border-border px-3 py-2 text-xs"
+					>
+						<span class="text-muted-foreground">Round {i + 1}</span>
+						<span class="font-mono">{formatFreq(round.targetFreq)}</span>
+						{#if round.guess !== null}
+							<span class="font-mono text-muted-foreground">→ {formatFreq(round.guess)}</span>
+						{/if}
+						<span
+							class="rounded px-1.5 py-0.5 text-xs font-semibold {round.result === 'correct'
+								? 'bg-green-900 text-green-300'
+								: 'bg-red-900 text-red-300'}"
+						>
+							{round.result === 'correct' ? 'CORRECT' : 'WRONG'}
+						</span>
+					</li>
+				{/each}
+			</ul>
+
+			<div class="flex justify-center">
+				<Button onclick={handlePlayAgain}>PLAY AGAIN</Button>
+			</div>
+		</div>
 	{/if}
 </main>
