@@ -4,7 +4,9 @@
 	import AbToggle from '$lib/components/ab-toggle.svelte';
 	import DifficultyCard from '$lib/components/difficulty-card.svelte';
 	import FrequencyStrip from '$lib/components/FrequencyStrip.svelte';
+	import GameOver from '$lib/components/game-over.svelte';
 	import KnobStrip from '$lib/components/knob-strip.svelte';
+	import RoundResult from '$lib/components/round-result.svelte';
 	import { DIFFICULTY_CONFIG } from '$lib/game/config.js';
 	import { createGameSession, evaluateGuess } from '$lib/game/engine.js';
 	import type { Difficulty, GameSession, GameState } from '$lib/game/types.js';
@@ -96,6 +98,34 @@
 		}
 		gameState = 'round_result';
 	}
+
+	function handleNextRound() {
+		if (!session) return;
+		const isLast = session.currentRoundIndex >= 4;
+		if (isLast) {
+			session.endedAt = new Date().toISOString();
+			engine?.stop();
+			gameState = 'game_over';
+		} else {
+			session.currentRoundIndex += 1;
+			resetKnobs();
+			gameState = 'round_active';
+			startRound();
+		}
+	}
+
+	function handlePlayAgain() {
+		if (!session) return;
+		const difficulty = session.difficulty;
+		session = createGameSession(difficulty);
+		resetKnobs();
+		gameState = 'round_active';
+		startRound();
+	}
+
+	function handleHome() {
+		engine?.stop();
+	}
 </script>
 
 <svelte:head>
@@ -170,5 +200,39 @@
 				SUBMIT
 			</button>
 		</div>
+	{:else if gameState === 'round_result' && session && currentRound}
+		<!-- Round result header -->
+		<div class="mb-4">
+			<span class="text-xs tracking-widest text-muted-foreground uppercase">
+				Round {session.currentRoundIndex + 1} / 5
+			</span>
+		</div>
+
+		<!-- Main layout: FrequencyStrip + RoundResult -->
+		<div class="flex gap-4">
+			<div class="flex-none self-stretch">
+				<FrequencyStrip
+					value={currentRound.userFreq ?? freqValue}
+					targetValue={currentRound.targetFreq}
+					showTarget={true}
+				/>
+			</div>
+			<div class="flex-1">
+				<RoundResult
+					result={currentRound.result === 'pending' ? 'incorrect' : currentRound.result}
+					targetFreq={currentRound.targetFreq}
+					targetGainDb={currentRound.targetGainDb}
+					targetQ={currentRound.targetQ}
+					userFreq={currentRound.userFreq ?? freqValue}
+					userGainDb={currentRound.userGainDb ?? gainValue}
+					userQ={currentRound.userQ ?? qValue}
+					errorMarginPct={currentRound.errorMarginPct}
+					isLastRound={session.currentRoundIndex >= 4}
+					onnext={handleNextRound}
+				/>
+			</div>
+		</div>
+	{:else if gameState === 'game_over' && session}
+		<GameOver {session} onPlayAgain={handlePlayAgain} onHome={handleHome} />
 	{/if}
 </main>
