@@ -11,3 +11,12 @@ bun.lockb
 
 # Claude Code config + vendored skills (managed externally, do not reformat)
 .claude/
+
+# Task docs (managed by upstream agents, do not reformat)
+tasks/
+
+# Serena project config
+.serena/
+
+# Project CLAUDE.md (managed externally)
+CLAUDE.md
