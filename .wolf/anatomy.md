@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T12:28:00.240Z
-> Files: 168 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T18:15:22.280Z
+> Files: 176 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../.claude/plans/
 
-- `melodic-splashing-bee.md` — Game: Compressorist — SSL 4000 Console UI (~2464 tok)
+- `melodic-splashing-bee.md` — Game: EQ Matching (~1613 tok)
 
 ## ./
 
@@ -24,10 +24,10 @@
 - `playwright.config.ts` — Playwright test configuration (~54 tok)
 - `pnpm-lock.yaml` — pnpm lock file (~37193 tok)
 - `pnpm-workspace.yaml` (~10 tok)
-- `progress.md` — Auris — Progress Log (~798 tok)
+- `progress.md` — Auris — Progress Log (~1119 tok)
 - `README.md` — Project documentation (~284 tok)
 - `svelte.config.js` — SvelteKit configuration (~145 tok)
-- `task_plan.md` — Auris — Task Plan (~1222 tok)
+- `task_plan.md` — Auris — Task Plan (~1578 tok)
 - `tsconfig.json` — TypeScript configuration (~198 tok)
 - `vite.config.ts` — Vite build configuration (~58 tok)
 - `vitest.config.ts` — Vitest test configuration (~44 tok)
@@ -236,6 +236,8 @@
 
 - `ab-toggle.svelte` — Svelte: ab-toggle, TS, 1 stores (~216 tok)
 - `db-choice.svelte` — Set on roundResult to reveal correct answer. (~357 tok)
+- `eq-choice.svelte` — Svelte: eq-choice (~429 tok)
+- `eq-curve.svelte` — Svelte: eq-curve (~659 tok)
 - `freq-id-heatmap.svelte` — Svelte: freq-id-heatmap, TS, 4 stores (~762 tok)
 - `freq-strip.svelte` — When set, shows a persistent target marker (result phase). (~1626 tok)
 - `game-card.svelte` — Svelte: game-card, TS, 3 stores (~245 tok)
@@ -286,6 +288,16 @@
 - `audio.ts` — dB Change audio — AudioChain with a GainNode. (~212 tok)
 - `config.ts` — dB Change game — config + round type. (~742 tok)
 
+## src/lib/games/eq-guess/
+
+- `audio.ts` — EQ Guess audio — AudioChain with MAX_BANDS peaking EQ filters in series. (~351 tok)
+- `config.ts` — EQ Guess — 2AFC ear training. (~968 tok)
+
+## src/lib/games/eq-matching/
+
+- `audio.ts` — EQ Matching audio — dual parallel peaking-EQ chains on one AudioContext. (~1179 tok)
+- `config.ts` — EQ Matching — dial in the target EQ by ear. (~824 tok)
+
 ## src/lib/games/freq-id/
 
 - `audio.ts` — Frequency ID audio — assembles an `AudioChain` with a single peaking EQ. (~266 tok)
@@ -309,17 +321,25 @@
 ## src/routes/
 
 - `+layout.svelte` — Svelte: +layout, TS, 3 stores (~75 tok)
-- `+page.svelte` — Svelte: +page (~438 tok)
+- `+page.svelte` — Svelte: +page (~473 tok)
 - `dashboard.e2e.ts` — Declares grid (~280 tok)
 - `layout.css` — Styles: 13 rules, 104 vars, 2 animations, 1 layers (~1398 tok)
 
 ## src/routes/games/compressorist/
 
-- `+page.svelte` — Svelte: +page (~2998 tok)
+- `+page.svelte` — Svelte: +page (~3004 tok)
 
 ## src/routes/games/db-change/
 
 - `+page.svelte` — Svelte: +page (~1905 tok)
+
+## src/routes/games/eq-guess/
+
+- `+page.svelte` — Svelte: +page (~1975 tok)
+
+## src/routes/games/eq-matching/
+
+- `+page.svelte` — Svelte: +page (~3246 tok)
 
 ## src/routes/games/frequency-id/
 

@@ -85,7 +85,52 @@ More educational and replayable. Just extend the config — engine handled every
 
 ---
 
-## Phase 8 — Compressorist ✅
+## Phase 5 — Second Game ✅
+
+Panning ID — hear a panned signal, guess the stereo position.
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Choose game type | ✅ | Panning ID |
+| Implement game config + audio | ✅ | `src/lib/games/panning/config.ts`, `audio.ts` |
+| StereoStrip component | ✅ | `src/lib/components/stereo-strip.svelte` |
+| Implement UI | ✅ | `src/routes/games/panning/+page.svelte` |
+| Register on dashboard | ✅ | `src/routes/+page.svelte` |
+| Tests + quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
+
+---
+
+## Phase 10 — EQ Matching ✅
+
+Dial in N peaking EQ bands to match the hidden target. Live EqCurve strip + knob-per-band UI. Dual audio chains (A=user EQ, B=target EQ).
+
+| Task | Status | Notes |
+|------|--------|-------|
+| `formatQ` helper | ✅ | `src/lib/format.ts` |
+| EQ Matching config (FREQ/GAIN/Q steps, difficulty band count) | ✅ | `src/lib/games/eq-matching/config.ts` |
+| Dual-chain audio (BiquadFilterNode, 3 slots per path) | ✅ | `src/lib/games/eq-matching/audio.ts` |
+| Game page (EqCurve strip + per-band knob groups + result table) | ✅ | `src/routes/games/eq-matching/+page.svelte` |
+| Enable in dashboard | ✅ | `available: true` in `src/routes/+page.svelte` |
+| Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
+
+---
+
+## Phase 9 — EQ Guess + Compressorist GR tweak ✅
+
+| Task | Status | Notes |
+|------|--------|-------|
+| GR meter hidden in B mode | ✅ | `active={isPlaying && !isPaused && abMode === 'A'}` |
+| EQ Guess config + types | ✅ | `src/lib/games/eq-guess/config.ts` |
+| EQ Guess audio (4 peaking EQ slots) | ✅ | `src/lib/games/eq-guess/audio.ts` |
+| EQ curve SVG component (Gaussian approx) | ✅ | `src/lib/components/eq-curve.svelte` |
+| EQ choice 2-card component | ✅ | `src/lib/components/eq-choice.svelte` |
+| EQ Guess game page | ✅ | `src/routes/games/eq-guess/+page.svelte` |
+| Dashboard registration | ✅ | `src/routes/+page.svelte` |
+| Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
+
+---
+
+## Phase 7 — Compressorist ✅
 
 SSL 4000-style compression matcher — hear target compression (B), dial in matching params (A), submit.
 
@@ -100,19 +145,4 @@ SSL 4000-style compression matcher — hear target compression (B), dial in matc
 | Dashboard registration | ✅ | `src/routes/+page.svelte` |
 | `eslint.config.js` — `varsIgnorePattern: '^_'` | ✅ | allow `_x` unused vars |
 | Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
-
----
-
-## Phase 5 — Second Game ✅
-
-Panning ID — hear a panned signal, guess the stereo position.
-
-| Task | Status | Notes |
-|------|--------|-------|
-| Choose game type | ✅ | Panning ID |
-| Implement game config + audio | ✅ | `src/lib/games/panning/config.ts`, `audio.ts` |
-| StereoStrip component | ✅ | `src/lib/components/stereo-strip.svelte` |
-| Implement UI | ✅ | `src/routes/games/panning/+page.svelte` |
-| Register on dashboard | ✅ | `src/routes/+page.svelte` |
-| Tests + quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
 

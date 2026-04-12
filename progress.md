@@ -4,7 +4,37 @@ One entry per session. Most recent first.
 
 ---
 
-## 2026-04-12 — Compressorist complete (Phase 8)
+## 2026-04-12 — EQ Matching complete (Phase 10)
+
+| Item | Files touched |
+|------|--------------|
+| `formatQ` helper | `src/lib/format.ts` |
+| Config — FREQ/GAIN/Q steps, defaultBands, evaluateGuess | `src/lib/games/eq-matching/config.ts` |
+| Dual BiquadFilterNode chains (3 slots per path, like Compressorist) | `src/lib/games/eq-matching/audio.ts` |
+| Game page — live EqCurve + per-band knob groups + result table + side-by-side curves | `src/routes/games/eq-matching/+page.svelte` |
+| Dashboard — `available: false` → `true` | `src/routes/+page.svelte` |
+
+`pnpm check` ✅ `pnpm lint` ✅
+
+---
+
+## 2026-04-12 — EQ Guess + Compressorist GR fix (Phase 7)
+
+| Item | Files touched |
+|------|--------------|
+| GR meter hidden in B mode (1-line fix) | `src/routes/games/compressorist/+page.svelte` |
+| EQ Guess config — types, difficulty, round/distractor gen | `src/lib/games/eq-guess/config.ts` |
+| EQ Guess audio — 4-slot AudioChain | `src/lib/games/eq-guess/audio.ts` |
+| EQ curve SVG (Gaussian bell approx, fuchsia) | `src/lib/components/eq-curve.svelte` |
+| EQ choice 2-card component | `src/lib/components/eq-choice.svelte` |
+| EQ Guess game page | `src/routes/games/eq-guess/+page.svelte` |
+| Dashboard registration | `src/routes/+page.svelte` |
+
+`pnpm check` ✅ `pnpm lint` ✅
+
+---
+
+## 2026-04-12 — Compressorist complete (Phase 6)
 
 **Completed:** Compressorist game — SSL 4000-style compression ear training.
 

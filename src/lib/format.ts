@@ -17,6 +17,10 @@ export function formatMakeup(db: number): string {
 	return db === 0 ? '0 dB' : `+${db} dB`;
 }
 
+export function formatQ(q: number): string {
+	return `Q ${q}`;
+}
+
 /** Format a dB value as "+6 dB", "-3 dB", "0 dB". */
 export function formatDb(db: number): string {
 	if (db === 0) return '0 dB';

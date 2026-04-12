@@ -280,7 +280,10 @@
 						onChange={(v) => (userParams.makeup = v)}
 					/>
 					<div class="min-w-48 flex-1">
-						<GrMeter getReduction={() => audio.getReduction()} active={isPlaying && !isPaused} />
+						<GrMeter
+							getReduction={() => audio.getReduction()}
+							active={isPlaying && !isPaused && abMode === 'A'}
+						/>
 					</div>
 				</div>
 			</div>

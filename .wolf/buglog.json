@@ -112,6 +112,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-04-12T12:25:24.247Z"
+    },
+    {
+      "id": "bug-008",
+      "timestamp": "2026-04-12T17:46:19.126Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/routes/games/eq-guess/+page.svelte",
+      "root_cause": "Had '$lib/components/eq-curve.svelte'",
+      "fix": "Changed to '$lib/stores/game-store.svelte.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-12T17:46:19.126Z"
     }
   ]
 }

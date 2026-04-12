@@ -7,7 +7,7 @@
 			title: 'EQ Matching',
 			description: 'Match the EQ curve by ear',
 			href: '/games/eq-matching',
-			available: false
+			available: true
 		},
 		{
 			title: 'Frequency ID',
@@ -25,6 +25,12 @@
 			title: 'Panning',
 			description: 'Guess where the signal is panned in the stereo field',
 			href: '/games/panning',
+			available: true
+		},
+		{
+			title: 'EQ Guess',
+			description: 'Identify which EQ was applied by ear',
+			href: '/games/eq-guess',
 			available: true
 		},
 		{

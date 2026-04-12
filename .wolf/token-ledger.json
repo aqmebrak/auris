@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-04-12T07:22:32.187Z",
   "lifetime": {
-    "total_tokens_estimated": 100865,
-    "total_reads": 105,
-    "total_writes": 111,
-    "total_sessions": 13,
-    "anatomy_hits": 101,
-    "anatomy_misses": 0,
-    "repeated_reads_blocked": 45,
-    "estimated_savings_vs_bare_cli": 54118
+    "total_tokens_estimated": 153037,
+    "total_reads": 141,
+    "total_writes": 140,
+    "total_sessions": 15,
+    "anatomy_hits": 135,
+    "anatomy_misses": 2,
+    "repeated_reads_blocked": 57,
+    "estimated_savings_vs_bare_cli": 80600
   },
   "sessions": [
     {
@@ -1313,6 +1313,401 @@
         "writes_count": 12,
         "repeated_reads_blocked": 1,
         "anatomy_lookups": 6
+      }
+    },
+    {
+      "id": "session-2026-04-12-1928",
+      "started": "2026-04-12T17:28:45.552Z",
+      "ended": "2026-04-12T17:46:52.229Z",
+      "reads": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 1222,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/compressorist/+page.svelte",
+          "tokens_estimated": 2998,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/gr-meter.svelte",
+          "tokens_estimated": 479,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/compressorist/audio.ts",
+          "tokens_estimated": 1161,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/audio/effects.ts",
+          "tokens_estimated": 685,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/audio/chain.ts",
+          "tokens_estimated": 955,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/db-change/config.ts",
+          "tokens_estimated": 742,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/db-change/audio.ts",
+          "tokens_estimated": 212,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/db-change/+page.svelte",
+          "tokens_estimated": 1905,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/db-choice.svelte",
+          "tokens_estimated": 357,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/freq-strip.svelte",
+          "tokens_estimated": 1626,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/frequency.ts",
+          "tokens_estimated": 204,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/freq-id/config.ts",
+          "tokens_estimated": 676,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/freq-id/audio.ts",
+          "tokens_estimated": 266,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/stores/game-store.svelte.ts",
+          "tokens_estimated": 423,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/.claude/plans/melodic-splashing-bee.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/aqmebrak/.claude/plans/melodic-splashing-bee.md",
+          "tokens_estimated": 2050,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/compressorist/+page.svelte",
+          "tokens_estimated": 31,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/eq-guess/config.ts",
+          "tokens_estimated": 968,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/eq-guess/audio.ts",
+          "tokens_estimated": 351,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/eq-curve.svelte",
+          "tokens_estimated": 706,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/eq-choice.svelte",
+          "tokens_estimated": 459,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/eq-guess/+page.svelte",
+          "tokens_estimated": 2126,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/+page.svelte",
+          "tokens_estimated": 47,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/eq-guess/+page.svelte",
+          "tokens_estimated": 20,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 206,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/progress.md",
+          "tokens_estimated": 211,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 13911,
+        "output_tokens_estimated": 7175,
+        "reads_count": 16,
+        "writes_count": 11,
+        "repeated_reads_blocked": 5,
+        "anatomy_lookups": 15
+      }
+    },
+    {
+      "id": "session-2026-04-12-1928",
+      "started": "2026-04-12T17:28:45.552Z",
+      "ended": "2026-04-12T18:15:30.692Z",
+      "reads": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 1222,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/compressorist/+page.svelte",
+          "tokens_estimated": 2998,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/gr-meter.svelte",
+          "tokens_estimated": 479,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/compressorist/audio.ts",
+          "tokens_estimated": 1161,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/audio/effects.ts",
+          "tokens_estimated": 685,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/audio/chain.ts",
+          "tokens_estimated": 955,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/db-change/config.ts",
+          "tokens_estimated": 742,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/db-change/audio.ts",
+          "tokens_estimated": 212,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/db-change/+page.svelte",
+          "tokens_estimated": 1905,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/db-choice.svelte",
+          "tokens_estimated": 357,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/freq-strip.svelte",
+          "tokens_estimated": 1626,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/frequency.ts",
+          "tokens_estimated": 204,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/freq-id/config.ts",
+          "tokens_estimated": 676,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/freq-id/audio.ts",
+          "tokens_estimated": 266,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/stores/game-store.svelte.ts",
+          "tokens_estimated": 423,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/.claude/plans/melodic-splashing-bee.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/eq-curve.svelte",
+          "tokens_estimated": 659,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/format.ts",
+          "tokens_estimated": 283,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/+page.svelte",
+          "tokens_estimated": 473,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/compressorist/config.ts",
+          "tokens_estimated": 813,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/aqmebrak/.claude/plans/melodic-splashing-bee.md",
+          "tokens_estimated": 2050,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/compressorist/+page.svelte",
+          "tokens_estimated": 31,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/eq-guess/config.ts",
+          "tokens_estimated": 968,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/eq-guess/audio.ts",
+          "tokens_estimated": 351,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/eq-curve.svelte",
+          "tokens_estimated": 706,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/components/eq-choice.svelte",
+          "tokens_estimated": 459,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/eq-guess/+page.svelte",
+          "tokens_estimated": 2126,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/+page.svelte",
+          "tokens_estimated": 47,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/eq-guess/+page.svelte",
+          "tokens_estimated": 20,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 206,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/progress.md",
+          "tokens_estimated": 211,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/.claude/plans/melodic-splashing-bee.md",
+          "tokens_estimated": 1843,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/eq-matching/config.ts",
+          "tokens_estimated": 824,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/lib/games/eq-matching/audio.ts",
+          "tokens_estimated": 1179,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/games/eq-matching/+page.svelte",
+          "tokens_estimated": 3478,
+          "action": "create"
+        },
+        {
+          "file": "/home/aqmebrak/auris/src/routes/+page.svelte",
+          "tokens_estimated": 37,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 224,
+          "action": "edit"
+        },
+        {
+          "file": "/home/aqmebrak/auris/progress.md",
+          "tokens_estimated": 187,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 16139,
+        "output_tokens_estimated": 14947,
+        "reads_count": 20,
+        "writes_count": 18,
+        "repeated_reads_blocked": 7,
+        "anatomy_lookups": 19
       }
     }
   ],

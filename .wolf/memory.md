@@ -127,3 +127,33 @@
 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
+
+## Session: 2026-04-12 19:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-04-12 19:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 19:39 | Created ../.claude/plans/melodic-splashing-bee.md | — | ~1914 |
+| 19:43 | Edited src/routes/games/compressorist/+page.svelte | inline fix | ~29 |
+| 19:44 | Created src/lib/games/eq-guess/config.ts | — | ~968 |
+| 19:44 | Created src/lib/games/eq-guess/audio.ts | — | ~351 |
+| 19:44 | Created src/lib/components/eq-curve.svelte | — | ~659 |
+| 19:44 | Created src/lib/components/eq-choice.svelte | — | ~429 |
+| 19:45 | Created src/routes/games/eq-guess/+page.svelte | — | ~1984 |
+| 19:45 | Edited src/routes/+page.svelte | expanded (+6 lines) | ~44 |
+| 19:46 | Edited src/routes/games/eq-guess/+page.svelte | 2→1 lines | ~19 |
+| 19:46 | Edited task_plan.md | expanded (+15 lines) | ~192 |
+| 19:46 | Edited progress.md | expanded (+16 lines) | ~197 |
+| 19:46 | Session end: 11 writes across 8 files (melodic-splashing-bee.md, +page.svelte, config.ts, audio.ts, eq-curve.svelte) | 16 reads | ~21086 tok |
+| 20:12 | Created ../.claude/plans/melodic-splashing-bee.md | — | ~1720 |
+| 20:13 | Created src/lib/games/eq-matching/config.ts | — | ~824 |
+| 20:13 | Created src/lib/games/eq-matching/audio.ts | — | ~1179 |
+| 20:14 | Created src/routes/games/eq-matching/+page.svelte | — | ~3246 |
+| 20:14 | Edited src/routes/+page.svelte | 6→6 lines | ~35 |
+| 20:15 | Edited task_plan.md | expanded (+15 lines) | ~209 |
+| 20:15 | Edited progress.md | expanded (+14 lines) | ~174 |
+| 20:15 | Session end: 18 writes across 8 files (melodic-splashing-bee.md, +page.svelte, config.ts, audio.ts, eq-curve.svelte) | 20 reads | ~31086 tok |
