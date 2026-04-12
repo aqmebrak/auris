@@ -85,56 +85,16 @@ More educational and replayable. Just extend the config — engine handled every
 
 ---
 
-## Phase 5 — Second Game ⬜
+## Phase 5 — Second Game ✅
 
-New ear-training exercise. Write PRD before implementation.
-
-| Task | Status | Notes |
-|------|--------|-------|
-| Choose game type | ⬜ | Dynamic EQ / Level matching / Reverb ID / Compression ratio ID |
-| Write PRD | ⬜ | Use `/prd` skill |
-| Design spec | ⬜ | Use `/design` skill |
-| Implement game config + audio | ⬜ | Follow `src/lib/game/README.md` |
-| Implement UI | ⬜ | |
-| Register on dashboard | ⬜ | `src/routes/+page.svelte` |
-| Tests + quality checks | ⬜ | |
-
-**Decision needed:** Pick one game type before starting.
-
----
-
-## Phase 6 — Auth + Cloud Sync ⬜
-
-Optional accounts for cross-device stat sync.
+Panning ID — hear a panned signal, guess the stereo position.
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Drizzle schema: `users`, `sessions`, `game_results` | ⬜ | `src/lib/server/db/schema.ts` |
-| Auth (Lucia or better-auth) | ⬜ | |
-| Sync stats to DB on game-over | ⬜ | |
-| Dashboard: lifetime stats from DB when logged in | ⬜ | |
+| Choose game type | ✅ | Panning ID |
+| Implement game config + audio | ✅ | `src/lib/games/panning/config.ts`, `audio.ts` |
+| StereoStrip component | ✅ | `src/lib/components/stereo-strip.svelte` |
+| Implement UI | ✅ | `src/routes/games/panning/+page.svelte` |
+| Register on dashboard | ✅ | `src/routes/+page.svelte` |
+| Tests + quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
 
-**Prerequisite:** Phase 5 shipped.
-
----
-
-## Phase 7 — Polish & Deploy ⬜
-
-| Task | Status | Notes |
-|------|--------|-------|
-| PWA manifest + service worker (offline WAV caching) | ⬜ | |
-| `og:image` + metadata for sharing | ⬜ | |
-| Vercel analytics | ⬜ | |
-| Lighthouse audit — target 95+ perf, 100 a11y | ⬜ | |
-| README with setup instructions | ⬜ | |
-
----
-
-## Decisions Log
-
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| Phase 3 | Generic `GameConfig<TRound,TGuess>` over game-specific stores | Adding a new game = config + UI only, zero engine work |
-| Phase 4 | CSS keyframe animations over Svelte transitions for result feedback | Simpler, no JS bundle cost |
-| Phase 4 | Per-octave heatmap (10 bands) over per-session zone breakdown | More granular, shows actual weak spots |
-| Phase 5 | TBD | Pending user choice |

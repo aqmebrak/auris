@@ -1,29 +1,33 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T07:37:30.885Z
-> Files: 154 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T08:26:04.732Z
+> Files: 159 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../.claude/plans/
+
+- `melodic-splashing-bee.md` — Phase 5: Panning Game (~1697 tok)
 
 ## ./
 
 - `.gitignore` — Git ignore rules (~63 tok)
 - `.mcp.json` (~38 tok)
 - `.npmrc` (~6 tok)
-- `.prettierignore` — Package Managers (~95 tok)
+- `.prettierignore` — Package Managers (~128 tok)
 - `.prettierrc` — Prettier configuration (~82 tok)
 - `CLAUDE.md` — OpenWolf (~1028 tok)
 - `components.json` (~129 tok)
 - `drizzle.config.ts` — Drizzle ORM configuration (~87 tok)
-- `eslint.config.js` — ESLint flat configuration (~390 tok)
+- `eslint.config.js` — Declares gitignorePath (~398 tok)
 - `findings.md` — Auris — Findings (~656 tok)
 - `package.json` — Node.js package manifest (~534 tok)
 - `PLAN.md` — Auris — Development Plan (~1682 tok)
 - `playwright.config.ts` — Playwright test configuration (~54 tok)
 - `pnpm-lock.yaml` — pnpm lock file (~37193 tok)
 - `pnpm-workspace.yaml` (~10 tok)
-- `progress.md` — Auris — Progress Log (~369 tok)
+- `progress.md` — Auris — Progress Log (~551 tok)
 - `README.md` — Project documentation (~284 tok)
 - `svelte.config.js` — SvelteKit configuration (~145 tok)
-- `task_plan.md` — Auris — Task Plan (~1306 tok)
+- `task_plan.md` — Auris — Task Plan (~1298 tok)
 - `tsconfig.json` — TypeScript configuration (~198 tok)
 - `vite.config.ts` — Vite build configuration (~58 tok)
 - `vitest.config.ts` — Vitest test configuration (~44 tok)
@@ -216,7 +220,7 @@
 
 ## src/lib/
 
-- `format.ts` — Exports formatFreq (~40 tok)
+- `format.ts` — Format a pan value (-1 to +1) as "L50", "C", "R75" etc. (~110 tok)
 - `frequency.ts` — Range-aware variants — use when FreqStrip is scoped to a sub-band. (~204 tok)
 - `index.ts` — place files you want to import through the `$lib` alias in this folder. (~22 tok)
 - `utils.ts` — Exports cn, WithoutChild, WithoutChildren, WithoutChildrenOrChild, WithElementRef (~181 tok)
@@ -235,6 +239,7 @@
 - `freq-strip.svelte` — When set, shows a persistent target marker (result phase). (~1626 tok)
 - `game-card.svelte` — Svelte: game-card, TS, 3 stores (~245 tok)
 - `stats-panel.svelte` — Svelte: stats-panel, TS, 7 stores (~621 tok)
+- `stereo-strip.svelte` — When set, shows a persistent target marker (result phase). (~1567 tok)
 - `top-bar.svelte` — Svelte: top-bar, TS, 1 stores (~104 tok)
 
 ## src/lib/components/game/
@@ -273,6 +278,11 @@
 - `audio.ts` — Frequency ID audio — assembles an `AudioChain` with a single peaking EQ. (~266 tok)
 - `config.ts` — Frequency ID game — config + round type. (~676 tok)
 
+## src/lib/games/panning/
+
+- `audio.ts` — Panning ID audio — assembles an `AudioChain` with a single stereo panner. (~224 tok)
+- `config.ts` — Panning ID game — config + round type. (~613 tok)
+
 ## src/lib/server/db/
 
 - `index.ts` — Exports db (~96 tok)
@@ -286,13 +296,17 @@
 ## src/routes/
 
 - `+layout.svelte` — Svelte: +layout, TS, 3 stores (~75 tok)
-- `+page.svelte` — Svelte: +page, TS, 2 stores (~319 tok)
+- `+page.svelte` — Svelte: +page (~359 tok)
 - `dashboard.e2e.ts` — Declares grid (~280 tok)
 - `layout.css` — Styles: 13 rules, 104 vars, 2 animations, 1 layers (~1398 tok)
 
 ## src/routes/games/frequency-id/
 
 - `+page.svelte` — Svelte: +page, TS, 23 stores (~2281 tok)
+
+## src/routes/games/panning/
+
+- `+page.svelte` — Svelte: +page (~2201 tok)
 
 ## static/
 

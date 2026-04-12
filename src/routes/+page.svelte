@@ -16,6 +16,12 @@
 			available: true
 		},
 		{
+			title: 'Panning',
+			description: 'Guess where the signal is panned in the stereo field',
+			href: '/games/panning',
+			available: true
+		},
+		{
 			title: 'Dynamics',
 			description: 'Recognize compression characteristics',
 			href: '/games/dynamics',

@@ -4,6 +4,26 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-04-12 — Phase 5 complete
+
+**Completed:** Panning ID game — second ear-training exercise.
+
+| Item | Files touched |
+|------|--------------|
+| `formatPan()` helper | `src/lib/format.ts` |
+| Panning config + round type | `src/lib/games/panning/config.ts` |
+| Panning audio (StereoPanner) | `src/lib/games/panning/audio.ts` |
+| StereoStrip component | `src/lib/components/stereo-strip.svelte` |
+| Panning game page | `src/routes/games/panning/+page.svelte` |
+| Dashboard registration | `src/routes/+page.svelte` |
+| Add `.wolf/` + planning files to prettier/eslint ignore | `.prettierignore`, `eslint.config.js` |
+
+`pnpm check` ✅ `pnpm lint` ✅
+
+**Next:** Phase 6 — Auth + Cloud sync (or choose to skip to Phase 7).
+
+---
+
 ## 2026-04-12 — Phase 4 complete
 
 **Completed:** All 6 Phase 4 tasks.
