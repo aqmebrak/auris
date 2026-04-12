@@ -1,0 +1,35 @@
+{
+  "session_id": "session-2026-04-12-0933",
+  "started": "2026-04-12T07:33:33.528Z",
+  "files_read": {},
+  "files_written": [
+    {
+      "file": "/home/aqmebrak/auris/task_plan.md",
+      "action": "create",
+      "tokens": 1493,
+      "at": "2026-04-12T07:36:59.157Z"
+    },
+    {
+      "file": "/home/aqmebrak/auris/findings.md",
+      "action": "create",
+      "tokens": 750,
+      "at": "2026-04-12T07:37:20.306Z"
+    },
+    {
+      "file": "/home/aqmebrak/auris/progress.md",
+      "action": "create",
+      "tokens": 422,
+      "at": "2026-04-12T07:37:30.890Z"
+    }
+  ],
+  "edit_counts": {
+    "task_plan.md": 1,
+    "findings.md": 1,
+    "progress.md": 1
+  },
+  "anatomy_hits": 0,
+  "anatomy_misses": 0,
+  "repeated_reads_warned": 0,
+  "cerebrum_warnings": 0,
+  "stop_count": 1
+}

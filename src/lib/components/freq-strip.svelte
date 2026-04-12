@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { ERROR_MARGIN_OCTAVES } from '$lib/games/freq-id/config.js';
 	import { formatFreq } from '$lib/format.js';
-	import { LOG_RANGE, posToFreq, freqToPct } from '$lib/frequency.js';
+	import {
+		FREQ_MIN,
+		FREQ_MAX,
+		posToFreq,
+		freqToPct,
+		posToFreqInRange,
+		freqToPctInRange
+	} from '$lib/frequency.js';
 
 	interface Props {
 		onSelect: (freq: number) => void;
@@ -10,14 +17,27 @@
 		targetFreq?: number | null;
 		/** When set, shows a persistent guess marker (result phase). */
 		guessFreq?: number | null;
+		/** Restrict the visible/selectable range (e.g. for zone practice). Defaults to 20–20000. */
+		freqMin?: number;
+		freqMax?: number;
+		/** Error margin in octaves — controls hover band width. */
+		errorMarginOctaves?: number;
 	}
 
-	let { onSelect, disabled = false, targetFreq = null, guessFreq = null }: Props = $props();
+	let {
+		onSelect,
+		disabled = false,
+		targetFreq = null,
+		guessFreq = null,
+		freqMin = FREQ_MIN,
+		freqMax = FREQ_MAX,
+		errorMarginOctaves = ERROR_MARGIN_OCTAVES
+	}: Props = $props();
 
 	let hoveredFreq: number | null = $state(null);
 	let stripEl: HTMLDivElement | undefined = $state();
 
-	const TICKS = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+	const ALL_TICKS = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
 	const TICK_LABELS: Record<number, string> = {
 		20: '20',
 		50: '50',
@@ -31,14 +51,27 @@
 		20000: '20k'
 	};
 
-	const MARGIN_RATIO = 2 ** ERROR_MARGIN_OCTAVES; // 2^(1/3) ≈ 1.26
-	// Band half-width as a fraction of strip width (log scale — constant regardless of position)
-	const MARGIN_HALF_PCT = (Math.log(MARGIN_RATIO) / LOG_RANGE) * 100;
+	// Only show ticks within [freqMin, freqMax]
+	const ticks = $derived(ALL_TICKS.filter((t) => t >= freqMin && t <= freqMax));
+
+	const isFullRange = $derived(freqMin === FREQ_MIN && freqMax === FREQ_MAX);
+
+	function toFreq(x: number, width: number): number {
+		return isFullRange ? posToFreq(x, width) : posToFreqInRange(x, width, freqMin, freqMax);
+	}
+
+	function toPct(freq: number): number {
+		return isFullRange ? freqToPct(freq) : freqToPctInRange(freq, freqMin, freqMax);
+	}
+
+	const logRange = $derived(Math.log(freqMax / freqMin));
+	const MARGIN_RATIO = $derived(2 ** errorMarginOctaves);
+	const MARGIN_HALF_PCT = $derived((Math.log(MARGIN_RATIO) / logRange) * 100);
 
 	function handleMousemove(e: MouseEvent) {
 		if (disabled) return;
 		const el = e.currentTarget as HTMLDivElement;
-		hoveredFreq = posToFreq(e.offsetX, el.clientWidth);
+		hoveredFreq = toFreq(e.offsetX, el.clientWidth);
 	}
 
 	function handleMouseleave() {
@@ -56,7 +89,7 @@
 		const touch = e.touches[0];
 		const rect = stripEl.getBoundingClientRect();
 		const x = touch.clientX - rect.left;
-		hoveredFreq = posToFreq(x, rect.width);
+		hoveredFreq = toFreq(x, rect.width);
 	}
 
 	function handleTouchmove(e: TouchEvent) {
@@ -65,7 +98,7 @@
 		const touch = e.touches[0];
 		const rect = stripEl.getBoundingClientRect();
 		const x = touch.clientX - rect.left;
-		hoveredFreq = posToFreq(x, rect.width);
+		hoveredFreq = toFreq(x, rect.width);
 	}
 
 	function handleTouchend() {
@@ -74,12 +107,12 @@
 		hoveredFreq = null;
 	}
 
-	const cursorPct = $derived(hoveredFreq !== null ? freqToPct(hoveredFreq) : null);
+	const cursorPct = $derived(hoveredFreq !== null ? toPct(hoveredFreq) : null);
 	const targetPct = $derived(
-		targetFreq !== null && targetFreq !== undefined ? freqToPct(targetFreq) : null
+		targetFreq !== null && targetFreq !== undefined ? toPct(targetFreq) : null
 	);
 	const guessPct = $derived(
-		guessFreq !== null && guessFreq !== undefined ? freqToPct(guessFreq) : null
+		guessFreq !== null && guessFreq !== undefined ? toPct(guessFreq) : null
 	);
 </script>
 
@@ -157,8 +190,8 @@
 	{/if}
 
 	<!-- Tick marks -->
-	{#each TICKS as tick (tick)}
-		{@const pct = freqToPct(tick)}
+	{#each ticks as tick (tick)}
+		{@const pct = toPct(tick)}
 		<div class="absolute bottom-8 h-3 w-0.5 bg-border" style="left: {pct}%"></div>
 		<div
 			class="absolute bottom-1 -translate-x-1/2 font-mono text-xs leading-none text-muted-foreground"

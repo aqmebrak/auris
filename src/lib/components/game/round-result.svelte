@@ -20,8 +20,8 @@
 <div class="flex flex-col gap-8">
 	<div
 		class="rounded border p-5 {result === 'correct'
-			? 'border-green-700 bg-green-950/30'
-			: 'border-red-700 bg-red-950/30'}"
+			? 'animate-pulse-correct border-green-700 bg-green-950/30'
+			: 'animate-shake-wrong border-red-700 bg-red-950/30'}"
 	>
 		<p class="text-xl font-semibold tracking-wide">
 			{result === 'correct' ? 'CORRECT ✓' : 'WRONG ✗'}

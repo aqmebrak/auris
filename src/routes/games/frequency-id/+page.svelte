@@ -9,19 +9,31 @@
 	import GameOver from '$lib/components/game/game-over.svelte';
 	import { createGameStore } from '$lib/stores/game-store.svelte.js';
 	import { createStatsStore } from '$lib/stores/stats-store.svelte.js';
-	import { freqIdConfig, type FreqIdRound } from '$lib/games/freq-id/config.js';
+	import {
+		createFreqIdConfig,
+		DEFAULT_OPTIONS,
+		DIFFICULTY_CONFIG,
+		ZONE_CONFIG,
+		ROUND_COUNT_OPTIONS,
+		type FreqIdRound,
+		type FreqIdOptions,
+		type Difficulty,
+		type FreqZone
+	} from '$lib/games/freq-id/config.js';
 	import { createFreqIdAudio } from '$lib/games/freq-id/audio.js';
 	import { formatFreq } from '$lib/format.js';
 
-	const game = createGameStore(freqIdConfig);
-	const stats = createStatsStore(freqIdConfig.id);
+	const stats = createStatsStore('freq-id');
 	const audio = createFreqIdAudio();
+
+	let options = $state<FreqIdOptions>({ ...DEFAULT_OPTIONS });
+	let game = $state(createGameStore(createFreqIdConfig(options)));
 
 	let isTouchDevice = $state(false);
 	let isPaused = $state(true);
 	let isLoading = $state(false);
 	let abMode = $state<'A' | 'B'>('B');
-	let gameRecorded = false;
+	let gameRecorded = $state(false);
 
 	$effect(() => {
 		if (browser) {
@@ -33,12 +45,26 @@
 	// Record the session once when we hit gameOver.
 	$effect(() => {
 		if (game.phase === 'gameOver' && !gameRecorded) {
-			stats.record(game.score);
+			const rounds = game.session.rounds.map((r: FreqIdRound) => ({
+				targetFreq: r.targetFreq,
+				correct: r.result === 'correct'
+			}));
+			stats.record(game.score, {
+				difficulty: options.difficulty,
+				zone: options.zone,
+				roundCount: options.roundCount,
+				rounds
+			});
 			gameRecorded = true;
 		}
 	});
 
 	onDestroy(() => audio.destroy());
+
+	function rebuildGame() {
+		game = createGameStore(createFreqIdConfig(options));
+		gameRecorded = false;
+	}
 
 	async function handleStart() {
 		if (!browser) return;
@@ -91,9 +117,11 @@
 	function handlePlayAgain() {
 		audio.chain.stop();
 		isPaused = true;
-		game.reset();
-		gameRecorded = false;
+		rebuildGame();
 	}
+
+	const zone = $derived(ZONE_CONFIG[options.zone]);
+	const diff = $derived(DIFFICULTY_CONFIG[options.difficulty]);
 </script>
 
 <svelte:head>
@@ -110,12 +138,92 @@
 
 	{#if game.phase === 'idle'}
 		<div class="flex flex-col gap-8">
+			<!-- Options -->
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+				<!-- Difficulty -->
+				<div class="flex flex-col gap-2">
+					<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+						Difficulty
+					</p>
+					<div class="flex gap-2">
+						{#each Object.entries(DIFFICULTY_CONFIG) as [key, dcfg] (key)}
+							<Button
+								class="flex-1 rounded border px-3 py-2 text-xs tracking-widest uppercase transition-colors
+									{options.difficulty === key
+									? 'border-primary bg-primary/10 text-primary'
+									: 'border-border text-muted-foreground hover:border-foreground/40'}"
+								onclick={() => {
+									options.difficulty = key as Difficulty;
+									rebuildGame();
+								}}
+							>
+								{dcfg.label}
+							</Button>
+						{/each}
+					</div>
+				</div>
+
+				<!-- Zone -->
+				<div class="flex flex-col gap-2">
+					<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">Zone</p>
+					<div class="flex gap-2">
+						{#each Object.keys(ZONE_CONFIG) as key (key)}
+							<Button
+								class="flex-1 rounded border px-2 py-2 text-xs tracking-widest uppercase transition-colors
+									{options.zone === key
+									? 'border-primary bg-primary/10 text-primary'
+									: 'border-border text-muted-foreground hover:border-foreground/40'}"
+								onclick={() => {
+									options.zone = key as FreqZone;
+									rebuildGame();
+								}}
+							>
+								{key}
+							</Button>
+						{/each}
+					</div>
+				</div>
+
+				<!-- Round count -->
+				<div class="flex flex-col gap-2">
+					<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">Rounds</p>
+					<div class="flex gap-2">
+						{#each ROUND_COUNT_OPTIONS as n (n)}
+							<Button
+								class="flex-1 rounded border px-3 py-2 text-xs tracking-widest uppercase transition-colors
+									{options.roundCount === n
+									? 'border-primary bg-primary/10 text-primary'
+									: 'border-border text-muted-foreground hover:border-foreground/40'}"
+								onclick={() => {
+									options.roundCount = n;
+									rebuildGame();
+								}}
+							>
+								{n}
+							</Button>
+						{/each}
+					</div>
+				</div>
+			</div>
+
 			<p class="text-sm text-muted-foreground">
-				Press PLAY to hear the audio. Your task: identify the frequency band where the EQ is
-				applied.
+				Press PLAY to hear the audio. Identify the frequency band where the EQ is applied.
+				<span class="ml-1 font-mono text-xs">
+					margin ±{diff.errorMarginOctaves >= 1
+						? '1 oct'
+						: diff.errorMarginOctaves === 1 / 3
+							? '⅓ oct'
+							: '¼ oct'}
+				</span>
 			</p>
 
-			<FreqStrip onSelect={handleSelect} disabled={true} />
+			<FreqStrip
+				onSelect={handleSelect}
+				disabled={true}
+				freqMin={zone.min}
+				freqMax={zone.max}
+				errorMarginOctaves={diff.errorMarginOctaves}
+			/>
 
 			<div class="flex justify-center">
 				<Button
@@ -138,7 +246,13 @@
 				{/if}
 			</p>
 
-			<FreqStrip onSelect={handleSelect} disabled={false} />
+			<FreqStrip
+				onSelect={handleSelect}
+				disabled={false}
+				freqMin={zone.min}
+				freqMax={zone.max}
+				errorMarginOctaves={diff.errorMarginOctaves}
+			/>
 
 			<PlaybackControls
 				{isPaused}
@@ -179,6 +293,9 @@
 					disabled={true}
 					targetFreq={round.targetFreq}
 					guessFreq={round.guess}
+					freqMin={zone.min}
+					freqMax={zone.max}
+					errorMarginOctaves={diff.errorMarginOctaves}
 				/>
 			{/snippet}
 		</RoundResult>

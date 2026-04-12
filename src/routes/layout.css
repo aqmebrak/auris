@@ -118,6 +118,45 @@
 	--radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@keyframes pulse-correct {
+	0% {
+		box-shadow: 0 0 0 0 oklch(0.72 0.17 142 / 0.5);
+	}
+	60% {
+		box-shadow: 0 0 0 10px oklch(0.72 0.17 142 / 0);
+	}
+	100% {
+		box-shadow: 0 0 0 0 oklch(0.72 0.17 142 / 0);
+	}
+}
+
+@keyframes shake-wrong {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+	18% {
+		transform: translateX(-7px);
+	}
+	36% {
+		transform: translateX(7px);
+	}
+	54% {
+		transform: translateX(-5px);
+	}
+	72% {
+		transform: translateX(5px);
+	}
+	90% {
+		transform: translateX(-2px);
+	}
+}
+
+@theme inline {
+	--animate-pulse-correct: pulse-correct 0.7s ease-out forwards;
+	--animate-shake-wrong: shake-wrong 0.45s ease-in-out forwards;
+}
+
 @layer base {
 	* {
 		@apply border-border outline-ring/50;

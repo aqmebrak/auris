@@ -1,3 +1,10 @@
+# OpenWolf
+
+@.wolf/OPENWOLF.md
+
+This project uses OpenWolf for context management. Read and follow .wolf/OPENWOLF.md every session. Check .wolf/cerebrum.md before generating code. Check .wolf/anatomy.md before reading files.
+
+
 - In all interactions, be extremely concise and sacrifice grammar for the sake of concision.
 - if available use Serena MCP as your semantic code retrieval and editing tools. 
 

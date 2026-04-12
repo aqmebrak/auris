@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { createStatsStore } from '$lib/stores/stats-store.svelte.js';
+	import FreqIdHeatmap from '$lib/components/freq-id-heatmap.svelte';
 
 	// Dashboard currently surfaces Frequency ID stats only. When additional
 	// games land, compose additional stores here.
@@ -60,4 +61,10 @@
 			</dd>
 		</dl>
 	</div>
+
+	{#if freqId.gamesPlayed > 0}
+		<div class="mt-6 border-t border-border pt-6">
+			<FreqIdHeatmap history={freqId.history} />
+		</div>
+	{/if}
 </section>
