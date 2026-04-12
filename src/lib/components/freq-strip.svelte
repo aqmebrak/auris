@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ERROR_MARGIN_OCTAVES } from '$lib/game-frequency-id.js';
+	import { ERROR_MARGIN_OCTAVES } from '$lib/games/freq-id/config.js';
 	import { formatFreq } from '$lib/format.js';
 	import { LOG_RANGE, posToFreq, freqToPct } from '$lib/frequency.js';
 
