@@ -70,7 +70,6 @@
     ]
   },
   "enabledPlugins": {
-    "ralph-skills@ralph-marketplace": false,
     "planning-with-files@planning-with-files": true
   }
 }
