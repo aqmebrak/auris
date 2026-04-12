@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T10:52:43.597Z
-> Files: 159 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T11:50:19.512Z
+> Files: 163 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../.claude/plans/
 
-- `melodic-splashing-bee.md` — UI Refactor: Options visibility + Panning A/B removal (~731 tok)
+- `melodic-splashing-bee.md` — Game: dB Change (Two-Alternative Forced Choice) (~1406 tok)
 
 ## ./
 
@@ -220,7 +220,7 @@
 
 ## src/lib/
 
-- `format.ts` — Format a pan value (-1 to +1) as "L50", "C", "R75" etc. (~110 tok)
+- `format.ts` — Format a dB value as "+6 dB", "-3 dB", "0 dB". (~159 tok)
 - `frequency.ts` — Range-aware variants — use when FreqStrip is scoped to a sub-band. (~204 tok)
 - `index.ts` — place files you want to import through the `$lib` alias in this folder. (~22 tok)
 - `utils.ts` — Exports cn, WithoutChild, WithoutChildren, WithoutChildrenOrChild, WithElementRef (~181 tok)
@@ -228,13 +228,14 @@
 ## src/lib/audio/
 
 - `chain.ts` — AudioChain — wraps an `AudioPlayer` + an ordered list of effects and adds (~955 tok)
-- `effects.ts` — Effect node factories. Each factory takes an `AudioContext` and returns an (~585 tok)
+- `effects.ts` — Effect node factories. Each factory takes an `AudioContext` and returns an (~685 tok)
 - `player.ts` — AudioPlayer — owns the AudioContext, decodes & caches buffers. (~502 tok)
 - `samples.ts` — Bundled music samples shipped with the app. Add new URLs here and any game (~193 tok)
 
 ## src/lib/components/
 
 - `ab-toggle.svelte` — Svelte: ab-toggle, TS, 1 stores (~216 tok)
+- `db-choice.svelte` — Set on roundResult to reveal correct answer. (~357 tok)
 - `freq-id-heatmap.svelte` — Svelte: freq-id-heatmap, TS, 4 stores (~762 tok)
 - `freq-strip.svelte` — When set, shows a persistent target marker (result phase). (~1626 tok)
 - `game-card.svelte` — Svelte: game-card, TS, 3 stores (~245 tok)
@@ -273,6 +274,11 @@
 - `session.ts` — Pure, game-agnostic session helpers. (~440 tok)
 - `types.ts` — Generic game engine — core types. (~275 tok)
 
+## src/lib/games/db-change/
+
+- `audio.ts` — dB Change audio — AudioChain with a GainNode. (~212 tok)
+- `config.ts` — dB Change game — config + round type. (~742 tok)
+
 ## src/lib/games/freq-id/
 
 - `audio.ts` — Frequency ID audio — assembles an `AudioChain` with a single peaking EQ. (~266 tok)
@@ -296,9 +302,13 @@
 ## src/routes/
 
 - `+layout.svelte` — Svelte: +layout, TS, 3 stores (~75 tok)
-- `+page.svelte` — Svelte: +page (~359 tok)
+- `+page.svelte` — Svelte: +page (~399 tok)
 - `dashboard.e2e.ts` — Declares grid (~280 tok)
 - `layout.css` — Styles: 13 rules, 104 vars, 2 animations, 1 layers (~1398 tok)
+
+## src/routes/games/db-change/
+
+- `+page.svelte` — Svelte: +page (~1905 tok)
 
 ## src/routes/games/frequency-id/
 

@@ -3,6 +3,12 @@ export function formatFreq(hz: number): string {
 	return `${Math.round(hz)} Hz`;
 }
 
+/** Format a dB value as "+6 dB", "-3 dB", "0 dB". */
+export function formatDb(db: number): string {
+	if (db === 0) return '0 dB';
+	return `${db > 0 ? '+' : ''}${db} dB`;
+}
+
 /** Format a pan value (-1 to +1) as "L50", "C", "R75" etc. */
 export function formatPan(pan: number): string {
 	if (Math.abs(pan) < 0.01) return 'C';

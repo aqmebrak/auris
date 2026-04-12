@@ -63,6 +63,22 @@ export interface PannerHandle extends EffectHandle {
 	setPan(pan: number): void;
 }
 
+export interface GainHandle extends EffectHandle {
+	setGain(db: number): void;
+}
+
+export function createGain(ctx: AudioContext, initialDb = 0): GainHandle {
+	const node = ctx.createGain();
+	node.gain.value = Math.pow(10, initialDb / 20);
+	return {
+		input: node,
+		output: node,
+		setGain(db) {
+			node.gain.value = Math.pow(10, db / 20);
+		}
+	};
+}
+
 export function createPanner(ctx: AudioContext, initialPan = 0): PannerHandle {
 	const panner = ctx.createStereoPanner();
 	panner.pan.value = initialPan;

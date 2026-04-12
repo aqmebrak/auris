@@ -16,6 +16,12 @@
 			available: true
 		},
 		{
+			title: 'Level Change',
+			description: 'Identify how much gain was applied to the signal',
+			href: '/games/db-change',
+			available: true
+		},
+		{
 			title: 'Panning',
 			description: 'Guess where the signal is panned in the stereo field',
 			href: '/games/panning',
