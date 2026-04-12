@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T08:26:04.732Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T10:52:43.597Z
 > Files: 159 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../.claude/plans/
 
-- `melodic-splashing-bee.md` — Phase 5: Panning Game (~1697 tok)
+- `melodic-splashing-bee.md` — UI Refactor: Options visibility + Panning A/B removal (~731 tok)
 
 ## ./
 
@@ -246,7 +246,7 @@
 
 - `game-header.svelte` — Svelte: game-header, TS, 2 stores (~221 tok)
 - `game-over.svelte` — Maps a round to display strings. Keeps the layout consistent across games. (~457 tok)
-- `playback-controls.svelte` — Svelte: playback-controls, TS, 3 stores (~195 tok)
+- `playback-controls.svelte` — Svelte: playback-controls (~211 tok)
 - `round-result.svelte` — Game-specific contents rendered inside the result card. (~337 tok)
 
 ## src/lib/components/ui/button/
@@ -302,11 +302,11 @@
 
 ## src/routes/games/frequency-id/
 
-- `+page.svelte` — Svelte: +page, TS, 23 stores (~2281 tok)
+- `+page.svelte` — Svelte: +page (~2292 tok)
 
 ## src/routes/games/panning/
 
-- `+page.svelte` — Svelte: +page (~2201 tok)
+- `+page.svelte` — Svelte: +page (~2135 tok)
 
 ## static/
 

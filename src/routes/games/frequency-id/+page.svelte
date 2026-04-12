@@ -138,84 +138,88 @@
 
 	{#if game.phase === 'idle'}
 		<div class="flex flex-col gap-8">
-			<!-- Options -->
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-				<!-- Difficulty -->
-				<div class="flex flex-col gap-2">
-					<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
-						Difficulty
-					</p>
-					<div class="flex gap-2">
-						{#each Object.entries(DIFFICULTY_CONFIG) as [key, dcfg] (key)}
-							<Button
-								class="flex-1 rounded border px-3 py-2 text-xs tracking-widest uppercase transition-colors
+			{#if game.roundIndex === 0}
+				<!-- Options -->
+				<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+					<!-- Difficulty -->
+					<div class="flex flex-col gap-2">
+						<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+							Difficulty
+						</p>
+						<div class="flex gap-2">
+							{#each Object.entries(DIFFICULTY_CONFIG) as [key, dcfg] (key)}
+								<Button
+									class="flex-1 rounded border px-3 py-2 text-xs tracking-widest uppercase transition-colors
 									{options.difficulty === key
-									? 'border-primary bg-primary/10 text-primary'
-									: 'border-border text-muted-foreground hover:border-foreground/40'}"
-								onclick={() => {
-									options.difficulty = key as Difficulty;
-									rebuildGame();
-								}}
-							>
-								{dcfg.label}
-							</Button>
-						{/each}
+										? 'border-primary bg-primary/10 text-primary'
+										: 'border-border text-muted-foreground hover:border-foreground/40'}"
+									onclick={() => {
+										options.difficulty = key as Difficulty;
+										rebuildGame();
+									}}
+								>
+									{dcfg.label}
+								</Button>
+							{/each}
+						</div>
 					</div>
-				</div>
 
-				<!-- Zone -->
-				<div class="flex flex-col gap-2">
-					<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">Zone</p>
-					<div class="flex gap-2">
-						{#each Object.keys(ZONE_CONFIG) as key (key)}
-							<Button
-								class="flex-1 rounded border px-2 py-2 text-xs tracking-widest uppercase transition-colors
+					<!-- Zone -->
+					<div class="flex flex-col gap-2">
+						<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">Zone</p>
+						<div class="flex gap-2">
+							{#each Object.keys(ZONE_CONFIG) as key (key)}
+								<Button
+									class="flex-1 rounded border px-2 py-2 text-xs tracking-widest uppercase transition-colors
 									{options.zone === key
-									? 'border-primary bg-primary/10 text-primary'
-									: 'border-border text-muted-foreground hover:border-foreground/40'}"
-								onclick={() => {
-									options.zone = key as FreqZone;
-									rebuildGame();
-								}}
-							>
-								{key}
-							</Button>
-						{/each}
+										? 'border-primary bg-primary/10 text-primary'
+										: 'border-border text-muted-foreground hover:border-foreground/40'}"
+									onclick={() => {
+										options.zone = key as FreqZone;
+										rebuildGame();
+									}}
+								>
+									{key}
+								</Button>
+							{/each}
+						</div>
 					</div>
-				</div>
 
-				<!-- Round count -->
-				<div class="flex flex-col gap-2">
-					<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">Rounds</p>
-					<div class="flex gap-2">
-						{#each ROUND_COUNT_OPTIONS as n (n)}
-							<Button
-								class="flex-1 rounded border px-3 py-2 text-xs tracking-widest uppercase transition-colors
+					<!-- Round count -->
+					<div class="flex flex-col gap-2">
+						<p class="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+							Rounds
+						</p>
+						<div class="flex gap-2">
+							{#each ROUND_COUNT_OPTIONS as n (n)}
+								<Button
+									class="flex-1 rounded border px-3 py-2 text-xs tracking-widest uppercase transition-colors
 									{options.roundCount === n
-									? 'border-primary bg-primary/10 text-primary'
-									: 'border-border text-muted-foreground hover:border-foreground/40'}"
-								onclick={() => {
-									options.roundCount = n;
-									rebuildGame();
-								}}
-							>
-								{n}
-							</Button>
-						{/each}
+										? 'border-primary bg-primary/10 text-primary'
+										: 'border-border text-muted-foreground hover:border-foreground/40'}"
+									onclick={() => {
+										options.roundCount = n;
+										rebuildGame();
+									}}
+								>
+									{n}
+								</Button>
+							{/each}
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<p class="text-sm text-muted-foreground">
-				Press PLAY to hear the audio. Identify the frequency band where the EQ is applied.
-				<span class="ml-1 font-mono text-xs">
-					margin ±{diff.errorMarginOctaves >= 1
-						? '1 oct'
-						: diff.errorMarginOctaves === 1 / 3
-							? '⅓ oct'
-							: '¼ oct'}
-				</span>
-			</p>
+				<p class="text-sm text-muted-foreground">
+					Press PLAY to hear the audio. Identify the frequency band where the EQ is applied.
+					<span class="ml-1 font-mono text-xs">
+						margin ±{diff.errorMarginOctaves >= 1
+							? '1 oct'
+							: diff.errorMarginOctaves === 1 / 3
+								? '⅓ oct'
+								: '¼ oct'}
+					</span>
+				</p>
+			{/if}
 
 			<FreqStrip
 				onSelect={handleSelect}
