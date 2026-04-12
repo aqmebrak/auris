@@ -85,6 +85,24 @@ More educational and replayable. Just extend the config — engine handled every
 
 ---
 
+## Phase 8 — Compressorist ✅
+
+SSL 4000-style compression matcher — hear target compression (B), dial in matching params (A), submit.
+
+| Task | Status | Notes |
+|------|--------|-------|
+| `formatAttack/Release/Ratio/Makeup` helpers | ✅ | `src/lib/format.ts` |
+| Compressorist config + types | ✅ | `src/lib/games/compressorist/config.ts` |
+| Custom dual-chain audio class | ✅ | `src/lib/games/compressorist/audio.ts` — not AudioChain |
+| SVG knob component (pointer drag, wheel, keyboard) | ✅ | `src/lib/components/knob.svelte` |
+| LED GR meter (20 segments, rAF) | ✅ | `src/lib/components/gr-meter.svelte` |
+| Compressorist game page (SSL panel layout) | ✅ | `src/routes/games/compressorist/+page.svelte` |
+| Dashboard registration | ✅ | `src/routes/+page.svelte` |
+| `eslint.config.js` — `varsIgnorePattern: '^_'` | ✅ | allow `_x` unused vars |
+| Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
+
+---
+
 ## Phase 5 — Second Game ✅
 
 Panning ID — hear a panned signal, guess the stereo position.

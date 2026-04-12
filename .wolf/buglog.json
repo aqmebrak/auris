@@ -48,6 +48,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-04-12T11:48:39.418Z"
+    },
+    {
+      "id": "bug-004",
+      "timestamp": "2026-04-12T12:18:56.222Z",
+      "error_message": "Type error",
+      "file": "src/lib/format.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-12T12:18:56.222Z"
+    },
+    {
+      "id": "bug-005",
+      "timestamp": "2026-04-12T12:23:44.320Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/lib/components/knob.svelte",
+      "root_cause": "Had \"rotate({angle()} 40 40)\"",
+      "fix": "Changed to \"rotate({angle} 40 40)\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-12T12:23:44.320Z"
+    },
+    {
+      "id": "bug-006",
+      "timestamp": "2026-04-12T12:24:18.564Z",
+      "error_message": "Wrong reference: svelte should be div",
+      "file": "src/lib/components/knob.svelte",
+      "root_cause": "Used \"svelte\" instead of \"div\"",
+      "fix": "Changed svelte → div",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-12T12:24:18.564Z"
+    },
+    {
+      "id": "bug-007",
+      "timestamp": "2026-04-12T12:25:24.247Z",
+      "error_message": "Wrong reference: __unused should be _seg",
+      "file": "src/lib/components/gr-meter.svelte",
+      "root_cause": "Used \"__unused\" instead of \"_seg\"",
+      "fix": "Changed __unused → _seg",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "svelte"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-12T12:25:24.247Z"
     }
   ]
 }

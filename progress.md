@@ -4,6 +4,27 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-04-12 — Compressorist complete (Phase 8)
+
+**Completed:** Compressorist game — SSL 4000-style compression ear training.
+
+| Item | Files touched |
+|------|--------------|
+| Format helpers (attack/release/ratio/makeup) | `src/lib/format.ts` |
+| Game config, param steps, difficulty tolerance | `src/lib/games/compressorist/config.ts` |
+| Custom dual-chain audio (not AudioChain) | `src/lib/games/compressorist/audio.ts` |
+| SVG knob — pointer drag, wheel, arrow keys | `src/lib/components/knob.svelte` |
+| LED GR meter — 20 segments, green/yellow/red, rAF | `src/lib/components/gr-meter.svelte` |
+| SSL panel game page | `src/routes/games/compressorist/+page.svelte` |
+| Dashboard registration | `src/routes/+page.svelte` |
+| `varsIgnorePattern: '^_'` in eslint | `eslint.config.js` |
+
+Fixes during lint pass: `$derived(() => {...})` → inline expression in knob.svelte; stale `svelte-ignore` removed; `{#each}` rewritten to avoid unused item var.
+
+`pnpm check` ✅ `pnpm lint` ✅
+
+---
+
 ## 2026-04-12 — Phase 5 complete
 
 **Completed:** Panning ID game — second ear-training exercise.

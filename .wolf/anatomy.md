@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T11:50:19.512Z
-> Files: 163 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T12:28:00.240Z
+> Files: 168 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../.claude/plans/
 
-- `melodic-splashing-bee.md` — Game: dB Change (Two-Alternative Forced Choice) (~1406 tok)
+- `melodic-splashing-bee.md` — Game: Compressorist — SSL 4000 Console UI (~2464 tok)
 
 ## ./
 
@@ -17,17 +17,17 @@
 - `CLAUDE.md` — OpenWolf (~1028 tok)
 - `components.json` (~129 tok)
 - `drizzle.config.ts` — Drizzle ORM configuration (~87 tok)
-- `eslint.config.js` — Declares gitignorePath (~398 tok)
+- `eslint.config.js` — Declares gitignorePath (~420 tok)
 - `findings.md` — Auris — Findings (~656 tok)
 - `package.json` — Node.js package manifest (~534 tok)
 - `PLAN.md` — Auris — Development Plan (~1682 tok)
 - `playwright.config.ts` — Playwright test configuration (~54 tok)
 - `pnpm-lock.yaml` — pnpm lock file (~37193 tok)
 - `pnpm-workspace.yaml` (~10 tok)
-- `progress.md` — Auris — Progress Log (~551 tok)
+- `progress.md` — Auris — Progress Log (~798 tok)
 - `README.md` — Project documentation (~284 tok)
 - `svelte.config.js` — SvelteKit configuration (~145 tok)
-- `task_plan.md` — Auris — Task Plan (~1298 tok)
+- `task_plan.md` — Auris — Task Plan (~1222 tok)
 - `tsconfig.json` — TypeScript configuration (~198 tok)
 - `vite.config.ts` — Vite build configuration (~58 tok)
 - `vitest.config.ts` — Vitest test configuration (~44 tok)
@@ -220,7 +220,7 @@
 
 ## src/lib/
 
-- `format.ts` — Format a dB value as "+6 dB", "-3 dB", "0 dB". (~159 tok)
+- `format.ts` — Format attack/release time in ms (short). (~283 tok)
 - `frequency.ts` — Range-aware variants — use when FreqStrip is scoped to a sub-band. (~204 tok)
 - `index.ts` — place files you want to import through the `$lib` alias in this folder. (~22 tok)
 - `utils.ts` — Exports cn, WithoutChild, WithoutChildren, WithoutChildrenOrChild, WithElementRef (~181 tok)
@@ -239,6 +239,8 @@
 - `freq-id-heatmap.svelte` — Svelte: freq-id-heatmap, TS, 4 stores (~762 tok)
 - `freq-strip.svelte` — When set, shows a persistent target marker (result phase). (~1626 tok)
 - `game-card.svelte` — Svelte: game-card, TS, 3 stores (~245 tok)
+- `gr-meter.svelte` — Svelte: gr-meter (~479 tok)
+- `knob.svelte` — Svelte: knob (~878 tok)
 - `stats-panel.svelte` — Svelte: stats-panel, TS, 7 stores (~621 tok)
 - `stereo-strip.svelte` — When set, shows a persistent target marker (result phase). (~1567 tok)
 - `top-bar.svelte` — Svelte: top-bar, TS, 1 stores (~104 tok)
@@ -274,6 +276,11 @@
 - `session.ts` — Pure, game-agnostic session helpers. (~440 tok)
 - `types.ts` — Generic game engine — core types. (~275 tok)
 
+## src/lib/games/compressorist/
+
+- `audio.ts` — Compressorist audio — dual parallel compression chains on one AudioContext. (~1161 tok)
+- `config.ts` — Compressorist — match the compression settings by ear. (~813 tok)
+
 ## src/lib/games/db-change/
 
 - `audio.ts` — dB Change audio — AudioChain with a GainNode. (~212 tok)
@@ -302,9 +309,13 @@
 ## src/routes/
 
 - `+layout.svelte` — Svelte: +layout, TS, 3 stores (~75 tok)
-- `+page.svelte` — Svelte: +page (~399 tok)
+- `+page.svelte` — Svelte: +page (~438 tok)
 - `dashboard.e2e.ts` — Declares grid (~280 tok)
 - `layout.css` — Styles: 13 rules, 104 vars, 2 animations, 1 layers (~1398 tok)
+
+## src/routes/games/compressorist/
+
+- `+page.svelte` — Svelte: +page (~2998 tok)
 
 ## src/routes/games/db-change/
 

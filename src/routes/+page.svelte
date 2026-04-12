@@ -28,6 +28,12 @@
 			available: true
 		},
 		{
+			title: 'Compressorist',
+			description: 'Match the compression settings by ear',
+			href: '/games/compressorist',
+			available: true
+		},
+		{
 			title: 'Dynamics',
 			description: 'Recognize compression characteristics',
 			href: '/games/dynamics',

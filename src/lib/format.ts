@@ -3,6 +3,20 @@ export function formatFreq(hz: number): string {
 	return `${Math.round(hz)} Hz`;
 }
 
+/** Format attack/release time in ms (short). */
+export function formatAttack(ms: number): string {
+	return ms < 1 ? `${ms} ms` : `${ms} ms`;
+}
+export function formatRelease(ms: number): string {
+	return ms >= 1000 ? `${ms / 1000} s` : `${ms} ms`;
+}
+export function formatRatio(r: number): string {
+	return r >= 20 ? '∞:1' : `${r}:1`;
+}
+export function formatMakeup(db: number): string {
+	return db === 0 ? '0 dB' : `+${db} dB`;
+}
+
 /** Format a dB value as "+6 dB", "-3 dB", "0 dB". */
 export function formatDb(db: number): string {
 	if (db === 0) return '0 dB';
