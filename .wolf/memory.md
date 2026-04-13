@@ -157,3 +157,26 @@
 | 20:15 | Edited task_plan.md | expanded (+15 lines) | ~209 |
 | 20:15 | Edited progress.md | expanded (+14 lines) | ~174 |
 | 20:15 | Session end: 18 writes across 8 files (melodic-splashing-bee.md, +page.svelte, config.ts, audio.ts, eq-curve.svelte) | 20 reads | ~31086 tok |
+| 22:02 | Session end: 18 writes across 8 files (melodic-splashing-bee.md, +page.svelte, config.ts, audio.ts, eq-curve.svelte) | 20 reads | ~31086 tok |
+
+## Session: 2026-04-12 22:07
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:07 | Created ../.claude/projects/-home-aqmebrak-auris/memory/feedback_tooling.md | — | ~347 |
+| 22:07 | Edited ../.claude/projects/-home-aqmebrak-auris/memory/MEMORY.md | 2→3 lines | ~98 |
+| 22:09 | Session end: 2 writes across 2 files (feedback_tooling.md, MEMORY.md) | 2 reads | ~938 tok |
+
+## Session: 2026-04-12 22:09
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-04-13 09:20
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:50 | designqc: captured 5 screenshots (123KB, ~12500 tok) | / | ready for eval | ~0 |
+| 09:56 | Edited ../.claude/settings.json | removed 7 lines | ~11 |
+| 09:56 | Edited .claude/settings.json | inline fix | ~15 |
+| 09:56 | Session end: 2 writes across 1 files (settings.json) | 2 reads | ~948 tok |

@@ -1,11 +1,20 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-12T18:15:22.280Z
-> Files: 176 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-13T07:56:04.252Z
+> Files: 179 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../.claude/
+
+- `settings.json` (~485 tok)
 
 ## ../.claude/plans/
 
 - `melodic-splashing-bee.md` — Game: EQ Matching (~1613 tok)
+
+## ../.claude/projects/-home-aqmebrak-auris/memory/
+
+- `feedback_tooling.md` (~338 tok)
+- `MEMORY.md` (~92 tok)
 
 ## ./
 
@@ -34,7 +43,7 @@
 
 ## .claude/
 
-- `settings.json` (~461 tok)
+- `settings.json` (~676 tok)
 - `settings.local.json` (~122 tok)
 
 ## .claude/agents/
