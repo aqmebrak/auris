@@ -30,8 +30,8 @@ export const DIFFICULTY_CONFIG: Record<
 	DbDifficulty,
 	{ label: string; pool: number[]; deltaRange: [number, number] }
 > = {
-	easy: { label: 'Easy', pool: [6, 8, 10, 12], deltaRange: [4, 4] },
-	medium: { label: 'Medium', pool: [4, 6, 8, 10, 12], deltaRange: [2, 3] },
+	easy: { label: 'Easy', pool: [9, 12], deltaRange: [3, 3] },
+	medium: { label: 'Medium', pool: [6, 8, 10, 12], deltaRange: [3, 4] },
 	hard: { label: 'Hard', pool: [1, 2, 3, 4, 6, 8, 10, 12], deltaRange: [1, 2] }
 };
 

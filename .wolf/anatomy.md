@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-13T07:56:04.252Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-19T08:04:20.596Z
 > Files: 179 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../.claude/
@@ -36,7 +36,7 @@
 - `progress.md` — Auris — Progress Log (~1119 tok)
 - `README.md` — Project documentation (~284 tok)
 - `svelte.config.js` — SvelteKit configuration (~145 tok)
-- `task_plan.md` — Auris — Task Plan (~1578 tok)
+- `task_plan.md` — Auris — Task Plan (~2019 tok)
 - `tsconfig.json` — TypeScript configuration (~198 tok)
 - `vite.config.ts` — Vite build configuration (~58 tok)
 - `vitest.config.ts` — Vitest test configuration (~44 tok)

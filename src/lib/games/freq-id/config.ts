@@ -32,16 +32,16 @@ export const DIFFICULTY_CONFIG: Record<
 	Difficulty,
 	{ label: string; errorMarginOctaves: number; gainOptions: number[] }
 > = {
-	easy: { label: 'Easy', errorMarginOctaves: 1, gainOptions: [6, 9, 12] },
-	medium: { label: 'Medium', errorMarginOctaves: 1 / 3, gainOptions: [6, 9, 12] },
+	easy: { label: 'Easy', errorMarginOctaves: 1.5, gainOptions: [6, 9, 12] },
+	medium: { label: 'Medium', errorMarginOctaves: 0.75, gainOptions: [6, 9, 12] },
 	hard: { label: 'Hard', errorMarginOctaves: 1 / 4, gainOptions: [6, 9, 12] }
 };
 
 export const ZONE_CONFIG: Record<FreqZone, { label: string; min: number; max: number }> = {
-	full: { label: 'Full (20–20k)', min: 20, max: 20000 },
-	lows: { label: 'Lows (20–500)', min: 20, max: 500 },
+	full: { label: 'Full (75–10k)', min: 75, max: 10000 },
+	lows: { label: 'Lows (75–500)', min: 75, max: 500 },
 	mids: { label: 'Mids (200–5k)', min: 200, max: 5000 },
-	highs: { label: 'Highs (1k–20k)', min: 1000, max: 20000 }
+	highs: { label: 'Highs (1k–10k)', min: 1000, max: 10000 }
 };
 
 export const ROUND_COUNT_OPTIONS = [3, 5, 10] as const;

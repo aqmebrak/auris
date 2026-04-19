@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-04-12T07:22:32.187Z",
   "lifetime": {
-    "total_tokens_estimated": 186009,
-    "total_reads": 165,
-    "total_writes": 162,
-    "total_sessions": 18,
-    "anatomy_hits": 157,
+    "total_tokens_estimated": 196900,
+    "total_reads": 170,
+    "total_writes": 167,
+    "total_sessions": 20,
+    "anatomy_hits": 162,
     "anatomy_misses": 4,
-    "repeated_reads_blocked": 65,
-    "estimated_savings_vs_bare_cli": 96024
+    "repeated_reads_blocked": 67,
+    "estimated_savings_vs_bare_cli": 101062
   },
   "sessions": [
     {
@@ -2013,6 +2013,146 @@
         "writes_count": 2,
         "repeated_reads_blocked": 0,
         "anatomy_lookups": 2
+      }
+    },
+    {
+      "id": "session-2026-04-19-1002",
+      "started": "2026-04-19T08:02:51.858Z",
+      "ended": "2026-04-19T08:04:25.088Z",
+      "reads": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 1578,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 512,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 1578,
+        "output_tokens_estimated": 512,
+        "reads_count": 1,
+        "writes_count": 1,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-04-19-1002",
+      "started": "2026-04-19T08:02:51.858Z",
+      "ended": "2026-04-19T08:10:56.933Z",
+      "reads": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 1578,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 512,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 1578,
+        "output_tokens_estimated": 512,
+        "reads_count": 1,
+        "writes_count": 1,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-04-19-1002",
+      "started": "2026-04-19T08:02:51.858Z",
+      "ended": "2026-04-19T08:16:45.648Z",
+      "reads": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 1578,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 512,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 1578,
+        "output_tokens_estimated": 512,
+        "reads_count": 1,
+        "writes_count": 1,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-04-19-1002",
+      "started": "2026-04-19T08:02:51.858Z",
+      "ended": "2026-04-19T08:41:01.723Z",
+      "reads": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 1578,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 512,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 1578,
+        "output_tokens_estimated": 512,
+        "reads_count": 1,
+        "writes_count": 1,
+        "repeated_reads_blocked": 0,
+        "anatomy_lookups": 1
+      }
+    },
+    {
+      "id": "session-2026-04-19-1002",
+      "started": "2026-04-19T08:02:51.858Z",
+      "ended": "2026-04-19T11:52:29.385Z",
+      "reads": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 2019,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/home/aqmebrak/auris/task_plan.md",
+          "tokens_estimated": 512,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 2019,
+        "output_tokens_estimated": 512,
+        "reads_count": 1,
+        "writes_count": 1,
+        "repeated_reads_blocked": 2,
+        "anatomy_lookups": 1
       }
     }
   ],

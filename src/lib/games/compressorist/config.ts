@@ -31,11 +31,41 @@ export const DEFAULT_OPTIONS: CompressoristOptions = {
 	roundCount: 5
 };
 
-// Discrete click-stop values (SSL-inspired)
+// Discrete click-stop values (SSL-inspired) — full sets used for evaluation indexing
 export const ATTACK_STEPS = [1, 3, 10, 30, 100] as const; // ms
 export const RELEASE_STEPS = [100, 200, 400, 800] as const; // ms
-export const RATIO_STEPS = [2, 4, 8, 20] as const;
+export const RATIO_STEPS = [2, 4, 10, 20] as const; // 10:1 replaces 8:1 for clearer ear-training steps
 export const MAKEUP_STEPS = [0, 3, 6, 9, 12] as const; // dB
+
+/** Per-difficulty available steps for both target generation and user knobs. */
+export const DIFFICULTY_STEPS: Record<
+	CompressorDifficulty,
+	{
+		attacks: readonly number[];
+		releases: readonly number[];
+		ratios: readonly number[];
+		makeups: readonly number[];
+	}
+> = {
+	easy: {
+		attacks: [1, 10, 100],
+		releases: [100, 400, 800],
+		ratios: [2, 10],
+		makeups: [0, 6, 12]
+	},
+	medium: {
+		attacks: [1, 10, 30, 100],
+		releases: [100, 200, 400, 800],
+		ratios: [2, 4, 10, 20],
+		makeups: [0, 3, 6, 12]
+	},
+	hard: {
+		attacks: [1, 3, 10, 30, 100],
+		releases: [100, 200, 400, 800],
+		ratios: [2, 4, 10, 20],
+		makeups: [0, 3, 6, 9, 12]
+	}
+};
 
 export const DEFAULT_USER_PARAMS: CompressionParams = {
 	attack: 10,
@@ -66,16 +96,17 @@ function randomFrom<T>(arr: readonly T[]): T {
 
 export function createCompressoristConfig(opts: CompressoristOptions = DEFAULT_OPTIONS) {
 	const tol = TOLERANCE[opts.difficulty];
+	const steps = DIFFICULTY_STEPS[opts.difficulty];
 
 	return defineGame<CompressoristRound, CompressionParams>({
 		id: 'compressorist',
 		roundCount: opts.roundCount,
 		generateRound: () => ({
 			targetParams: {
-				attack: randomFrom(ATTACK_STEPS),
-				release: randomFrom(RELEASE_STEPS),
-				ratio: randomFrom(RATIO_STEPS),
-				makeup: randomFrom(MAKEUP_STEPS)
+				attack: randomFrom(steps.attacks),
+				release: randomFrom(steps.releases),
+				ratio: randomFrom(steps.ratios),
+				makeup: randomFrom(steps.makeups)
 			},
 			sampleUrl: pickTrack(),
 			guess: null,

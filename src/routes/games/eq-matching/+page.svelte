@@ -16,7 +16,6 @@
 		DIFFICULTY_CONFIG,
 		ROUND_COUNT_OPTIONS,
 		FREQ_STEPS,
-		GAIN_STEPS,
 		Q_STEPS,
 		defaultBands,
 		type EqBand,
@@ -34,6 +33,7 @@
 	let game = $state(createGameStore(createEqMatchingConfig(options)));
 
 	const bandCount = $derived(DIFFICULTY_CONFIG[options.difficulty].bandCount);
+	const gainPool = $derived(DIFFICULTY_CONFIG[options.difficulty].gainPool);
 	let userBands = $state<EqBand[]>(defaultBands(1));
 
 	let isPaused = $state(true);
@@ -227,7 +227,7 @@
 								disabled={true}
 							/>
 							<Knob
-								steps={GAIN_STEPS}
+								steps={gainPool}
 								value={band.gainDb}
 								label="GAIN"
 								format={formatDb}
@@ -283,7 +283,7 @@
 								onChange={(v) => (userBands[i] = { ...userBands[i], freq: v })}
 							/>
 							<Knob
-								steps={GAIN_STEPS}
+								steps={gainPool}
 								value={band.gainDb}
 								label="GAIN"
 								format={formatDb}

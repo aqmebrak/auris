@@ -3,6 +3,12 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 
+## Session: 2026-04-19
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 19:00 | Phase 11 — difficulty tuning (easy/medium/hard curves) across all 6 games | freq-id/panning/db-change/eq-matching/eq-guess/compressorist configs + compressorist+eq-matching pages | ✅ check+lint green | ~2500 |
+
 ## Session: 2026-04-12 09:31
 
 | Time | Action | File(s) | Outcome | ~Tokens |
@@ -180,3 +186,19 @@
 | 09:56 | Edited ../.claude/settings.json | removed 7 lines | ~11 |
 | 09:56 | Edited .claude/settings.json | inline fix | ~15 |
 | 09:56 | Session end: 2 writes across 1 files (settings.json) | 2 reads | ~948 tok |
+
+## Session: 2026-04-19 09:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-04-19 10:02
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:04 | Edited task_plan.md | expanded (+35 lines) | ~478 |
+| 10:04 | Session end: 1 writes across 1 files (task_plan.md) | 1 reads | ~2090 tok |
+| 10:10 | Session end: 1 writes across 1 files (task_plan.md) | 1 reads | ~2090 tok |
+| 10:16 | Session end: 1 writes across 1 files (task_plan.md) | 1 reads | ~2090 tok |
+| 10:41 | Session end: 1 writes across 1 files (task_plan.md) | 1 reads | ~2090 tok |
+| 13:52 | Session end: 1 writes across 1 files (task_plan.md) | 1 reads | ~2531 tok |

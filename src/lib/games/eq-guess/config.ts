@@ -37,7 +37,7 @@ export const DEFAULT_OPTIONS: EqGuessOptions = {
 export const ROUND_COUNT_OPTIONS = [3, 5, 10] as const;
 
 // Standard octave-spaced frequencies available as band centers
-export const FREQ_STEPS = [63, 125, 250, 500, 1000, 2000, 4000, 8000] as const;
+export const FREQ_STEPS = [125, 250, 500, 1000, 2000, 4000, 8000] as const;
 
 export const Q_DEFAULT = 2.5;
 

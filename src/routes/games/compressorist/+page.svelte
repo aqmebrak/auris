@@ -13,13 +13,9 @@
 	import {
 		createCompressoristConfig,
 		DEFAULT_OPTIONS,
-		DEFAULT_USER_PARAMS,
 		DIFFICULTY_CONFIG,
+		DIFFICULTY_STEPS,
 		ROUND_COUNT_OPTIONS,
-		ATTACK_STEPS,
-		RELEASE_STEPS,
-		RATIO_STEPS,
-		MAKEUP_STEPS,
 		type CompressoristRound,
 		type CompressionParams,
 		type CompressorDifficulty,
@@ -31,9 +27,21 @@
 	const stats = createStatsStore('compressorist');
 	const audio = new CompressoristAudio();
 
+	function defaultParams(difficulty: CompressorDifficulty): CompressionParams {
+		const s = DIFFICULTY_STEPS[difficulty];
+		return {
+			attack: s.attacks[Math.floor(s.attacks.length / 2)],
+			release: s.releases[Math.floor(s.releases.length / 2)],
+			ratio: s.ratios[0],
+			makeup: s.makeups[Math.floor(s.makeups.length / 2)]
+		};
+	}
+
 	let options = $state<CompressoristOptions>({ ...DEFAULT_OPTIONS });
 	let game = $state(createGameStore(createCompressoristConfig(options)));
-	let userParams = $state<CompressionParams>({ ...DEFAULT_USER_PARAMS });
+	let userParams = $state<CompressionParams>(defaultParams(DEFAULT_OPTIONS.difficulty));
+
+	const diffSteps = $derived(DIFFICULTY_STEPS[options.difficulty]);
 
 	let isPaused = $state(true);
 	let isLoading = $state(false);
@@ -68,6 +76,7 @@
 
 	function rebuildGame() {
 		game = createGameStore(createCompressoristConfig(options));
+		userParams = defaultParams(options.difficulty);
 		gameRecorded = false;
 	}
 
@@ -117,14 +126,13 @@
 	function handleNextRound() {
 		audio.stop();
 		isPaused = true;
-		userParams = { ...DEFAULT_USER_PARAMS };
+		userParams = defaultParams(options.difficulty);
 		game.next();
 	}
 
 	function handlePlayAgain() {
 		audio.stop();
 		isPaused = true;
-		userParams = { ...DEFAULT_USER_PARAMS };
 		rebuildGame();
 	}
 
@@ -196,7 +204,7 @@
 			<div class="rounded border border-zinc-800 bg-zinc-950 p-6 opacity-50" aria-hidden="true">
 				<div class="flex flex-wrap items-end justify-between gap-8">
 					<Knob
-						steps={ATTACK_STEPS}
+						steps={diffSteps.attacks}
 						value={userParams.attack}
 						label="ATTACK"
 						format={formatAttack}
@@ -204,7 +212,7 @@
 						disabled={true}
 					/>
 					<Knob
-						steps={RELEASE_STEPS}
+						steps={diffSteps.releases}
 						value={userParams.release}
 						label="RELEASE"
 						format={formatRelease}
@@ -212,7 +220,7 @@
 						disabled={true}
 					/>
 					<Knob
-						steps={RATIO_STEPS}
+						steps={diffSteps.ratios}
 						value={userParams.ratio}
 						label="RATIO"
 						format={formatRatio}
@@ -220,7 +228,7 @@
 						disabled={true}
 					/>
 					<Knob
-						steps={MAKEUP_STEPS}
+						steps={diffSteps.makeups}
 						value={userParams.makeup}
 						label="MAKE UP"
 						format={formatMakeup}
@@ -252,28 +260,28 @@
 			<div class="rounded border border-zinc-700 bg-zinc-950 p-6 shadow-xl">
 				<div class="flex flex-wrap items-end justify-between gap-8">
 					<Knob
-						steps={ATTACK_STEPS}
+						steps={diffSteps.attacks}
 						value={userParams.attack}
 						label="ATTACK"
 						format={formatAttack}
 						onChange={(v) => (userParams.attack = v)}
 					/>
 					<Knob
-						steps={RELEASE_STEPS}
+						steps={diffSteps.releases}
 						value={userParams.release}
 						label="RELEASE"
 						format={formatRelease}
 						onChange={(v) => (userParams.release = v)}
 					/>
 					<Knob
-						steps={RATIO_STEPS}
+						steps={diffSteps.ratios}
 						value={userParams.ratio}
 						label="RATIO"
 						format={formatRatio}
 						onChange={(v) => (userParams.ratio = v)}
 					/>
 					<Knob
-						steps={MAKEUP_STEPS}
+						steps={diffSteps.makeups}
 						value={userParams.makeup}
 						label="MAKE UP"
 						format={formatMakeup}

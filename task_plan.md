@@ -98,20 +98,23 @@ Panning ID — hear a panned signal, guess the stereo position.
 | Register on dashboard | ✅ | `src/routes/+page.svelte` |
 | Tests + quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
 
----
 
-## Phase 10 — EQ Matching ✅
+## Phase 7 — Compressorist ✅
 
-Dial in N peaking EQ bands to match the hidden target. Live EqCurve strip + knob-per-band UI. Dual audio chains (A=user EQ, B=target EQ).
+SSL 4000-style compression matcher — hear target compression (B), dial in matching params (A), submit.
 
 | Task | Status | Notes |
 |------|--------|-------|
-| `formatQ` helper | ✅ | `src/lib/format.ts` |
-| EQ Matching config (FREQ/GAIN/Q steps, difficulty band count) | ✅ | `src/lib/games/eq-matching/config.ts` |
-| Dual-chain audio (BiquadFilterNode, 3 slots per path) | ✅ | `src/lib/games/eq-matching/audio.ts` |
-| Game page (EqCurve strip + per-band knob groups + result table) | ✅ | `src/routes/games/eq-matching/+page.svelte` |
-| Enable in dashboard | ✅ | `available: true` in `src/routes/+page.svelte` |
+| `formatAttack/Release/Ratio/Makeup` helpers | ✅ | `src/lib/format.ts` |
+| Compressorist config + types | ✅ | `src/lib/games/compressorist/config.ts` |
+| Custom dual-chain audio class | ✅ | `src/lib/games/compressorist/audio.ts` — not AudioChain |
+| SVG knob component (pointer drag, wheel, keyboard) | ✅ | `src/lib/components/knob.svelte` |
+| LED GR meter (20 segments, rAF) | ✅ | `src/lib/components/gr-meter.svelte` |
+| Compressorist game page (SSL panel layout) | ✅ | `src/routes/games/compressorist/+page.svelte` |
+| Dashboard registration | ✅ | `src/routes/+page.svelte` |
+| `eslint.config.js` — `varsIgnorePattern: '^_'` | ✅ | allow `_x` unused vars |
 | Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
+
 
 ---
 
@@ -130,19 +133,109 @@ Dial in N peaking EQ bands to match the hidden target. Live EqCurve strip + knob
 
 ---
 
-## Phase 7 — Compressorist ✅
+## Phase 10 — EQ Matching ✅
 
-SSL 4000-style compression matcher — hear target compression (B), dial in matching params (A), submit.
+Dial in N peaking EQ bands to match the hidden target. Live EqCurve strip + knob-per-band UI. Dual audio chains (A=user EQ, B=target EQ).
 
 | Task | Status | Notes |
 |------|--------|-------|
-| `formatAttack/Release/Ratio/Makeup` helpers | ✅ | `src/lib/format.ts` |
-| Compressorist config + types | ✅ | `src/lib/games/compressorist/config.ts` |
-| Custom dual-chain audio class | ✅ | `src/lib/games/compressorist/audio.ts` — not AudioChain |
-| SVG knob component (pointer drag, wheel, keyboard) | ✅ | `src/lib/components/knob.svelte` |
-| LED GR meter (20 segments, rAF) | ✅ | `src/lib/components/gr-meter.svelte` |
-| Compressorist game page (SSL panel layout) | ✅ | `src/routes/games/compressorist/+page.svelte` |
-| Dashboard registration | ✅ | `src/routes/+page.svelte` |
-| `eslint.config.js` — `varsIgnorePattern: '^_'` | ✅ | allow `_x` unused vars |
+| `formatQ` helper | ✅ | `src/lib/format.ts` |
+| EQ Matching config (FREQ/GAIN/Q steps, difficulty band count) | ✅ | `src/lib/games/eq-matching/config.ts` |
+| Dual-chain audio (BiquadFilterNode, 3 slots per path) | ✅ | `src/lib/games/eq-matching/audio.ts` |
+| Game page (EqCurve strip + per-band knob groups + result table) | ✅ | `src/routes/games/eq-matching/+page.svelte` |
+| Enable in dashboard | ✅ | `available: true` in `src/routes/+page.svelte` |
 | Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
+
+---
+
+## Phase 11 — Difficulty Tuning ✅
+
+Make every game accessible to beginners. Easy = very forgiving, Hard = current baseline.
+
+### Rules applied across all EQ-using games
+- No EQ band below **75 Hz** or above **10 kHz** (inaudible on basic samples)
+- Easy mode: EQ gain changes ≥ **±6 dB** only (no subtle ±2/3 dB)
+- Difficulty curve: Easy starts very low, Medium is moderate, Hard is current/pro level
+
+### Per-game changes
+
+| Game | Easy | Medium | Hard |
+|------|------|--------|------|
+| **Freq ID** | errorMargin **1.5 oct** (from 1), freq range clamped 75–10k | 0.75 oct (from ⅓) | ⅓ oct (unchanged) |
+| **Panning** | errorMargin **0.35** (from 0.2) | 0.15 (from 0.1) | 0.05 (unchanged) |
+| **dB Change** | pool `[9, 12]`, delta `[6, 6]` (from `[6,8,10,12]` / `[4,4]`) | pool `[6, 8, 10, 12]`, delta `[3, 4]` | unchanged |
+| **EQ Matching** | gain pool `[±6, ±12]`, freqs 75–10k | gain pool `[±3, ±6, ±12]`, freqs 75–10k | freqs 75–10k only |
+| **EQ Guess** | freq range 75–10k (remove 63 Hz) | unchanged | unchanged |
+| **Compressorist** | ratio `[2, 10]`, attack `[1, 10, 100]`, release `[100, 400, 800]`, makeup `[0, 6, 12]` | ratio `[2, 4, 10, 20]`, attack `[1, 10, 30, 100]`, release all | unchanged |
+
+### Tasks
+
+| Task | Status | Notes |
+|------|--------|-------|
+| `freq-id/config.ts` — wider easy margin + 75–10k zone | ✅ | easy 1.5oct, medium 0.75oct |
+| `panning/config.ts` — wider easy margin | ✅ | easy 0.35, medium 0.15 |
+| `db-change/config.ts` — easy starts at 9–12 dB | ✅ | pool [9,12] delta [3,3] |
+| `eq-matching/config.ts` — per-diff gain pool + drop 63 Hz | ✅ | easy ±6/±12, medium ±3/±6/±12 |
+| `eq-guess/config.ts` — drop 63 Hz from FREQ_STEPS | ✅ | |
+| `compressorist/config.ts` — per-diff step arrays | ✅ | DIFFICULTY_STEPS, RATIO_STEPS updated |
+| `compressorist/+page.svelte` — pass difficulty steps to knobs | ✅ | diffSteps derived |
+| Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
+
+---
+
+## Phase 12 — Room Reader (Reverb RT60 ID) ⬜
+
+**Concept:** Hear a reverb-treated signal (B), compare to dry reference (A), identify the reverb decay time (RT60) on a log-scale time strip. Completely different perceptual domain from all existing games — trains the most universal daily judgment call in mixing: *"Is this reverb too long?"*
+
+### Why this game
+
+Reverb time is used constantly — choosing presets, evaluating room acoustics, setting plate/hall/room decay. Nothing in the current lineup trains this. RT60 can be reliably trained: the difference between a 0.3 s booth and a 2.5 s concert hall is perceivable even by beginners; fine discrimination (0.7 s vs 1.2 s) separates experts.
+
+### Audio design
+
+- `ReverbIdAudio` — standalone class (same pattern as `CompressoristAudio`, NOT `AudioChain`)
+- **A = dry** reference, **B = reverb applied** via `ConvolverNode`
+- IR generation (synchronous): `amp(t) = noise × exp(−6.91 × t / rt60)` — 60 dB decay at t = RT60
+- Pre-delay: N ms of silence at IR head before exponential starts
+- Signal routing: `source → [dryGain, convolver → wetGain] → masterGain → destination`
+- `setMode('A')`: dryGain=1, wetGain=0 | `setMode('B')`: dryGain=0, wetGain=1
+- `setRt60(rt60, preDelayMs)` replaces `convolver.buffer` each round
+
+### Config — RT60 options per difficulty
+
+| Difficulty | RT60 options (s) | Error margin (log₂) | Wet level |
+|------------|------------------|----------------------|-----------|
+| Easy       | `[0.3, 0.8, 2.5, 6.0]` | ±0.67 (~50%) | 70% wet |
+| Medium     | `[0.2, 0.5, 1.0, 2.0, 4.0, 7.0]` | ±0.35 (~25%) | 45% wet |
+| Hard       | `[0.2, 0.4, 0.7, 1.2, 2.0, 3.5, 5.5, 8.0]` | ±0.17 (~12%) | 25% wet |
+
+Pre-delay: easy=0 ms, medium=random 0–20 ms, hard=random 0–40 ms.
+Evaluation: `Math.abs(Math.log2(guess / target)) <= errorMarginLog2`
+
+### UI — RT60 Strip (new component)
+
+**`rt60-strip.svelte`** — log-scale horizontal strip, analogous to `freq-strip.svelte`:
+- Range: **0.1 s → 8 s** (log scale)
+- Tick marks + room labels: 0.2 s "Booth", 0.5 s "Studio", 1.2 s "Live Rm", 2.5 s "Hall", 6.0 s "Cathedral"
+- Mouse/touch: click anywhere to place guess
+- Hover: shows time value + shaded error-margin band
+- Result phase: green marker = target, fuchsia/red marker = user guess
+
+### Round flow
+
+1. **Idle** — difficulty/rounds selector + greyed-out RT60 strip → PLAY
+2. **Playing** — starts in B (reverb), A/B toggle for dry reference, strip active for guessing
+3. SUBMIT → `roundResult` — shows target vs guess, error as log₂ ratio
+4. NEXT or `gameOver`
+
+### Tasks
+
+| Task | Status | Notes |
+|------|--------|-------|
+| `src/lib/games/reverb-id/config.ts` — RT60 options, difficulty config, types | ⬜ | |
+| `src/lib/games/reverb-id/audio.ts` — `ReverbIdAudio` + `generateIR()` | ⬜ | A=dry, B=convolved |
+| `src/lib/components/rt60-strip.svelte` — log-scale time selector, room labels | ⬜ | new component |
+| `src/routes/games/reverb-id/+page.svelte` — game page | ⬜ | |
+| Dashboard registration | ⬜ | `src/routes/+page.svelte` |
+| Quality checks | ⬜ | `pnpm check` + `pnpm lint` |
 

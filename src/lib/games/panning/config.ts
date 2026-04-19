@@ -28,8 +28,8 @@ export const DEFAULT_OPTIONS: PanningOptions = {
 };
 
 export const DIFFICULTY_CONFIG: Record<PanDifficulty, { label: string; errorMarginPan: number }> = {
-	easy: { label: 'Easy', errorMarginPan: 0.2 },
-	medium: { label: 'Medium', errorMarginPan: 0.1 },
+	easy: { label: 'Easy', errorMarginPan: 0.35 },
+	medium: { label: 'Medium', errorMarginPan: 0.15 },
 	hard: { label: 'Hard', errorMarginPan: 0.05 }
 };
 

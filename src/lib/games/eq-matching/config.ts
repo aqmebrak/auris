@@ -28,18 +28,20 @@ export const DEFAULT_OPTIONS: EqMatchingOptions = {
 
 export const ROUND_COUNT_OPTIONS = [3, 5, 10] as const;
 
-export const FREQ_STEPS = [63, 125, 250, 500, 1000, 2000, 4000, 8000] as const;
-export const GAIN_STEPS = [-12, -6, -3, -2, 2, 3, 6, 12] as const; // no 0
+export const FREQ_STEPS = [125, 250, 500, 1000, 2000, 4000, 8000] as const; // 75–10k range only
+export const GAIN_STEPS = [-12, -6, -3, -2, 2, 3, 6, 12] as const; // full set, no 0
 export const Q_STEPS = [1, 1.5, 2, 3] as const;
 
 export const MAX_BANDS = 3;
 
-export const DIFFICULTY_CONFIG: Record<EqMatchingDifficulty, { label: string; bandCount: number }> =
-	{
-		easy: { label: 'Easy', bandCount: 1 },
-		medium: { label: 'Medium', bandCount: 2 },
-		hard: { label: 'Hard', bandCount: 3 }
-	};
+export const DIFFICULTY_CONFIG: Record<
+	EqMatchingDifficulty,
+	{ label: string; bandCount: number; gainPool: readonly number[] }
+> = {
+	easy: { label: 'Easy', bandCount: 1, gainPool: [-12, -6, 6, 12] },
+	medium: { label: 'Medium', bandCount: 2, gainPool: [-12, -6, -3, 3, 6, 12] },
+	hard: { label: 'Hard', bandCount: 3, gainPool: GAIN_STEPS }
+};
 
 // Starting user band positions spread across the frequency range
 const DEFAULT_FREQS: Record<number, number[]> = {
@@ -50,7 +52,7 @@ const DEFAULT_FREQS: Record<number, number[]> = {
 
 export function defaultBands(bandCount: number): EqBand[] {
 	const freqs = DEFAULT_FREQS[bandCount] ?? DEFAULT_FREQS[1];
-	return freqs.map((freq) => ({ freq, gainDb: GAIN_STEPS[4], q: Q_STEPS[1] })); // +2 dB, Q 1.5
+	return freqs.map((freq) => ({ freq, gainDb: 6, q: Q_STEPS[1] })); // +6 dB (in all difficulty pools), Q 1.5
 }
 
 export interface EqMatchingRound extends RoundBase<EqBand[]> {
@@ -62,12 +64,12 @@ function randomFrom<T>(arr: readonly T[]): T {
 	return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function generateTarget(bandCount: number): EqBand[] {
+function generateTarget(bandCount: number, gainPool: readonly number[]): EqBand[] {
 	const freqs = [...FREQ_STEPS].sort(() => Math.random() - 0.5).slice(0, bandCount);
 	freqs.sort((a, b) => a - b);
 	return freqs.map((freq) => ({
 		freq,
-		gainDb: randomFrom(GAIN_STEPS),
+		gainDb: randomFrom(gainPool),
 		q: randomFrom(Q_STEPS)
 	}));
 }
@@ -82,13 +84,13 @@ function bandsEqual(a: EqBand[], b: EqBand[]): boolean {
 }
 
 export function createEqMatchingConfig(opts: EqMatchingOptions = DEFAULT_OPTIONS) {
-	const { bandCount } = DIFFICULTY_CONFIG[opts.difficulty];
+	const { bandCount, gainPool } = DIFFICULTY_CONFIG[opts.difficulty];
 
 	return defineGame<EqMatchingRound, EqBand[]>({
 		id: 'eq-matching',
 		roundCount: opts.roundCount,
 		generateRound: () => ({
-			targetBands: generateTarget(bandCount),
+			targetBands: generateTarget(bandCount, gainPool),
 			sampleUrl: pickTrack(),
 			guess: null,
 			result: 'pending'
