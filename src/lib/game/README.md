@@ -12,6 +12,7 @@ src/lib/game/            ← you don't touch this
   config.ts              defineGame helper
 
 src/lib/stores/          ← you don't touch this
+  game-controller.svelte.ts  createGameController(…) — page lifecycle
   game-store.svelte.ts   createGameStore<TR, TG>(config)
   stats-store.svelte.ts  createStatsStore(gameId)
 
@@ -22,6 +23,8 @@ src/lib/audio/           ← you compose these
   samples.ts             SAMPLES + pickTrack()
 
 src/lib/components/game/ ← you render these
+  game-shell.svelte      header + phase switching, driven by a controller
+  option-group.svelte    idle-screen option selector
   game-header.svelte     score + round counter
   playback-controls.svelte   play/pause/AB/replay
   round-result.svelte    generic <TRound> with summary/visual snippets
@@ -71,67 +74,48 @@ export function createMyAudio() {
 
 ### 3. Page — `src/routes/games/<id>/+page.svelte`
 
+The controller owns audio lifecycle, A/B, play/pause/replay, stats recording,
+option → store rebuilds and keyboard shortcuts (Space, A/B, Enter). The shell
+owns header + phase switching. The page only supplies snippets.
+
 ```svelte
 <script lang="ts">
-  import { onDestroy } from 'svelte';
-  import GameHeader from '$lib/components/game/game-header.svelte';
-  import PlaybackControls from '$lib/components/game/playback-controls.svelte';
-  import RoundResult from '$lib/components/game/round-result.svelte';
-  import GameOver from '$lib/components/game/game-over.svelte';
-  import { createGameStore } from '$lib/stores/game-store.svelte.js';
-  import { createStatsStore } from '$lib/stores/stats-store.svelte.js';
-  import { myConfig } from '$lib/games/my-game/config.js';
+  import GameShell from '$lib/components/game/game-shell.svelte';
+  import OptionGroup from '$lib/components/game/option-group.svelte';
+  import { createGameController } from '$lib/stores/game-controller.svelte.js';
+  import { labelled, numbers } from '$lib/game/options.js';
+  import { createMyConfig, DEFAULT_OPTIONS, DIFFICULTY_CONFIG, ROUND_COUNT_OPTIONS,
+    type MyRound, type MyOptions } from '$lib/games/my-game/config.js';
   import { createMyAudio } from '$lib/games/my-game/audio.js';
 
-  const game = createGameStore(myConfig);
-  const stats = createStatsStore(myConfig.id);
   const audio = createMyAudio();
-
-  onDestroy(() => audio.chain.destroy());
-
-  $effect(() => {
-    if (game.phase === 'gameOver') stats.record(game.score);
+  const ctrl = createGameController<MyRound, MyGuess, MyOptions>({
+    gameId: 'my-game',
+    defaultOptions: DEFAULT_OPTIONS,
+    createConfig: createMyConfig,
+    audio: audio.chain,           // anything implementing Playable
+    prepareRound: (r) => audio.setParam(r.target),
+    sessionMeta: (rounds, o) => ({ difficulty: o.difficulty, rounds: [...] }),
+    // hasAB: false              // for games with no A/B comparison
   });
-
-  // wire start / submit / next / playAgain handlers to audio + game
 </script>
 
-<GameHeader
-  score={game.score}
-  roundIndex={game.roundIndex}
-  totalRounds={game.totalRounds}
-  showStats={game.phase !== 'gameOver'}
-/>
-
-{#if game.phase === 'idle'}
-  <!-- custom idle UI -->
-{:else if game.phase === 'playing'}
-  <!-- game-specific input + PlaybackControls -->
-{:else if game.phase === 'roundResult'}
-  <RoundResult
-    round={game.currentRound}
-    result={game.currentRound.result}
-    isLastRound={game.isLastRound}
-    onNext={() => game.next()}
-  >
-    {#snippet summary(round)} /* game-specific result text */ {/snippet}
-    {#snippet visual(round)} /* optional visual */ {/snippet}
-  </RoundResult>
-{:else if game.phase === 'gameOver'}
-  <GameOver
-    rounds={game.session.rounds}
-    score={game.score}
-    totalRounds={game.totalRounds}
-    formatRound={(round, i) => ({
-      label: `Round ${i + 1}`,
-      primary: /* target label */,
-      secondary: /* guess label or null */,
-      result: round.result
-    })}
-    onPlayAgain={() => game.reset()}
-  />
-{/if}
+<GameShell {ctrl} title="My Game" intro="…" legend="A = … · B = …" formatRound={...}>
+  {#snippet options()} <OptionGroup label="Difficulty" choices={labelled(DIFFICULTY_CONFIG)}
+    selected={ctrl.options.difficulty} onSelect={(v) => ctrl.setOption('difficulty', v)} /> {/snippet}
+  {#snippet idle()} <!-- disabled input --> {/snippet}
+  {#snippet playing(round)} <!-- input; call ctrl.submit(guess) --> {/snippet}
+  {#snippet summary(round)} <!-- result text --> {/snippet}
+  {#snippet resultVisual(round)} <!-- optional --> {/snippet}
+</GameShell>
 ```
+
+Rounds must carry `sampleUrl` (`SampleRound` in `types.ts`). Reference
+implementations: `frequency-id` (strip input), `db-change` (2AFC cards).
+
+**Graded scoring:** add `scoreGuess(round, guess) → 0..1` and `passThreshold`
+to the config. Rounds get a `score`; `ctrl.game.accuracy` is the 0–100 mean and
+is stored in stats history.
 
 ### 4. Dashboard — `src/routes/+page.svelte`
 

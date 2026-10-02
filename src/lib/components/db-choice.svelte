@@ -29,7 +29,7 @@
 				opt
 			)}"
 			onclick={() => {
-				if (!disabled || targetDb !== null) return;
+				if (disabled) return;
 				onSelect?.(opt);
 			}}
 			disabled={disabled && targetDb === null}

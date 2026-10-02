@@ -33,3 +33,8 @@ export function formatPan(pan: number): string {
 	const side = pan < 0 ? 'L' : 'R';
 	return `${side}${Math.round(Math.abs(pan) * 100)}`;
 }
+
+/** Format an octave distance as "±1.5 oct". */
+export function formatOctaves(oct: number): string {
+	return `±${+oct.toFixed(2)} oct`;
+}

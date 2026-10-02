@@ -89,11 +89,12 @@ Fixes P2, P3, P8, P9 structurally so per-game rework is small.
 | Stats store: record `accuracy` (0–100) alongside `score`; read old entries unchanged | ✅ | API only; pages wired during port |
 | `src/lib/audio/loudness.ts`: `rmsDb` + `compensationDb` pure math | ✅ | |
 | Loudness measurement via `OfflineAudioContext` render of A and B → apply compensation gain on effected path | ⬜ | wire per game in Phase 15 |
-| `createGameController()` (`.ts`): audio load/play/pause/replay/A-B, stop on submit, preload next, record stats once on gameOver, rebuild on option change | ⬜ | removes ~100 lines per page |
-| `<GameShell>`: idle screen with generic option groups (difficulty / mode / rounds from config), header, phase snippets | ⬜ | |
-| Keyboard: `Space` play/pause, `A`/`B` or `Tab` toggle, `Enter` submit/next | ⬜ | |
+| `createGameController()` (`.svelte.ts`): audio load/play/pause/replay/A-B, stop on submit, record stats once on gameOver, rebuild on option change | ✅ | preload-next waits on Phase 13 |
+| `<GameShell>` + `<OptionGroup>`: header, phase snippets, option selectors | ✅ | |
+| Keyboard: `Space` play/pause, `A`/`B` toggle, `Enter` start/next (ignored while a button has focus) | ✅ | `src/lib/game/keys.ts` |
 | Unit tests per game config: generate in range, evaluate/score edge cases | ✅ | `src/lib/games/configs.test.ts`, `eq-guess/config.test.ts` |
-| Port Freq ID first as reference, then other 5 pages; each page ≤150 lines | ⬜ | |
+| Port Freq ID, Panning, dB Change, EQ Guess (all ≤125 lines) | ✅ | E2E full-session test each |
+| Port EQ Matching + Compressorist | ⬜ | done as part of their Phase 15 rework, not twice |
 
 ---
 

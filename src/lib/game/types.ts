@@ -15,6 +15,11 @@ export interface RoundBase<TGuess> {
 	score?: number;
 }
 
+/** A round backed by a sample; what the game controller needs to play it. */
+export interface SampleRound<TGuess> extends RoundBase<TGuess> {
+	sampleUrl: string;
+}
+
 export interface GameConfig<TRound extends RoundBase<TGuess>, TGuess> {
 	/** Stable identifier used as the localStorage namespace. */
 	id: string;

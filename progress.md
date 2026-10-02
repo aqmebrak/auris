@@ -4,6 +4,20 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-02 — Engine v2 part 2: controller + shell
+
+| Item | Files touched |
+|------|--------------|
+| `createGameController`, `Playable`, key mapping | `src/lib/stores/game-controller.svelte.ts`, `src/lib/audio/playable.ts`, `src/lib/game/keys.ts` |
+| `<GameShell>`, `<OptionGroup>`, option builders | `src/lib/components/game/*`, `src/lib/game/options.ts` |
+| Ported Freq ID, Panning, dB Change, EQ Guess (394→~110 lines avg) | `src/routes/games/*/+page.svelte` |
+| **Bug fixed:** Level Change cards ignored clicks (inverted guard) | `src/lib/components/db-choice.svelte` |
+| E2E: full 3-round session per ported game | `src/routes/games/**/*.e2e.ts` |
+
+**Next:** Phase 13 sample tooling, or Phase 15 reworks (EQ Matching, Dynamics) on the shell.
+
+---
+
 ## 2026-10-02 — Engine v2 part 1 (Phase 14) + EQ Guess fix
 
 | Item | Files touched |
