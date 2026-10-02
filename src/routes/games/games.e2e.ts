@@ -19,6 +19,12 @@ const GAMES = [
 		answer: (page: Page) => page.getByRole('button', { name: /dB/ }).first().click()
 	},
 	{
+		name: 'eq-matching',
+		path: '/games/eq-matching',
+		hasAB: true,
+		answer: (page: Page) => page.getByRole('button', { name: 'SUBMIT' }).click()
+	},
+	{
 		name: 'eq-guess',
 		path: '/games/eq-guess',
 		hasAB: true,

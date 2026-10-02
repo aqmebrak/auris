@@ -30,6 +30,8 @@
 		legend?: string;
 		summary: Snippet<[TR]>;
 		resultVisual?: Snippet<[TR]>;
+		/** Show per-round match % and session accuracy (games with `scoreGuess`). */
+		graded?: boolean;
 		formatRound: (round: TR, index: number) => Row;
 	}
 
@@ -43,6 +45,7 @@
 		legend,
 		summary,
 		resultVisual,
+		graded = false,
 		formatRound
 	}: Props = $props();
 
@@ -104,6 +107,7 @@
 		<RoundResult
 			round={game.currentRound}
 			result={game.currentRound.result}
+			score={graded ? game.currentRound.score : undefined}
 			isLastRound={game.isLastRound}
 			onNext={() => ctrl.next()}
 			{summary}
@@ -114,6 +118,7 @@
 			rounds={game.session.rounds}
 			score={game.score}
 			totalRounds={game.totalRounds}
+			accuracy={graded ? game.accuracy : undefined}
 			{formatRound}
 			onPlayAgain={() => ctrl.playAgain()}
 		/>

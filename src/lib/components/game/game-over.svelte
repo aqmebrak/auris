@@ -13,18 +13,25 @@
 		rounds: TRound[];
 		score: number;
 		totalRounds: number;
+		/** 0..100 mean closeness; shown for graded games. */
+		accuracy?: number;
 		/** Maps a round to display strings. Keeps the layout consistent across games. */
 		formatRound: (round: TRound, index: number) => FormattedRow;
 		onPlayAgain: () => void;
 	}
 
-	let { rounds, score, totalRounds, formatRound, onPlayAgain }: Props = $props();
+	let { rounds, score, totalRounds, accuracy, formatRound, onPlayAgain }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-8">
 	<div class="text-center">
 		<h2 class="font-mono text-3xl font-bold tracking-widest uppercase">GAME OVER</h2>
 		<p class="mt-4 font-mono text-6xl font-bold text-primary">{score} / {totalRounds}</p>
+		{#if accuracy !== undefined}
+			<p class="mt-2 font-mono text-sm tracking-widest text-muted-foreground uppercase">
+				ACCURACY <span class="text-foreground">{accuracy}%</span>
+			</p>
+		{/if}
 	</div>
 
 	<ul class="flex flex-col gap-2" role="list">

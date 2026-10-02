@@ -1,13 +1,15 @@
 <script lang="ts">
-	import type { EqBand } from '$lib/games/eq-guess/config.js';
+	import { responseDb, type PeakingBand as EqBand } from '$lib/audio/eq-math.js';
 
 	interface Props {
 		bands: EqBand[];
+		/** Second curve drawn dashed in green (e.g. the target next to the player's). */
+		compare?: EqBand[];
 		width?: number;
 		height?: number;
 	}
 
-	let { bands, width = 400, height = 80 }: Props = $props();
+	let { bands, compare, width = 400, height = 80 }: Props = $props();
 
 	const FREQ_MIN = 20;
 	const FREQ_MAX = 20000;
@@ -27,17 +29,6 @@
 		20000: '20k'
 	};
 
-	// Gaussian bell curve approximation of a peaking EQ band
-	function peakingGainAt(f: number, band: EqBand): number {
-		const logRatio = Math.log2(f / band.freq);
-		const sigma = 1.0 / (Math.SQRT2 * band.q);
-		return band.gainDb * Math.exp(-0.5 * (logRatio / sigma) ** 2);
-	}
-
-	function totalGainDb(f: number): number {
-		return bands.reduce((sum, b) => sum + peakingGainAt(f, b), 0);
-	}
-
 	function freqToX(f: number): number {
 		return (Math.log(f / FREQ_MIN) / Math.log(FREQ_MAX / FREQ_MIN)) * width;
 	}
@@ -46,16 +37,19 @@
 		return height / 2 - (db / DB_RANGE) * (height / 2);
 	}
 
-	const curvePath = $derived(() => {
+	function pathFor(curve: EqBand[]): string {
 		const pts = Array.from({ length: POINTS }, (_, i) => {
 			const t = i / (POINTS - 1);
 			const f = FREQ_MIN * (FREQ_MAX / FREQ_MIN) ** t;
 			const x = freqToX(f).toFixed(1);
-			const y = Math.max(0, Math.min(height, dbToY(totalGainDb(f)))).toFixed(1);
+			const y = Math.max(0, Math.min(height, dbToY(responseDb(f, curve)))).toFixed(1);
 			return `${x},${y}`;
 		});
 		return 'M ' + pts.join(' L ');
-	});
+	}
+
+	const curvePath = $derived(pathFor(bands));
+	const comparePath = $derived(compare ? pathFor(compare) : null);
 </script>
 
 <svg viewBox="0 0 {width} {height}" class="w-full" style="height: {height}px;" aria-hidden="true">
@@ -84,8 +78,12 @@
 		>
 	{/each}
 
+	{#if comparePath}
+		<path d={comparePath} fill="none" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="5 3" />
+	{/if}
+
 	<!-- EQ response curve -->
-	<path d={curvePath()} fill="none" stroke="oklch(0.7 0.28 340)" stroke-width="1.5" />
+	<path d={curvePath} fill="none" stroke="oklch(0.7 0.28 340)" stroke-width="1.5" />
 
 	<!-- Band peak markers -->
 	{#each bands as band (band.freq)}

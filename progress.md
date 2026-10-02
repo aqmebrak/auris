@@ -4,6 +4,21 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-02 — Phase 15: EQ Matching v2
+
+| Item | Files touched |
+|------|--------------|
+| Exact peaking-EQ response + `matchScore` + `logGrid` | `src/lib/audio/eq-math.ts` |
+| Average spectrum (FFT) + `eqLoudnessDeltaDb` | `src/lib/audio/spectrum.ts` |
+| EQ Matching: graded scoring, Q fixed on easy/medium, per-path loudness compensation | `src/lib/games/eq-matching/{config,audio}.ts` |
+| Page rebuilt on shell; `EqBandKnobs`, `EqMatchResult`; `EqCurve` uses exact math + overlay | `src/routes/games/eq-matching/`, `src/lib/components/` |
+| Graded display (`% match`, session accuracy) in shared result/game-over | `src/lib/components/game/*` |
+| 58 unit tests, 6 E2E | |
+
+**Next:** Phase 15 Dynamics (replaces Compressorist), Freq ID/Panning reworks; or Phase 13 sample tooling.
+
+---
+
 ## 2026-10-02 — Engine v2 part 2: controller + shell
 
 | Item | Files touched |

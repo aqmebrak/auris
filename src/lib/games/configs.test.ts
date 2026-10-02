@@ -6,7 +6,12 @@ import {
 } from './freq-id/config.js';
 import { createPanningConfig, ZONE_CONFIG as PAN_ZONE } from './panning/config.js';
 import { createDbChangeConfig, DIFFICULTY_CONFIG as DB_DIFF } from './db-change/config.js';
-import { createEqMatchingConfig, DIFFICULTY_CONFIG as EQM_DIFF } from './eq-matching/config.js';
+import {
+	createEqMatchingConfig,
+	DIFFICULTY_CONFIG as EQM_DIFF,
+	Q_FIXED,
+	Q_STEPS
+} from './eq-matching/config.js';
 import { createCompressoristConfig, DIFFICULTY_STEPS } from './compressorist/config.js';
 
 const DIFFS = ['easy', 'medium', 'hard'] as const;
@@ -79,6 +84,40 @@ describe('eq-matching', () => {
 				expect(config.evaluateGuess(r, r.targetBands)).toBe(true);
 			}
 		}
+	});
+});
+
+describe('eq-matching scoring', () => {
+	it('Q is fixed unless the difficulty exposes it', () => {
+		for (const difficulty of DIFFS) {
+			const config = createEqMatchingConfig({ difficulty, roundCount: 5 });
+			for (let i = 0; i < RUNS; i++) {
+				for (const band of config.generateRound().targetBands) {
+					if (EQM_DIFF[difficulty].qEditable) expect(Q_STEPS).toContain(band.q);
+					else expect(band.q).toBe(Q_FIXED);
+				}
+			}
+		}
+	});
+
+	it('grades: exact = 1, nothing applied = 0, passes only at the threshold', () => {
+		const config = createEqMatchingConfig({ difficulty: 'easy', roundCount: 5 });
+		for (let i = 0; i < RUNS; i++) {
+			const r = config.generateRound();
+			expect(config.scoreGuess!(r, r.targetBands)).toBe(1);
+			expect(config.scoreGuess!(r, [])).toBe(0);
+			expect(config.evaluateGuess(r, r.targetBands)).toBe(true);
+			expect(config.evaluateGuess(r, [])).toBe(false);
+		}
+	});
+
+	it('right band, wrong gain earns partial credit', () => {
+		const config = createEqMatchingConfig({ difficulty: 'easy', roundCount: 5 });
+		const r = config.generateRound();
+		const half = r.targetBands.map((b) => ({ ...b, gainDb: b.gainDb / 2 }));
+		const score = config.scoreGuess!(r, half);
+		expect(score).toBeGreaterThan(0.5);
+		expect(score).toBeLessThan(1);
 	});
 });
 

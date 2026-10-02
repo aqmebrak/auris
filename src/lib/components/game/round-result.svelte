@@ -6,6 +6,8 @@
 	interface Props {
 		round: TRound;
 		result: RoundResult;
+		/** 0..1 closeness; shown as a percentage for graded games. */
+		score?: number;
 		isLastRound: boolean;
 		onNext: () => void;
 		/** Game-specific contents rendered inside the result card. */
@@ -14,7 +16,7 @@
 		visual?: Snippet<[TRound]>;
 	}
 
-	let { round, result, isLastRound, onNext, summary, visual }: Props = $props();
+	let { round, result, score, isLastRound, onNext, summary, visual }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-8">
@@ -25,6 +27,11 @@
 	>
 		<p class="text-xl font-semibold tracking-wide">
 			{result === 'correct' ? 'CORRECT ✓' : 'WRONG ✗'}
+			{#if score !== undefined}
+				<span class="ml-3 font-mono text-base text-muted-foreground"
+					>{Math.round(score * 100)}% match</span
+				>
+			{/if}
 		</p>
 		<div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
 			{@render summary(round)}
