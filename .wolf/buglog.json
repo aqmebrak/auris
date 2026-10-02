@@ -177,6 +177,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-02T19:30:00Z"
+    },
+    {
+      "id": "bug-012",
+      "timestamp": "2026-10-02T22:10:00Z",
+      "error_message": "Level Change (db-change): clicking a dB card does nothing; round never submits",
+      "file": "src/lib/components/db-choice.svelte",
+      "root_cause": "onclick guard inverted: `if (!disabled || targetDb !== null) return;` returned whenever the card was enabled",
+      "fix": "`if (disabled) return;` \u2014 found by new games.e2e.ts",
+      "tags": [
+        "db-change",
+        "inverted-condition",
+        "e2e"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-02T22:10:00Z"
     }
   ]
 }

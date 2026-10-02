@@ -36,6 +36,9 @@
 - **Graded scoring API**: `GameConfig.scoreGuess` (0..1) + `passThreshold`; `evaluateGuess` still required but ignored when `scoreGuess` set. `RoundBase.score` set on submit.
 - **Vitest needs `$lib` alias** (in `vitest.config.ts`) to import game configs.
 
+- **Game pages = controller + shell.** New game: `createGameController({gameId, createConfig, audio, prepareRound, sessionMeta})` + `<GameShell>` snippets (options/idle/playing/summary/resultVisual). Option selectors via `<OptionGroup>` + `$lib/game/options.js` builders. Game rounds need `sampleUrl` (`SampleRound`).
+- **E2E shortcut gotcha**: Enter/Space/A/B shortcuts are ignored while a button has focus (blur first in tests).
+
 ## Do-Not-Repeat
 
 - **[2026-10-02] Suggested diversifying sample genres** — wrong: app targets rock/metal on purpose.
