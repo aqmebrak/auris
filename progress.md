@@ -4,6 +4,20 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-02 — Engine v2 part 1 (Phase 14) + EQ Guess fix
+
+| Item | Files touched |
+|------|--------------|
+| Graded scoring: `scoreGuess`/`passThreshold`, `RoundBase.score`, `accuracySession`, store `accuracy` | `src/lib/game/*`, `src/lib/stores/*` |
+| Stats entries carry optional `accuracy` | `src/lib/stores/stats-store.svelte.ts` |
+| Loudness math (`rmsDb`, `compensationDb`) | `src/lib/audio/loudness.ts` |
+| EQ Guess sign tell removed, per-difficulty distractors | `src/lib/games/eq-guess/config.ts` |
+| Unit tests: 34 total (session, loudness, all game configs); vitest `$lib` alias | `*.test.ts`, `vitest.config.ts` |
+
+**Next:** `createGameController` + `<GameShell>`, port Freq ID as reference.
+
+---
+
 ## 2026-10-02 — Assessment + roadmap (Phases 13–17)
 
 | Item | Files touched |

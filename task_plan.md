@@ -85,13 +85,14 @@ Fixes P2, P3, P8, P9 structurally so per-game rework is small.
 
 | Task | Status | Notes |
 | ---- | ------ | ----- |
-| Graded scoring: optional `scoreGuess(round, guess) → 0..1` + `passThreshold` in `GameConfig`; `result` derived from threshold; session score = mean % | ⬜ | binary games keep `evaluateGuess` (score 0/1) |
-| Stats store: record `accuracy` (0–100) alongside `score`; read old entries unchanged | ⬜ | no localStorage migration needed |
-| `src/lib/audio/loudness.ts`: `measureRms(chain)` via `OfflineAudioContext` (render ~5 s of A and B) → compensation gain on effected path | ⬜ | fixes A/B loudness bias |
+| Graded scoring: optional `scoreGuess(round, guess) → 0..1` + `passThreshold` in `GameConfig`; `result` derived from threshold; `accuracySession` = mean % | ✅ | binary games keep `evaluateGuess` (score 0/1) |
+| Stats store: record `accuracy` (0–100) alongside `score`; read old entries unchanged | ✅ | API only; pages wired during port |
+| `src/lib/audio/loudness.ts`: `rmsDb` + `compensationDb` pure math | ✅ | |
+| Loudness measurement via `OfflineAudioContext` render of A and B → apply compensation gain on effected path | ⬜ | wire per game in Phase 15 |
 | `createGameController()` (`.ts`): audio load/play/pause/replay/A-B, stop on submit, preload next, record stats once on gameOver, rebuild on option change | ⬜ | removes ~100 lines per page |
 | `<GameShell>`: idle screen with generic option groups (difficulty / mode / rounds from config), header, phase snippets | ⬜ | |
 | Keyboard: `Space` play/pause, `A`/`B` or `Tab` toggle, `Enter` submit/next | ⬜ | |
-| Unit tests per game config: generate in range, evaluate/score edge cases | ⬜ | |
+| Unit tests per game config: generate in range, evaluate/score edge cases | ✅ | `src/lib/games/configs.test.ts`, `eq-guess/config.test.ts` |
 | Port Freq ID first as reference, then other 5 pages; each page ≤150 lines | ⬜ | |
 
 ---
@@ -100,7 +101,7 @@ Fixes P2, P3, P8, P9 structurally so per-game rework is small.
 
 | Game | Change | Fixes |
 | ---- | ------ | ----- |
-| **EQ Guess** | Random sign per band. Distractor differs by difficulty: Easy = every band shifted 2 steps; Medium = 1 band shifted 1 step; Hard = 1 band sign- or freq-changed. Options: Easy 2, Medium 3, Hard 4. Test: no option is identifiable from curve shape alone. | P1 |
+| **EQ Guess** ✅ | Random sign per band; distractor keeps gain pattern. Easy = all bands shifted 2 steps; Medium = 1 band moved to nearest free step; Hard = 1 band flips boost/cut. Still 2 options (3/4 options deferred). Tested: no sign tell. | P1 |
 | **EQ Matching** | Score = RMS dB difference of magnitude responses on 1/12-oct grid 75 Hz–10 kHz → 0–100. Pass: Easy ≥70, Medium ≥80, Hard ≥90. Easy: freq+gain only (Q fixed, shown). Hard adds Q. Result screen shows score + overlaid curves. Loudness-compensated. | P2, P3 |
 | **Freq ID** | Easy: boost-only +12 dB, wide Q (1.4), pick one of 7 octave bands (buttons). Medium: ±9–12 dB, continuous, ±½ oct. Hard: ±6–12 incl. cuts, Q 2.5–4, ±⅓ oct. Graded score by octave error. Option: pink-noise source. | P6 |
 | **Panning** | Mono stems only (`pickSample({ channels: 1 })`), equal-power pan. Easy: 5 snap positions (L, L½, C, R½, R). Medium ±0.15, Hard ±0.08. Graded score by distance. | P4 |

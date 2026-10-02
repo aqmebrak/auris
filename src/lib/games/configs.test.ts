@@ -1,0 +1,100 @@
+import { describe, it, expect } from 'vitest';
+import {
+	createFreqIdConfig,
+	ZONE_CONFIG,
+	DIFFICULTY_CONFIG as FREQ_DIFF
+} from './freq-id/config.js';
+import { createPanningConfig, ZONE_CONFIG as PAN_ZONE } from './panning/config.js';
+import { createDbChangeConfig, DIFFICULTY_CONFIG as DB_DIFF } from './db-change/config.js';
+import { createEqMatchingConfig, DIFFICULTY_CONFIG as EQM_DIFF } from './eq-matching/config.js';
+import { createCompressoristConfig, DIFFICULTY_STEPS } from './compressorist/config.js';
+
+const DIFFS = ['easy', 'medium', 'hard'] as const;
+const RUNS = 100;
+
+describe('freq-id', () => {
+	it('targets stay inside the zone, correct inside margin, wrong outside', () => {
+		for (const difficulty of DIFFS) {
+			for (const zone of Object.keys(ZONE_CONFIG) as (keyof typeof ZONE_CONFIG)[]) {
+				const config = createFreqIdConfig({ difficulty, zone, roundCount: 5 });
+				const { min, max } = ZONE_CONFIG[zone];
+				const margin = FREQ_DIFF[difficulty].errorMarginOctaves;
+				for (let i = 0; i < RUNS; i++) {
+					const r = config.generateRound();
+					expect(r.targetFreq).toBeGreaterThanOrEqual(min);
+					expect(r.targetFreq).toBeLessThanOrEqual(max);
+					expect(config.evaluateGuess(r, r.targetFreq)).toBe(true);
+					expect(config.evaluateGuess(r, r.targetFreq * 2 ** (margin * 0.9))).toBe(true);
+					expect(config.evaluateGuess(r, r.targetFreq * 2 ** (margin * 1.1))).toBe(false);
+				}
+			}
+		}
+	});
+});
+
+describe('panning', () => {
+	it('targets stay in zone, off-center, exact guess correct', () => {
+		for (const difficulty of DIFFS) {
+			for (const zone of Object.keys(PAN_ZONE) as (keyof typeof PAN_ZONE)[]) {
+				const config = createPanningConfig({ difficulty, zone, roundCount: 5 });
+				const { min, max } = PAN_ZONE[zone];
+				for (let i = 0; i < RUNS; i++) {
+					const r = config.generateRound();
+					expect(r.targetPan).toBeGreaterThanOrEqual(min);
+					expect(r.targetPan).toBeLessThanOrEqual(max);
+					expect(Math.abs(r.targetPan)).toBeGreaterThanOrEqual(0.1);
+					expect(config.evaluateGuess(r, r.targetPan)).toBe(true);
+				}
+			}
+		}
+	});
+});
+
+describe('db-change', () => {
+	it('options contain the target and a distinct distractor from the pool', () => {
+		for (const difficulty of DIFFS) {
+			const config = createDbChangeConfig({ difficulty, roundCount: 5 });
+			const pool = DB_DIFF[difficulty].pool;
+			for (let i = 0; i < RUNS; i++) {
+				const r = config.generateRound();
+				expect(r.options).toContain(r.targetDb);
+				expect(r.options[0]).not.toBe(r.options[1]);
+				expect(r.options.every((o) => pool.includes(Math.abs(o)))).toBe(true);
+				expect(config.evaluateGuess(r, r.targetDb)).toBe(true);
+			}
+		}
+	});
+});
+
+describe('eq-matching', () => {
+	it('targets have bandCount distinct freqs, gains from the pool, exact match passes', () => {
+		for (const difficulty of DIFFS) {
+			const config = createEqMatchingConfig({ difficulty, roundCount: 5 });
+			const { bandCount, gainPool } = EQM_DIFF[difficulty];
+			for (let i = 0; i < RUNS; i++) {
+				const r = config.generateRound();
+				expect(r.targetBands).toHaveLength(bandCount);
+				expect(new Set(r.targetBands.map((b) => b.freq)).size).toBe(bandCount);
+				expect(r.targetBands.every((b) => gainPool.includes(b.gainDb))).toBe(true);
+				expect(config.evaluateGuess(r, r.targetBands)).toBe(true);
+			}
+		}
+	});
+});
+
+describe('compressorist', () => {
+	it('targets use only the difficulty steps and exact match passes', () => {
+		for (const difficulty of DIFFS) {
+			const config = createCompressoristConfig({ difficulty, roundCount: 5 });
+			const steps = DIFFICULTY_STEPS[difficulty];
+			for (let i = 0; i < RUNS; i++) {
+				const r = config.generateRound();
+				expect(steps.attacks).toContain(r.targetParams.attack);
+				expect(steps.releases).toContain(r.targetParams.release);
+				expect(steps.ratios).toContain(r.targetParams.ratio);
+				expect(steps.makeups).toContain(r.targetParams.makeup);
+				expect(config.evaluateGuess(r, r.targetParams)).toBe(true);
+			}
+		}
+	});
+});

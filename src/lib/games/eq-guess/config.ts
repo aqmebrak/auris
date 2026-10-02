@@ -54,27 +54,54 @@ function randomFrom<T>(arr: readonly T[]): T {
 	return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function generateTarget(bandCount: number, gainPool: number[]): EqConfig {
-	// Pick bandCount distinct frequencies, alternating boost/cut
+export function generateTarget(bandCount: number, gainPool: number[]): EqConfig {
+	// Independent random sign per band so boost/cut pattern carries no information
 	const freqs = [...FREQ_STEPS].sort(() => Math.random() - 0.5).slice(0, bandCount);
 	freqs.sort((a, b) => a - b); // ascending order
-	return freqs.map((freq, i) => ({
+	return freqs.map((freq) => ({
 		freq,
-		gainDb: (i % 2 === 0 ? 1 : -1) * randomFrom(gainPool as readonly number[]),
+		gainDb: (Math.random() < 0.5 ? 1 : -1) * randomFrom(gainPool as readonly number[]),
 		q: Q_DEFAULT
 	}));
 }
 
-function generateDistractor(target: EqConfig): EqConfig {
-	// Shift each band's freq by 1 step in FREQ_STEPS, and negate or shift the gain
-	return target.map((band) => {
-		const idx = FREQ_STEPS.indexOf(band.freq as (typeof FREQ_STEPS)[number]);
-		// Move freq up by 1 step, wrap around within array
-		const newIdx = (idx + 1) % FREQ_STEPS.length;
-		const newFreq = FREQ_STEPS[newIdx];
-		// Negate the gain (boost↔cut)
-		return { freq: newFreq, gainDb: -band.gainDb, q: Q_DEFAULT };
-	});
+/**
+ * Builds the wrong option. Gains (and so the boost/cut pattern) are preserved
+ * wherever frequencies move, so the distractor can't be told apart by shape alone.
+ * - easy: every band moves 2 steps up (wrapping)
+ * - medium: one band moves to the nearest free step
+ * - hard: one band keeps its frequency but flips boost/cut
+ */
+export function generateDistractor(target: EqConfig, difficulty: EqGuessDifficulty): EqConfig {
+	const stepOf = (freq: number) => FREQ_STEPS.indexOf(freq as (typeof FREQ_STEPS)[number]);
+	const pick = Math.floor(Math.random() * target.length);
+
+	let result: EqConfig;
+	if (difficulty === 'easy') {
+		result = target.map((band) => ({
+			...band,
+			freq: FREQ_STEPS[(stepOf(band.freq) + 2) % FREQ_STEPS.length]
+		}));
+	} else if (difficulty === 'medium') {
+		const used = new Set(target.map((b) => b.freq));
+		const from = stepOf(target[pick].freq);
+		let moved: number = target[pick].freq;
+		for (let d = 1; d < FREQ_STEPS.length; d++) {
+			const candidate = [FREQ_STEPS[from + d], FREQ_STEPS[from - d]].find(
+				(f) => f !== undefined && !used.has(f)
+			);
+			if (candidate !== undefined) {
+				moved = candidate;
+				break;
+			}
+		}
+		result = target.map((band, i) => (i === pick ? { ...band, freq: moved } : { ...band }));
+	} else {
+		result = target.map((band, i) =>
+			i === pick ? { ...band, gainDb: -band.gainDb } : { ...band }
+		);
+	}
+	return result.sort((a, b) => a.freq - b.freq);
 }
 
 export function eqConfigsEqual(a: EqConfig, b: EqConfig): boolean {
@@ -85,13 +112,14 @@ export function eqConfigsEqual(a: EqConfig, b: EqConfig): boolean {
 
 export function createEqGuessConfig(opts: EqGuessOptions = DEFAULT_OPTIONS) {
 	const { bandCount, gainPool } = DIFFICULTY_CONFIG[opts.difficulty];
+	const { difficulty } = opts;
 
 	return defineGame<EqGuessRound, EqConfig>({
 		id: 'eq-guess',
 		roundCount: opts.roundCount,
 		generateRound: () => {
 			const targetEq = generateTarget(bandCount, gainPool);
-			const distractor = generateDistractor(targetEq);
+			const distractor = generateDistractor(targetEq, difficulty);
 			const options: [EqConfig, EqConfig] =
 				Math.random() < 0.5 ? [targetEq, distractor] : [distractor, targetEq];
 			return { targetEq, options, sampleUrl: pickTrack(), guess: null, result: 'pending' };

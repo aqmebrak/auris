@@ -6,6 +6,8 @@
 export interface StatsHistoryEntry {
 	timestamp: string;
 	score: number;
+	/** Mean closeness 0..100. Absent in entries recorded before graded scoring. */
+	accuracy?: number;
 	/** Game-specific extra data (e.g. per-round results for heatmaps). */
 	meta?: Record<string, unknown>;
 }
@@ -85,13 +87,21 @@ export function createStatsStore(gameId: string) {
 			stats = load(gameId);
 		},
 		/** Appends a completed session and updates aggregates. */
-		record(score: number, meta?: Record<string, unknown>): void {
+		record(score: number, meta?: Record<string, unknown>, accuracy?: number): void {
 			const timestamp = nowIso();
 			stats = {
 				gamesPlayed: stats.gamesPlayed + 1,
 				bestScore: Math.max(stats.bestScore, score),
 				lastPlayed: timestamp,
-				history: [...stats.history, { timestamp, score, ...(meta ? { meta } : {}) }]
+				history: [
+					...stats.history,
+					{
+						timestamp,
+						score,
+						...(accuracy !== undefined ? { accuracy } : {}),
+						...(meta ? { meta } : {})
+					}
+				]
 			};
 			persist(gameId, stats);
 		},

@@ -5,6 +5,7 @@
  */
 
 import {
+	accuracySession,
 	createSession,
 	nextRound as nextRoundPure,
 	scoreSession,
@@ -34,6 +35,9 @@ export function createGameStore<TR extends RoundBase<TG>, TG>(config: GameConfig
 		},
 		get score(): number {
 			return scoreSession(session);
+		},
+		get accuracy(): number {
+			return accuracySession(session);
 		},
 		get isLastRound(): boolean {
 			return session.currentRound >= config.roundCount - 1;
