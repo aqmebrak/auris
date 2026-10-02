@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-19T08:04:20.596Z
-> Files: 179 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-02T17:27:47.016Z
+> Files: 180 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../.claude/
 
@@ -15,6 +15,7 @@
 
 - `feedback_tooling.md` (~338 tok)
 - `MEMORY.md` (~92 tok)
+- `project_roadmap_ownership.md` (~227 tok)
 
 ## ./
 
@@ -25,7 +26,6 @@
 - `.prettierrc` — Prettier configuration (~82 tok)
 - `CLAUDE.md` — OpenWolf (~1028 tok)
 - `components.json` (~129 tok)
-- `drizzle.config.ts` — Drizzle ORM configuration (~87 tok)
 - `eslint.config.js` — Declares gitignorePath (~420 tok)
 - `findings.md` — Auris — Findings (~656 tok)
 - `package.json` — Node.js package manifest (~534 tok)
@@ -36,7 +36,7 @@
 - `progress.md` — Auris — Progress Log (~1119 tok)
 - `README.md` — Project documentation (~284 tok)
 - `svelte.config.js` — SvelteKit configuration (~145 tok)
-- `task_plan.md` — Auris — Task Plan (~2019 tok)
+- `task_plan.md` — Auris — Task Plan (~2691 tok)
 - `tsconfig.json` — TypeScript configuration (~198 tok)
 - `vite.config.ts` — Vite build configuration (~58 tok)
 - `vitest.config.ts` — Vitest test configuration (~44 tok)
@@ -317,8 +317,6 @@
 - `audio.ts` — Panning ID audio — assembles an `AudioChain` with a single stereo panner. (~224 tok)
 - `config.ts` — Panning ID game — config + round type. (~613 tok)
 
-## src/lib/server/db/
-
 - `index.ts` — Exports db (~96 tok)
 - `schema.ts` — Exports task (~66 tok)
 
@@ -331,7 +329,7 @@
 
 - `+layout.svelte` — Svelte: +layout, TS, 3 stores (~75 tok)
 - `+page.svelte` — Svelte: +page (~473 tok)
-- `dashboard.e2e.ts` — Declares grid (~280 tok)
+- `dashboard.e2e.ts` — Declares cards (~240 tok)
 - `layout.css` — Styles: 13 rules, 104 vars, 2 animations, 1 layers (~1398 tok)
 
 ## src/routes/games/compressorist/

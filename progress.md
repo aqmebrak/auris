@@ -4,6 +4,23 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-02 — Assessment + roadmap (Phases 13–17)
+
+| Item | Files touched |
+|------|--------------|
+| Deps minor/patch (vite 8.3.2, vite-plugin-svelte 7.3.1, prettier 3.9.9, ts-eslint 8.71, globals 17.13, neon 1.2) | `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml` |
+| Stale dashboard E2E (expected 3 cards) made data-agnostic | `src/routes/dashboard.e2e.ts` |
+| CLAUDE.md: real stack, unit tests in gates, planning files, dep policy | `CLAUDE.md` |
+| Removed unused Drizzle/Neon/Better Auth scaffold | `package.json`, `svelte.config.js`, `src/lib/server/` |
+| Plan retargeted to rock/metal mixing engineers | `task_plan.md`, `CLAUDE.md` |
+| Assessment (P1–P10) + roadmap: sample lib v2, engine v2, rework, 7 new games, progression | `task_plan.md` |
+
+`pnpm check` ✅ `pnpm lint` ✅ `pnpm test:unit` ✅ `pnpm test:e2e` ✅
+
+**Next:** Phase 14 engine v2 + Phase 15 EQ Guess tell fix.
+
+---
+
 ## 2026-04-12 — EQ Matching complete (Phase 10)
 
 | Item | Files touched |

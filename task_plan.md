@@ -1,241 +1,161 @@
 # Auris — Task Plan
 
-## Status Legend
-- ✅ Complete
-- 🔄 In Progress
-- ⬜ Pending
-- ❌ Blocked
+Status: ✅ done · 🔄 in progress · ⬜ pending · 🎧 blocked on samples from user
 
 ---
 
-## Phase 1 — Foundation & Frequency ID MVP ✅
+## Done (Phases 1–11)
 
-Core infrastructure + first working game.
+| Phase | Result |
+| ----- | ------ |
+| 1–2 | SvelteKit scaffold, dark theme, dashboard, Frequency ID MVP, UI polish |
+| 3 | Generic engine: `defineGame`, `createGameStore`, `createStatsStore`, `AudioChain`, shared `game/` UI |
+| 4 | Freq ID depth: difficulty, zones, gain variety, heatmap, round count |
+| 5 | Panning ID |
+| 7 | Compressorist (dual-chain audio, knob, GR meter) |
+| 9 | EQ Guess (2AFC curves) |
+| 10 | EQ Matching (dual-chain, N bands) |
+| 11 | Difficulty tuning: 75 Hz–10 kHz EQ range, easier Easy modes |
 
-| Task | Status | Notes |
-|------|--------|-------|
-| SvelteKit + Svelte 5 scaffold | ✅ | |
-| Tailwind v4 + shadcn-svelte | ✅ | |
-| Dark monochrome theme (oklch tokens) | ✅ | `src/routes/layout.css` |
-| Top-bar navigation | ✅ | `src/lib/components/top-bar.svelte` |
-| Dashboard with game card grid | ✅ | `src/routes/+page.svelte` |
-| Stats panel (localStorage) | ✅ | `src/lib/stores/stats-store.svelte.ts` |
-| Frequency ID game state machine | ✅ | `src/routes/games/frequency-id/+page.svelte` |
-| FrequencyIdEngine (Web Audio, A/B routing) | ✅ | `src/lib/audio/chain.ts` |
-| FreqStrip (log selector, touch+mouse) | ✅ | `src/lib/components/freq-strip.svelte` |
-| A/B toggle component | ✅ | `src/lib/components/ab-toggle.svelte` |
-| Playwright e2e — dashboard card grid | ✅ | `src/routes/dashboard.e2e.ts` |
+Details: `progress.md` + git history.
 
 ---
 
-## Phase 2 — UI Polish + Game UX Fixes ✅
+## Audience
 
-Fixes found during first playthrough on a 33" screen.
+Mixing engineers working on **rock and metal**. Every exercise targets that material: dense distorted guitars, loud/compressed drums, bass/guitar masking, harsh upper mids. Ranges, difficulty and choices tuned to that context (e.g. 2–5 kHz harshness, 200–500 Hz mud, kick/bass low-end, snare crack).
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Neon fuchsia primary accent | ✅ | `oklch(0.7 0.28 340)` |
-| Layout widened to `max-w-7xl` | ✅ | |
-| Game card button spacing | ✅ | |
-| Stats panel — larger numbers | ✅ | `text-3xl` |
-| FreqStrip — taller, ±⅓ oct band on hover | ✅ | `min-h-55` |
-| Game page — play/pause, A/B, REPLAY | ✅ | |
-| Remove `listening…` intermediate phase | ✅ | |
-| Hide BOOST/CUT during guessing | ✅ | |
-| WAV music samples (7 tracks) | ✅ | `static/audio/` |
-| Delete dead `src/lib/audio.ts` | ✅ | |
-| All quality checks green | ✅ | |
+## Assessment — 2026-10-02
 
----
+**Healthy:** engine/session split is clean and tested; all gates green (`check`, `lint`, `test:unit`, `test:e2e`); deps current (minor/patch).
 
-## Phase 3 — Generic Game Engine Foundation ✅
+**Problems making games infeasible or unfair:**
 
-Reusable game framework so every new game plugs in without reinventing round/score/audio logic.
-
-| Task | Status | Notes |
-|------|--------|-------|
-| `src/lib/game/types.ts` — generic types | ✅ | `GameConfig<TRound, TGuess>`, `Phase`, `RoundBase` |
-| `src/lib/game/session.ts` — pure functions | ✅ | `createSession`, `submitGuess`, `nextRound`, `scoreSession` |
-| `src/lib/game/config.ts` — `defineGame` helper | ✅ | |
-| `src/lib/stores/game-store.svelte.ts` — reactive factory | ✅ | `createGameStore<TR,TG>(config)` |
-| `src/lib/stores/stats-store.svelte.ts` — per-game persistence | ✅ | `auris:stats:{gameId}` |
-| `src/lib/audio/player.ts` — game-agnostic audio | ✅ | |
-| `src/lib/audio/effects.ts` — effect node factories | ✅ | `createPeakingEq` |
-| `src/lib/audio/chain.ts` — `AudioChain` A/B routing | ✅ | |
-| `src/lib/audio/samples.ts` — sample list + `pickTrack()` | ✅ | |
-| Shared game UI components (`game/`) | ✅ | `game-header`, `playback-controls`, `game-over`, `round-result` |
-| Freq ID ported to new engine | ✅ | `src/lib/games/freq-id/` |
-| All tests pass, no regression | ✅ | |
-| `src/lib/game/README.md` | ✅ | How to add a new game |
+| # | Problem | Affects |
+| - | ------- | ------- |
+| P1 | **EQ Guess is answerable without listening.** Target always starts with a boost (`i % 2 === 0 ? 1 : -1`), distractor always starts with a cut (gains negated). | EQ Guess |
+| P2 | **Exact-match scoring on continuous perception.** EQ Matching needs freq+gain+Q exact on up to 3 bands (Q 1 vs 1.5 is near-inaudible). Compressorist needs 4 params at once. Binary pass/fail → near-0 scores, no feedback on "how close". | EQ Matching, Compressorist |
+| P3 | **Loudness bias in A/B.** Boosts, makeup gain and compression change loudness; louder reads as "different/better". No gain compensation anywhere. | Compressorist, EQ games |
+| P4 | **Wrong source material.** Panning a full stereo mix with `StereoPannerNode` = balance knob, not source placement. Reverb/delay/compression drills need dry stems. No dry stems or multitracks available yet. | Panning, future games |
+| P5 | **Samples not normalized; fixed −24 dBFS compressor threshold** → GR varies wildly per track. 46 MB of WAV in `static/`, 15 MB single file → slow first round, no preload. | All, esp. Compressorist |
+| P6 | **Cuts as hard as boosts on Easy.** Freq ID Easy mixes ±gain; cuts are much harder to locate. Hard margin is ¼ oct (spec said ⅓). | Freq ID |
+| P7 | **Compressor drill too subtle on Web Audio.** `DynamicsCompressorNode` has fixed knee/lookahead; 1 ms vs 3 ms attack inaudible; makeup knob confounds everything. | Compressorist |
+| P8 | **Page bloat + duplication.** Game pages 266–415 lines (target ≤150); each re-implements audio lifecycle, play/pause/replay, stats recording, idle option selectors. | All pages |
+| P9 | Test coverage: 1 unit file (session), 1 E2E (dashboard). No config tests. | All |
+| P10 | Dead scaffold: `Dynamics` "coming soon" card, boilerplate `README.md`. (Drizzle/Neon/Better Auth removed 2026-10-02.) | Repo |
 
 ---
 
-## Phase 4 — Frequency ID Depth ✅
+## Phase 13 — Sample Library v2 ⬜ 🎧
 
-More educational and replayable. Just extend the config — engine handled everything else.
+Foundation for every rework and new game. Can start with existing samples; full value once user samples land.
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Difficulty levels (Easy/Medium/Hard) | ✅ | ±1 oct / ±⅓ oct / ±¼ oct margin |
-| Frequency zones (Full/Lows/Mids/Highs) | ✅ | FreqStrip rescales range + ticks |
-| Gain variety (6/9/12 dB random) | ✅ | |
-| Stats persistence + per-band heatmap | ✅ | `freq-id-heatmap.svelte` on dashboard |
-| Round count config (3/5/10) | ✅ | |
-| Result animations (pulse / shake) | ✅ | CSS keyframes in `layout.css` |
+### Sample spec (what the user provides)
 
----
+- **Format in:** WAV/AIFF/FLAC, 44.1 or 48 kHz, 16/24-bit. Conversion handled by script.
+- **Length:** 15–30 s, loopable (start/end on bar line), no fades, no silence at head.
+- **Stems must be dry:** no reverb, delay, compression, or heavy EQ printed.
+- **Licensing:** own recordings or CC0/CC-BY (note author for credits).
+- **Naming:** `{kind}_{source}_{bpm}_{name}.wav` — e.g. `stem_vocal-f_92_ballad.wav`, `mix_pop_120_sunny.wav`, `multi_song1_110_bass.wav`.
 
-## Phase 5 — Second Game ✅
+| Kind | What | Count | Used by |
+| ---- | ---- | ----- | ------- |
+| `mix` | Full stereo mixes, rock/metal subgenres (classic rock, hard rock, modern metal, djent, punk, doom/stoner, metalcore) — mix of dense/sparse arrangements | 8–12 | Freq ID, EQ, Level, Filter, Width |
+| `stem` | Dry mono: vocal (clean + screamed), bass DI + amped, rhythm gtr L/R (distorted, double-tracked), lead gtr, clean gtr, snare, kick, toms | 1–2 each | Panning, Reverb, Delay, Saturation, Dynamics |
+| `drums` | Dry drum kit loops (stereo ok), clear transients, incl. fast double-kick | 3–4 | Dynamics (attack/release), Delay |
+| `multi` | Multitrack: 4–6 time-aligned stems of one song, equal length | 2–3 songs | Instrument Spotlight |
 
-Panning ID — hear a panned signal, guess the stereo position.
-
-| Task | Status | Notes |
-|------|--------|-------|
-| Choose game type | ✅ | Panning ID |
-| Implement game config + audio | ✅ | `src/lib/games/panning/config.ts`, `audio.ts` |
-| StereoStrip component | ✅ | `src/lib/components/stereo-strip.svelte` |
-| Implement UI | ✅ | `src/routes/games/panning/+page.svelte` |
-| Register on dashboard | ✅ | `src/routes/+page.svelte` |
-| Tests + quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
-
-
-## Phase 7 — Compressorist ✅
-
-SSL 4000-style compression matcher — hear target compression (B), dial in matching params (A), submit.
-
-| Task | Status | Notes |
-|------|--------|-------|
-| `formatAttack/Release/Ratio/Makeup` helpers | ✅ | `src/lib/format.ts` |
-| Compressorist config + types | ✅ | `src/lib/games/compressorist/config.ts` |
-| Custom dual-chain audio class | ✅ | `src/lib/games/compressorist/audio.ts` — not AudioChain |
-| SVG knob component (pointer drag, wheel, keyboard) | ✅ | `src/lib/components/knob.svelte` |
-| LED GR meter (20 segments, rAF) | ✅ | `src/lib/components/gr-meter.svelte` |
-| Compressorist game page (SSL panel layout) | ✅ | `src/routes/games/compressorist/+page.svelte` |
-| Dashboard registration | ✅ | `src/routes/+page.svelte` |
-| `eslint.config.js` — `varsIgnorePattern: '^_'` | ✅ | allow `_x` unused vars |
-| Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
-
-
----
-
-## Phase 9 — EQ Guess + Compressorist GR tweak ✅
-
-| Task | Status | Notes |
-|------|--------|-------|
-| GR meter hidden in B mode | ✅ | `active={isPlaying && !isPaused && abMode === 'A'}` |
-| EQ Guess config + types | ✅ | `src/lib/games/eq-guess/config.ts` |
-| EQ Guess audio (4 peaking EQ slots) | ✅ | `src/lib/games/eq-guess/audio.ts` |
-| EQ curve SVG component (Gaussian approx) | ✅ | `src/lib/components/eq-curve.svelte` |
-| EQ choice 2-card component | ✅ | `src/lib/components/eq-choice.svelte` |
-| EQ Guess game page | ✅ | `src/routes/games/eq-guess/+page.svelte` |
-| Dashboard registration | ✅ | `src/routes/+page.svelte` |
-| Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
-
----
-
-## Phase 10 — EQ Matching ✅
-
-Dial in N peaking EQ bands to match the hidden target. Live EqCurve strip + knob-per-band UI. Dual audio chains (A=user EQ, B=target EQ).
-
-| Task | Status | Notes |
-|------|--------|-------|
-| `formatQ` helper | ✅ | `src/lib/format.ts` |
-| EQ Matching config (FREQ/GAIN/Q steps, difficulty band count) | ✅ | `src/lib/games/eq-matching/config.ts` |
-| Dual-chain audio (BiquadFilterNode, 3 slots per path) | ✅ | `src/lib/games/eq-matching/audio.ts` |
-| Game page (EqCurve strip + per-band knob groups + result table) | ✅ | `src/routes/games/eq-matching/+page.svelte` |
-| Enable in dashboard | ✅ | `available: true` in `src/routes/+page.svelte` |
-| Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
-
----
-
-## Phase 11 — Difficulty Tuning ✅
-
-Make every game accessible to beginners. Easy = very forgiving, Hard = current baseline.
-
-### Rules applied across all EQ-using games
-- No EQ band below **75 Hz** or above **10 kHz** (inaudible on basic samples)
-- Easy mode: EQ gain changes ≥ **±6 dB** only (no subtle ±2/3 dB)
-- Difficulty curve: Easy starts very low, Medium is moderate, Hard is current/pro level
-
-### Per-game changes
-
-| Game | Easy | Medium | Hard |
-|------|------|--------|------|
-| **Freq ID** | errorMargin **1.5 oct** (from 1), freq range clamped 75–10k | 0.75 oct (from ⅓) | ⅓ oct (unchanged) |
-| **Panning** | errorMargin **0.35** (from 0.2) | 0.15 (from 0.1) | 0.05 (unchanged) |
-| **dB Change** | pool `[9, 12]`, delta `[6, 6]` (from `[6,8,10,12]` / `[4,4]`) | pool `[6, 8, 10, 12]`, delta `[3, 4]` | unchanged |
-| **EQ Matching** | gain pool `[±6, ±12]`, freqs 75–10k | gain pool `[±3, ±6, ±12]`, freqs 75–10k | freqs 75–10k only |
-| **EQ Guess** | freq range 75–10k (remove 63 Hz) | unchanged | unchanged |
-| **Compressorist** | ratio `[2, 10]`, attack `[1, 10, 100]`, release `[100, 400, 800]`, makeup `[0, 6, 12]` | ratio `[2, 4, 10, 20]`, attack `[1, 10, 30, 100]`, release all | unchanged |
+Pink noise generated in code — no file needed.
 
 ### Tasks
 
 | Task | Status | Notes |
-|------|--------|-------|
-| `freq-id/config.ts` — wider easy margin + 75–10k zone | ✅ | easy 1.5oct, medium 0.75oct |
-| `panning/config.ts` — wider easy margin | ✅ | easy 0.35, medium 0.15 |
-| `db-change/config.ts` — easy starts at 9–12 dB | ✅ | pool [9,12] delta [3,3] |
-| `eq-matching/config.ts` — per-diff gain pool + drop 63 Hz | ✅ | easy ±6/±12, medium ±3/±6/±12 |
-| `eq-guess/config.ts` — drop 63 Hz from FREQ_STEPS | ✅ | |
-| `compressorist/config.ts` — per-diff step arrays | ✅ | DIFFICULTY_STEPS, RATIO_STEPS updated |
-| `compressorist/+page.svelte` — pass difficulty steps to knobs | ✅ | diffSteps derived |
-| Quality checks | ✅ | `pnpm check` ✅ `pnpm lint` ✅ |
+| ---- | ------ | ----- |
+| `scripts/prepare-samples.sh` (ffmpeg): loudnorm −18 LUFS / −1 dBTP, 44.1 kHz, trim ≤30 s, encode **FLAC** (gapless loops; lossy codecs add priming gaps) | ⬜ | raw input in `samples-src/` (gitignored) → `static/audio/` |
+| `src/lib/audio/library.ts`: typed manifest `{ id, url, kind, source, channels, bpm?, lufs, credit }` + `pickSample(filter)` replacing `pickTrack()` | ⬜ | games declare requirements, e.g. `{ kind: 'stem', channels: 1 }` |
+| Re-encode current 8 tracks, drop WAVs; verify freesound licenses → `static/audio/CREDITS.md` | ⬜ | 46 MB → ~15 MB est. |
+| Preload next round's sample during result screen (`AudioPlayer.preload`) | ⬜ | |
+| Unit tests: `pickSample` filtering + fallback | ⬜ | |
 
 ---
 
-## Phase 12 — Room Reader (Reverb RT60 ID) ⬜
+## Phase 14 — Engine v2 ⬜
 
-**Concept:** Hear a reverb-treated signal (B), compare to dry reference (A), identify the reverb decay time (RT60) on a log-scale time strip. Completely different perceptual domain from all existing games — trains the most universal daily judgment call in mixing: *"Is this reverb too long?"*
-
-### Why this game
-
-Reverb time is used constantly — choosing presets, evaluating room acoustics, setting plate/hall/room decay. Nothing in the current lineup trains this. RT60 can be reliably trained: the difference between a 0.3 s booth and a 2.5 s concert hall is perceivable even by beginners; fine discrimination (0.7 s vs 1.2 s) separates experts.
-
-### Audio design
-
-- `ReverbIdAudio` — standalone class (same pattern as `CompressoristAudio`, NOT `AudioChain`)
-- **A = dry** reference, **B = reverb applied** via `ConvolverNode`
-- IR generation (synchronous): `amp(t) = noise × exp(−6.91 × t / rt60)` — 60 dB decay at t = RT60
-- Pre-delay: N ms of silence at IR head before exponential starts
-- Signal routing: `source → [dryGain, convolver → wetGain] → masterGain → destination`
-- `setMode('A')`: dryGain=1, wetGain=0 | `setMode('B')`: dryGain=0, wetGain=1
-- `setRt60(rt60, preDelayMs)` replaces `convolver.buffer` each round
-
-### Config — RT60 options per difficulty
-
-| Difficulty | RT60 options (s) | Error margin (log₂) | Wet level |
-|------------|------------------|----------------------|-----------|
-| Easy       | `[0.3, 0.8, 2.5, 6.0]` | ±0.67 (~50%) | 70% wet |
-| Medium     | `[0.2, 0.5, 1.0, 2.0, 4.0, 7.0]` | ±0.35 (~25%) | 45% wet |
-| Hard       | `[0.2, 0.4, 0.7, 1.2, 2.0, 3.5, 5.5, 8.0]` | ±0.17 (~12%) | 25% wet |
-
-Pre-delay: easy=0 ms, medium=random 0–20 ms, hard=random 0–40 ms.
-Evaluation: `Math.abs(Math.log2(guess / target)) <= errorMarginLog2`
-
-### UI — RT60 Strip (new component)
-
-**`rt60-strip.svelte`** — log-scale horizontal strip, analogous to `freq-strip.svelte`:
-- Range: **0.1 s → 8 s** (log scale)
-- Tick marks + room labels: 0.2 s "Booth", 0.5 s "Studio", 1.2 s "Live Rm", 2.5 s "Hall", 6.0 s "Cathedral"
-- Mouse/touch: click anywhere to place guess
-- Hover: shows time value + shaded error-margin band
-- Result phase: green marker = target, fuchsia/red marker = user guess
-
-### Round flow
-
-1. **Idle** — difficulty/rounds selector + greyed-out RT60 strip → PLAY
-2. **Playing** — starts in B (reverb), A/B toggle for dry reference, strip active for guessing
-3. SUBMIT → `roundResult` — shows target vs guess, error as log₂ ratio
-4. NEXT or `gameOver`
-
-### Tasks
+Fixes P2, P3, P8, P9 structurally so per-game rework is small.
 
 | Task | Status | Notes |
-|------|--------|-------|
-| `src/lib/games/reverb-id/config.ts` — RT60 options, difficulty config, types | ⬜ | |
-| `src/lib/games/reverb-id/audio.ts` — `ReverbIdAudio` + `generateIR()` | ⬜ | A=dry, B=convolved |
-| `src/lib/components/rt60-strip.svelte` — log-scale time selector, room labels | ⬜ | new component |
-| `src/routes/games/reverb-id/+page.svelte` — game page | ⬜ | |
-| Dashboard registration | ⬜ | `src/routes/+page.svelte` |
-| Quality checks | ⬜ | `pnpm check` + `pnpm lint` |
+| ---- | ------ | ----- |
+| Graded scoring: optional `scoreGuess(round, guess) → 0..1` + `passThreshold` in `GameConfig`; `result` derived from threshold; session score = mean % | ⬜ | binary games keep `evaluateGuess` (score 0/1) |
+| Stats store: record `accuracy` (0–100) alongside `score`; read old entries unchanged | ⬜ | no localStorage migration needed |
+| `src/lib/audio/loudness.ts`: `measureRms(chain)` via `OfflineAudioContext` (render ~5 s of A and B) → compensation gain on effected path | ⬜ | fixes A/B loudness bias |
+| `createGameController()` (`.ts`): audio load/play/pause/replay/A-B, stop on submit, preload next, record stats once on gameOver, rebuild on option change | ⬜ | removes ~100 lines per page |
+| `<GameShell>`: idle screen with generic option groups (difficulty / mode / rounds from config), header, phase snippets | ⬜ | |
+| Keyboard: `Space` play/pause, `A`/`B` or `Tab` toggle, `Enter` submit/next | ⬜ | |
+| Unit tests per game config: generate in range, evaluate/score edge cases | ⬜ | |
+| Port Freq ID first as reference, then other 5 pages; each page ≤150 lines | ⬜ | |
 
+---
+
+## Phase 15 — Rework existing games ⬜
+
+| Game | Change | Fixes |
+| ---- | ------ | ----- |
+| **EQ Guess** | Random sign per band. Distractor differs by difficulty: Easy = every band shifted 2 steps; Medium = 1 band shifted 1 step; Hard = 1 band sign- or freq-changed. Options: Easy 2, Medium 3, Hard 4. Test: no option is identifiable from curve shape alone. | P1 |
+| **EQ Matching** | Score = RMS dB difference of magnitude responses on 1/12-oct grid 75 Hz–10 kHz → 0–100. Pass: Easy ≥70, Medium ≥80, Hard ≥90. Easy: freq+gain only (Q fixed, shown). Hard adds Q. Result screen shows score + overlaid curves. Loudness-compensated. | P2, P3 |
+| **Freq ID** | Easy: boost-only +12 dB, wide Q (1.4), pick one of 7 octave bands (buttons). Medium: ±9–12 dB, continuous, ±½ oct. Hard: ±6–12 incl. cuts, Q 2.5–4, ±⅓ oct. Graded score by octave error. Option: pink-noise source. | P6 |
+| **Panning** | Mono stems only (`pickSample({ channels: 1 })`), equal-power pan. Easy: 5 snap positions (L, L½, C, R½, R). Medium ±0.15, Hard ±0.08. Graded score by distance. | P4 |
+| **Level Change** | Keep 2AFC. Add Hard JND tier (0.5–2 dB). Loudness-normalized samples make magnitudes consistent. Minor. | P5 |
+| **Dynamics** (replaces Compressorist + "Dynamics" card) | One game, `mode` option, normalized drum/stem sources, threshold relative to sample LUFS, auto makeup (loudness-matched): **Compressed?** (yes/no) → **Ratio** (2:1 / 4:1 / 10:1) → **Attack** (fast 1 ms / med 10 / slow 50) → **Release** (fast 50 / slow 500) → **Match** (capstone: ratio+attack+release, graded per param, no makeup knob). Reuse knob + GR meter. | P2, P3, P7 |
+
+---
+
+## Phase 16 — New exercises ⬜
+
+Ordered by value ÷ effort. All reuse engine v2 + shared components.
+
+| # | Game | Trains | Audio | UI | Samples | Effort |
+| - | ---- | ------ | ----- | -- | ------- | ------ |
+| 1 | **Filter Finder** | HPF/LPF cutoff placement | `BiquadFilterNode` highpass/lowpass, 12/24 dB/oct (cascade) | reuse `freq-strip` | mixes ✅ | S |
+| 2 | **Room Reader** | Reverb decay (RT60) | `ConvolverNode`, generated exp-decay IR — spec below | new `rt60-strip` (log 0.1–8 s, room labels) | dry stems 🎧 | M |
+| 3 | **Delay Time** | Slapback / 1/16 / 1/8 / 1/4 / dotted 1/8 at track BPM | `DelayNode` + feedback gain | choice cards | dry drums/stems + BPM 🎧 | S |
+| 4 | **Phase / Comb** | In phase vs polarity flip vs comb (0.1–5 ms) | sum source + delayed/inverted copy | 3AFC → Hard: estimate delay | mixes ✅, mono stems better | S |
+| 5 | **Stereo Width** | Mono / narrow / normal / wide | M/S matrix via `ChannelSplitter` + gains | width strip 0–200% | stereo mixes ✅ | S |
+| 6 | **Saturation** | Clean vs drive amount | `WaveShaperNode` tanh curve, oversample 4x, loudness-matched | 3AFC drive levels | stems 🎧 | S |
+| 7 | **Instrument Spotlight** | Which stem got +3/+6 dB in the mix | N synced `AudioBufferSourceNode`s, per-stem gain | stem choice list | multitracks 🎧 | M (engine: multi-source playback) |
+
+### Room Reader spec (carried from old Phase 12)
+
+- A = dry, B = reverb (standalone class, dry/wet gains). IR: `noise × exp(−6.91·t / rt60)`, pre-delay = leading silence. `setRt60(rt60, preDelayMs)` swaps `convolver.buffer`.
+- Difficulty: Easy RT60 `[0.3, 0.8, 2.5, 6.0]`, margin ±0.67 log₂, 70% wet, 0 ms pre-delay · Medium `[0.2, 0.5, 1.0, 2.0, 4.0, 7.0]`, ±0.35, 45% wet, 0–20 ms · Hard `[0.2, 0.4, 0.7, 1.2, 2.0, 3.5, 5.5, 8.0]`, ±0.17, 25% wet, 0–40 ms.
+- Eval: `|log2(guess / target)| ≤ margin`; graded by log error.
+- Strip labels: 0.2 s Booth · 0.5 s Studio · 1.2 s Live Rm · 2.5 s Hall · 6 s Cathedral.
+
+---
+
+## Phase 17 — Progression & dashboard ⬜
+
+| Task | Status | Notes |
+| ---- | ------ | ----- |
+| Adaptive difficulty (2-down/1-up staircase) as opt-in "Auto" difficulty | ⬜ | standard psychoacoustic method |
+| Dashboard: per-game accuracy sparkline + last played, grouped by category (EQ / Dynamics / Space / Level) | ⬜ | |
+| "Daily mix": 10 rounds across games, weakest areas weighted | ⬜ | uses stats history |
+| Generalize Freq ID heatmap to any game with per-round meta | ⬜ | |
+
+---
+
+## Cleanup (any time) ⬜
+
+| Task | Status | Notes |
+| ---- | ------ | ----- |
+| Remove Drizzle/Neon/`DATABASE_URL`/Better Auth | ✅ | 2026-10-02 |
+| Replace boilerplate `README.md` with project README | ⬜ | |
+| Remove "Dynamics" coming-soon card (superseded by Phase 15 Dynamics) | ⬜ | |
+
+---
+
+## Execution order
+
+1. **Phase 14** (engine v2) + **Phase 13** tooling in parallel — no samples needed to start.
+2. **Phase 15** reworks, P1 (EQ Guess tell) first — it's a 1-file fix.
+3. **Phase 16** #1, #4, #5 (work with mixes) → #2, #3, #6, #7 as samples arrive.
+4. **Phase 17**.
