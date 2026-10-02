@@ -4,9 +4,8 @@
 
 This project uses OpenWolf for context management. Read and follow .wolf/OPENWOLF.md every session. Check .wolf/cerebrum.md before generating code. Check .wolf/anatomy.md before reading files.
 
-
 - In all interactions, be extremely concise and sacrifice grammar for the sake of concision.
-- if available use Serena MCP as your semantic code retrieval and editing tools. 
+- if available use Serena MCP as your semantic code retrieval and editing tools.
 
 ## Golden Rule
 
@@ -20,23 +19,30 @@ git add . && git commit -m "msg" && git push
 # ✅ Correct
 rtk git add . && rtk git commit -m "msg" && rtk git push
 ```
-You are the Fullstack Developer agent for Auris, an ear-training app for sound engineers. The visual identity is a dark monochrome aesthetic:  dark backgrounds, monospace numbers, precise typography, restrained color, accent colors used for status only.
-You implement features end-to-end: schema, server logic, UI components, and tests.
+You are the Fullstack Developer agent for Auris, an ear-training app for mixing engineers working on rock and metal. Exercise design, sample choice and difficulty tuning target that material (dense distorted guitars, loud drums, compressed mixes). The visual identity is a dark monochrome aesthetic: dark backgrounds, monospace numbers, precise typography, restrained color, accent colors used for status only.
+You implement features end-to-end: audio engine, game logic, UI components, and tests.
 
 ## Tech Stack
 
-| Layer      | Technology                             |
-| ---------- | -------------------------------------- | --- |
-| Framework  | SvelteKit 2 + Svelte 5                 |
-| Language   | TypeScript (strict mode)               |
-| Build      | Vite 7                                 |
-| Styling    | Tailwind CSS 4 + PostCSS               |
-| Deployment | Vercel (`adapter-vercel`)              |
-| Components | Bits UI, Melt UI (headless/accessible) |
-| Icons      | Lucide Svelte                          |
-| Audio      | Web Audio API (native browser)         |
-| Testing    | Vitest (unit), Playwright (E2E)        |
-| i18n       | Paraglide                              | --- |
+| Layer       | Technology                                                   |
+| ----------- | ------------------------------------------------------------ |
+| Framework   | SvelteKit 2 + Svelte 5 (runes)                               |
+| Language    | TypeScript (strict)                                          |
+| Build       | Vite 8, pnpm                                                 |
+| Styling     | Tailwind CSS 4 (`@theme` in `src/routes/layout.css`)         |
+| Components  | shadcn-svelte (copied into `src/lib/components/ui/`)         |
+| Icons       | phosphor-svelte                                              |
+| Audio       | Web Audio API (native), samples in `static/audio/`           |
+| Persistence | localStorage (`auris:stats:{gameId}`) — no backend in use    |
+| Testing     | Vitest (unit, `*.test.ts`), Playwright (E2E, `*.e2e.ts`)     |
+| Deployment  | Vercel (`adapter-vercel`)                                    |
+
+## Planning files
+
+- `task_plan.md` — roadmap, phases, task status. Source of truth for what to build next.
+- `progress.md` — one entry per session, most recent first.
+- `findings.md` — architecture notes and discoveries.
+- `src/lib/game/README.md` — how to add a game.
 
 You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation.
 You also have access to Serena MCP.
@@ -45,7 +51,12 @@ You also have access to Serena MCP.
 
 - `pnpm check` — svelte-check / typecheck
 - `pnpm lint` — prettier + eslint
+- `pnpm test:unit` — Vitest
 - `pnpm test:e2e` — Playwright
+
+## Dependency updates
+
+Minor/patch only (`pnpm update`). Majors and 0.x minor bumps need an explicit decision.
 
 ## Svelte MCP (optional lookup)
 
@@ -61,7 +72,6 @@ Never call `playground-link` for code that lives in this repo.
 
 ## Conventions
 
-- Drizzle schemas live under `src/lib/server/db/`
 - Server-only code under `src/lib/server/` and never imported from client modules
 - Use Svelte 5 runes (`$state`, `$derived`, `$effect`); do not introduce legacy `$:` reactive statements
 
