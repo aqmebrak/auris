@@ -33,6 +33,9 @@
 - **Icons are phosphor-svelte** (not Lucide); bits-ui/melt/paraglide not installed. 
 - **Sample format decision**: FLAC (gapless loops), loudnorm −18 LUFS; raw in gitignored `samples-src/`.
 
+- **Graded scoring API**: `GameConfig.scoreGuess` (0..1) + `passThreshold`; `evaluateGuess` still required but ignored when `scoreGuess` set. `RoundBase.score` set on submit.
+- **Vitest needs `$lib` alias** (in `vitest.config.ts`) to import game configs.
+
 ## Do-Not-Repeat
 
 - **[2026-10-02] Suggested diversifying sample genres** — wrong: app targets rock/metal on purpose.
