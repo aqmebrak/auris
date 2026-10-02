@@ -219,3 +219,4 @@
 |------|--------|---------|---------|--------|
 | 19:45 | Removed Drizzle/Neon/Better Auth; plan retargeted to rock/metal audience | package.json, svelte.config.js, task_plan.md, CLAUDE.md | gates pending | ~10k |
 | 21:50 | Engine v2 pt1: graded scoring, loudness math, EQ Guess tell fix, 34 unit tests | src/lib/game, src/lib/audio/loudness.ts, eq-guess/config.ts | tests green | ~40k |
+| 22:30 | Phase 15 EQ Matching v2: graded scoring, spectrum loudness compensation, shell port | audio/eq-math.ts, audio/spectrum.ts, eq-matching/* | gates green | ~60k |

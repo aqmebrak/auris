@@ -39,6 +39,9 @@
 - **Game pages = controller + shell.** New game: `createGameController({gameId, createConfig, audio, prepareRound, sessionMeta})` + `<GameShell>` snippets (options/idle/playing/summary/resultVisual). Option selectors via `<OptionGroup>` + `$lib/game/options.js` builders. Game rounds need `sampleUrl` (`SampleRound`).
 - **E2E shortcut gotcha**: Enter/Space/A/B shortcuts are ignored while a button has focus (blur first in tests).
 
+- **EQ scoring**: `matchScore` in `audio/eq-math.ts` (symmetric RMS-ratio on response, 75–10k). Doing nothing = 0, exact = 1. Misplaced band ≈ 0.29, half-gain ≈ 0.67.
+- **Loudness compensation** for EQ games = `eqLoudnessDeltaDb(averageSpectrum(sample), bands)` → inverse gain; recompute on every knob change (cheap).
+
 ## Do-Not-Repeat
 
 - **[2026-10-02] Suggested diversifying sample genres** — wrong: app targets rock/metal on purpose.
@@ -60,3 +63,4 @@
 - **[2026-04-12] EQ Matching scoring — exact match**: Discrete step values mean exact comparison is fair and unambiguous. No tolerance bands needed.
 - **[2026-04-12] GR meter gated on A mode**: GR activity in B mode reveals target compression intensity, making the game too easy. Fix: `active={isPlaying && !isPaused && abMode === 'A'}`.
 - **[2026-10-02] User handed ownership of roadmap**: Claude owns planning; user supplies audio samples. Graded scoring (0–100) over exact match for matching games; Compressorist folds into multi-mode Dynamics game.
+- **[2026-10-02] Match metric normalised by combined target+guess energy** (not target alone): target-only gave 0 for any misplaced band and made 2-band partial credit impossible.
