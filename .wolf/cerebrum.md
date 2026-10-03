@@ -13,6 +13,9 @@
 
 ## Key Learnings
 
+- **User UX prefs (2026-10-03)**: name A/B buttons by what they are (Target / Your EQ / Original / EQ'd), never bare "A"/"B". Graphs must be large on desktop and taller on mobile. Test on iPhone width (~402px). `<EqCurve>` sizes via a `class` prop (measured container), not a height number.
+- **GameShell** playing phase has a sticky bottom transport bar; `modeLabels` prop names the A/B sides.
+
 - **Audience: rock/metal mixing engineers.** Samples are rock/metal by design — do not propose other genres. Tune exercises to dense distorted mixes.
 - **No DB/backend**: Drizzle/Neon/Better Auth removed 2026-10-02. Vercel project still has a Neon integration provisioned (AURIS_* env in local `.env`) — unused.
 
