@@ -195,8 +195,8 @@
 					</div>
 				</div>
 				<p class="text-sm text-muted-foreground">
-					Press PLAY to hear the target compression (B). Adjust the knobs to match it (A). Submit
-					when you're happy.
+					Press PLAY to hear the Target. Switch to Your settings and adjust the knobs to match it.
+					Submit when you're happy.
 				</p>
 			{/if}
 
@@ -302,9 +302,10 @@
 				onPlayPause={handlePlayPause}
 				onModeChange={handleAbChange}
 				onReplay={handleReplay}
+				labels={{ A: 'Your settings', B: 'Target' }}
 			/>
 			<p class="text-center text-xs tracking-widest text-muted-foreground uppercase">
-				A = your compression &nbsp;·&nbsp; B = target (hidden)
+				Switch between your settings and the hidden target
 			</p>
 
 			<div class="flex justify-center">

@@ -15,7 +15,7 @@ test('frequency id: play a full 3-round session with keyboard + mouse', async ({
 
 		await page.keyboard.press('b'); // A/B shortcuts shouldn't throw
 		await page.keyboard.press('a');
-		await expect(page.getByRole('button', { name: 'A', exact: true })).toHaveAttribute(
+		await expect(page.getByRole('button', { name: /key A/ })).toHaveAttribute(
 			'aria-pressed',
 			'true'
 		);

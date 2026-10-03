@@ -47,7 +47,7 @@ for (const game of GAMES) {
 
 			if (game.hasAB) {
 				await page.keyboard.press('a');
-				await expect(page.getByRole('button', { name: 'A', exact: true })).toHaveAttribute(
+				await expect(page.getByRole('button', { name: /key A/ })).toHaveAttribute(
 					'aria-pressed',
 					'true'
 				);

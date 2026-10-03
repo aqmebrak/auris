@@ -79,6 +79,18 @@ Pink noise generated in code — no file needed.
 
 ---
 
+## Sample-aware targets ⬜ (add to Phase 13 manifest + Phase 15 games)
+
+Raised after playing EQ Matching: a boost/cut is only fair if the sample has energy there (a bass-only loop gives nothing to hear for a cut at 8 kHz; boosting empty bands is inaudible too).
+
+- `prepare-samples` computes a per-sample band-energy profile (reuse `audio/spectrum.ts`, 1/3-oct, dB relative to the sample's loudest band) and stores it in the manifest.
+- Games ask the library for **feasible frequencies**: `audibleFreqs(sample, { kind: 'cut' | 'boost', minRelDb })` — cuts need energy ≥ −20 dB re peak at the target, boosts ≥ −30 dB. Round generation picks the sample first, then candidates from its profile.
+- Optional hand-written overrides per sample (`avoid: [...]`, `tags`) for edge cases the numbers miss.
+- Per-game policy lives in the game config (EQ games: both; Freq ID: boost-only on Easy; Panning: needs wideband content).
+- Same mechanism feeds difficulty: Easy only picks bands where the sample is strong.
+
+---
+
 ## Phase 14 — Engine v2 ⬜
 
 Fixes P2, P3, P8, P9 structurally so per-game rework is small.
@@ -104,7 +116,7 @@ Fixes P2, P3, P8, P9 structurally so per-game rework is small.
 | Game | Change | Fixes |
 | ---- | ------ | ----- |
 | **EQ Guess** ✅ | Random sign per band; distractor keeps gain pattern. Easy = all bands shifted 2 steps; Medium = 1 band moved to nearest free step; Hard = 1 band flips boost/cut. Still 2 options (3/4 options deferred). Tested: no sign tell. | P1 |
-| **EQ Matching** ✅ | Graded: `matchScore` = 1 − RMS(Δ response) ÷ (RMS(target)+RMS(guess)) on a 1/12-oct grid 75 Hz–10 kHz, using exact biquad math. Pass: Easy ≥70%, Medium ≥80%, Hard ≥90%. Q fixed on Easy/Medium (knob hidden), editable on Hard. Both paths loudness-compensated per sample (spectrum-weighted). Result: overlaid target/yours curves + band table. | P2, P3 |
+| **EQ Matching** ✅ (UX: Target / Your EQ buttons, big responsive curve, sticky transport) | Graded: `matchScore` = 1 − RMS(Δ response) ÷ (RMS(target)+RMS(guess)) on a 1/12-oct grid 75 Hz–10 kHz, using exact biquad math. Pass: Easy ≥70%, Medium ≥80%, Hard ≥90%. Q fixed on Easy/Medium (knob hidden), editable on Hard. Both paths loudness-compensated per sample (spectrum-weighted). Result: overlaid target/yours curves + band table. | P2, P3 |
 | **Freq ID** | Easy: boost-only +12 dB, wide Q (1.4), pick one of 7 octave bands (buttons). Medium: ±9–12 dB, continuous, ±½ oct. Hard: ±6–12 incl. cuts, Q 2.5–4, ±⅓ oct. Graded score by octave error. Option: pink-noise source. | P6 |
 | **Panning** | Mono stems only (`pickSample({ channels: 1 })`), equal-power pan. Easy: 5 snap positions (L, L½, C, R½, R). Medium ±0.15, Hard ±0.08. Graded score by distance. | P4 |
 | **Level Change** | Keep 2AFC. Add Hard JND tier (0.5–2 dB). Loudness-normalized samples make magnitudes consistent. Minor. | P5 |

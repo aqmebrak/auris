@@ -26,7 +26,9 @@
 		idle?: Snippet<[TR]>;
 		/** Board rendered while playing — the guess UI. */
 		playing: Snippet<[TR]>;
-		/** Helper line under the transport controls. */
+		/** What the A and B buttons play, in the game's own words. */
+		modeLabels?: Record<'A' | 'B', string>;
+		/** Optional note under the transport controls. */
 		legend?: string;
 		summary: Snippet<[TR]>;
 		resultVisual?: Snippet<[TR]>;
@@ -42,6 +44,7 @@
 		intro,
 		idle,
 		playing,
+		modeLabels,
 		legend,
 		summary,
 		resultVisual,
@@ -89,19 +92,25 @@
 	{:else if game.phase === 'playing'}
 		<div class="flex flex-col gap-8">
 			{@render playing(game.currentRound)}
-			<PlaybackControls
-				isPaused={ctrl.isPaused}
-				mode={ctrl.abMode}
-				showAB={ctrl.hasAB}
-				onPlayPause={() => ctrl.playPause()}
-				onModeChange={(m) => ctrl.setMode(m)}
-				onReplay={() => ctrl.replay()}
-			/>
 			{#if legend}
 				<p class="text-center text-xs tracking-widest text-muted-foreground uppercase">
 					{legend}
 				</p>
 			{/if}
+			<!-- Stays in reach while scrolling the board (knobs, submit) -->
+			<div
+				class="sticky bottom-0 z-10 -mx-6 flex flex-col gap-2 border-t border-border bg-background/95 px-6 py-3 backdrop-blur lg:-mx-8 lg:px-8"
+			>
+				<PlaybackControls
+					isPaused={ctrl.isPaused}
+					mode={ctrl.abMode}
+					showAB={ctrl.hasAB}
+					labels={modeLabels}
+					onPlayPause={() => ctrl.playPause()}
+					onModeChange={(m) => ctrl.setMode(m)}
+					onReplay={() => ctrl.replay()}
+				/>
+			</div>
 		</div>
 	{:else if game.phase === 'roundResult'}
 		<RoundResult

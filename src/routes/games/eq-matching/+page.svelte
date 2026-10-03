@@ -68,8 +68,9 @@
 	{ctrl}
 	title="EQ Matching"
 	graded
-	intro={`Press PLAY to hear the target EQ (B). Adjust the band knobs so A sounds like B — the curve shows your EQ live. You need a ${Math.round(diff.passThreshold * 100)}% match.`}
-	legend="A = your EQ · B = target (hidden) · loudness-matched"
+	intro={`Press PLAY to hear the Target. Switch to Your EQ and adjust the band knobs until it sounds the same — the curve shows your EQ live. You need a ${Math.round(diff.passThreshold * 100)}% match.`}
+	modeLabels={{ A: 'Your EQ', B: 'Target' }}
+	legend="Both versions are loudness-matched"
 	formatRound={(round, i) => ({
 		label: `Round ${i + 1}`,
 		primary: bandSummary(round.targetBands),
@@ -99,7 +100,7 @@
 
 	{#snippet idle()}
 		<div class="rounded border border-zinc-800 bg-zinc-950 p-6 opacity-50" aria-hidden="true">
-			<EqCurve bands={userBands} height={100} />
+			<EqCurve bands={userBands} class="h-56 md:h-80" />
 			<div class="mt-6 flex flex-wrap justify-around gap-8">
 				{#each userBands as band, i (i)}
 					<EqBandKnobs {band} gainPool={diff.gainPool} qEditable={diff.qEditable} disabled />
@@ -109,9 +110,10 @@
 	{/snippet}
 
 	{#snippet playing()}
-		<p class="text-sm text-muted-foreground">Adjust bands so A sounds like B, then submit.</p>
-		<div class="rounded border border-zinc-700 bg-zinc-950 p-4">
-			<EqCurve bands={userBands} height={100} />
+		<p class="text-sm text-muted-foreground">Make Your EQ sound like the Target, then submit.</p>
+		<!-- Pinned on small screens so the curve stays visible while turning knobs -->
+		<div class="sticky top-12 z-10 rounded border border-zinc-700 bg-zinc-950 p-3 md:static md:p-4">
+			<EqCurve bands={userBands} class="h-40 md:h-80" />
 		</div>
 		<div class="flex flex-col gap-6">
 			{#each userBands as band, i (i)}

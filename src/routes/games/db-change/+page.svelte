@@ -37,8 +37,8 @@
 <GameShell
 	{ctrl}
 	title="Level Change"
-	intro="Press PLAY to hear the audio. Use A/B to compare dry vs gained signal. Select the correct dB value."
-	legend="A = dry (original) · B = gained signal"
+	intro="Press PLAY to hear the audio. Switch between Original and Gained to compare. Select the correct dB value."
+	modeLabels={{ A: 'Original', B: 'Gained' }}
 	formatRound={(round, i) => ({
 		label: `Round ${i + 1}`,
 		primary: formatDb(round.targetDb),

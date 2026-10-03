@@ -39,7 +39,7 @@
 	{ctrl}
 	title="Frequency ID"
 	intro={`Press PLAY to hear the audio. Identify the frequency band where the EQ is applied. Margin ${formatOctaves(diff.errorMarginOctaves)}`}
-	legend="A = dry signal · B = with EQ applied"
+	modeLabels={{ A: 'Original', B: "EQ'd" }}
 	formatRound={(round, i) => ({
 		label: `Round ${i + 1}`,
 		primary: formatFreq(round.targetFreq),

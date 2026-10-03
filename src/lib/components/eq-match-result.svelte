@@ -22,7 +22,7 @@
 			<span class="text-green-500">- - Target</span>
 			<span class="text-primary">— Yours</span>
 		</p>
-		<EqCurve bands={guess} compare={target} height={110} />
+		<EqCurve bands={guess} compare={target} class="h-56 md:h-72" />
 	</div>
 
 	<table class="w-full border-collapse font-mono text-sm">

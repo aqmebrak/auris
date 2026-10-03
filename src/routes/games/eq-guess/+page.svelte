@@ -43,8 +43,8 @@
 <GameShell
 	{ctrl}
 	title="EQ Guess"
-	intro="Press PLAY to hear the EQ'd audio (B). Use A/B to compare dry vs processed. Click the card that matches what you hear."
-	legend="A = dry (original) · B = EQ'd signal"
+	intro="Press PLAY to hear the EQ'd audio. Switch between Original and EQ'd to compare. Click the card that matches what you hear."
+	modeLabels={{ A: 'Original', B: "EQ'd" }}
 	formatRound={(round, i) => ({
 		label: `Round ${i + 1}`,
 		primary: bandSummary(round.targetEq),
