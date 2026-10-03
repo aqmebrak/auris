@@ -90,3 +90,12 @@ export function createPanner(ctx: AudioContext, initialPan = 0): PannerHandle {
 		}
 	};
 }
+
+/** Sums the signal to mono (channel average), so a following panner places a single source. */
+export function createMonoSum(ctx: AudioContext): EffectHandle {
+	const node = ctx.createGain();
+	node.channelCount = 1;
+	node.channelCountMode = 'explicit';
+	node.channelInterpretation = 'speakers';
+	return { input: node, output: node };
+}

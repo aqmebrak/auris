@@ -9,6 +9,8 @@ interface Game {
 	name: string;
 	path: string;
 	hasAB: boolean;
+	/** Difficulty button to click; defaults to Easy. */
+	difficulty?: string;
 	setup?: (page: Page) => Promise<void>;
 	answer: (page: Page) => Promise<void>;
 }
@@ -30,9 +32,22 @@ const GAMES: Game[] = [
 	dynamics('Release', clickFirst(/^\d+ ms$/)),
 	dynamics('Match', (page: Page) => page.getByRole('button', { name: 'SUBMIT' }).click()),
 	{
-		name: 'panning',
+		name: 'freq-id-easy-buttons',
+		path: '/games/frequency-id',
+		hasAB: true,
+		answer: clickFirst(/Hz$/)
+	},
+	{
+		name: 'panning-easy-buttons',
 		path: '/games/panning',
 		hasAB: false,
+		answer: clickFirst(/^([LR]\d+|C)$/)
+	},
+	{
+		name: 'panning-strip',
+		path: '/games/panning',
+		hasAB: false,
+		difficulty: 'Medium',
 		answer: (page: Page) => clickCenter(page, 'slider')
 	},
 	{
@@ -62,7 +77,7 @@ for (const game of GAMES) {
 		await page.goto(game.path);
 		await game.setup?.(page);
 		await page.getByRole('button', { name: '3', exact: true }).click();
-		await page.getByRole('button', { name: 'Easy' }).click();
+		await page.getByRole('button', { name: game.difficulty ?? 'Easy' }).click();
 		await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
 
 		for (let round = 0; round < 3; round++) {

@@ -102,3 +102,30 @@ export function eqLoudnessDeltaDb(spectrum: BandSpectrum, bands: PeakingBand[]):
 	if (total === 0 || shaped === 0) return 0;
 	return 10 * Math.log10(shaped / total);
 }
+
+/** Average of all channels as one Float32Array. */
+export function monoMix(buffer: {
+	length: number;
+	numberOfChannels: number;
+	getChannelData(channel: number): Float32Array;
+}): Float32Array {
+	const out = new Float32Array(buffer.length);
+	for (let c = 0; c < buffer.numberOfChannels; c++) {
+		const data = buffer.getChannelData(c);
+		for (let i = 0; i < out.length; i++) out[i] += data[i] / buffer.numberOfChannels;
+	}
+	return out;
+}
+
+/**
+ * Gain (dB) that cancels the loudness change `bands` cause on this material,
+ * clamped to ±`limit` so a pathological case can't blast the listener.
+ */
+export function compensationGainDb(
+	spectrum: BandSpectrum | null,
+	bands: PeakingBand[],
+	limit = 12
+): number {
+	if (!spectrum) return 0;
+	return Math.max(-limit, Math.min(limit, -eqLoudnessDeltaDb(spectrum, bands)));
+}

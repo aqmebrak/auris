@@ -4,7 +4,7 @@ test('frequency id: play a full 3-round session with keyboard + mouse', async ({
 	await page.goto('/games/frequency-id');
 
 	await page.getByRole('button', { name: '3', exact: true }).click();
-	await page.getByRole('button', { name: 'Easy' }).click();
+	await page.getByRole('button', { name: 'Medium' }).click();
 
 	// Shortcuts are ignored while a button has focus
 	await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());

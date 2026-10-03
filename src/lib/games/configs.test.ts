@@ -2,9 +2,16 @@ import { describe, it, expect } from 'vitest';
 import {
 	createFreqIdConfig,
 	ZONE_CONFIG,
-	DIFFICULTY_CONFIG as FREQ_DIFF
+	DIFFICULTY_CONFIG as FREQ_DIFF,
+	OCTAVE_BANDS,
+	bandsInZone
 } from './freq-id/config.js';
-import { createPanningConfig, ZONE_CONFIG as PAN_ZONE } from './panning/config.js';
+import {
+	createPanningConfig,
+	ZONE_CONFIG as PAN_ZONE,
+	DIFFICULTY_CONFIG as PAN_DIFF,
+	positionsInZone
+} from './panning/config.js';
 import { createDbChangeConfig, DIFFICULTY_CONFIG as DB_DIFF } from './db-change/config.js';
 import {
 	createEqMatchingConfig,
@@ -17,40 +24,96 @@ const DIFFS = ['easy', 'medium', 'hard'] as const;
 const RUNS = 100;
 
 describe('freq-id', () => {
-	it('targets stay inside the zone, correct inside margin, wrong outside', () => {
+	const zones = Object.keys(ZONE_CONFIG) as (keyof typeof ZONE_CONFIG)[];
+
+	it('rounds respect zone, gain, Q and the difficulty rules', () => {
 		for (const difficulty of DIFFS) {
-			for (const zone of Object.keys(ZONE_CONFIG) as (keyof typeof ZONE_CONFIG)[]) {
+			for (const zone of zones) {
 				const config = createFreqIdConfig({ difficulty, zone, roundCount: 5 });
 				const { min, max } = ZONE_CONFIG[zone];
-				const margin = FREQ_DIFF[difficulty].errorMarginOctaves;
+				const d = FREQ_DIFF[difficulty];
 				for (let i = 0; i < RUNS; i++) {
 					const r = config.generateRound();
 					expect(r.targetFreq).toBeGreaterThanOrEqual(min);
 					expect(r.targetFreq).toBeLessThanOrEqual(max);
-					expect(config.evaluateGuess(r, r.targetFreq)).toBe(true);
-					expect(config.evaluateGuess(r, r.targetFreq * 2 ** (margin * 0.9))).toBe(true);
-					expect(config.evaluateGuess(r, r.targetFreq * 2 ** (margin * 1.1))).toBe(false);
+					expect(d.gainOptions).toContain(Math.abs(r.gainDb));
+					expect(d.qOptions).toContain(r.q);
+					if (!d.allowCuts) expect(r.gainDb).toBeGreaterThan(0);
+					if (d.input === 'buttons') expect(OCTAVE_BANDS).toContain(r.targetFreq as never);
 				}
 			}
 		}
 	});
+
+	it('Easy offers at least one band per zone and always includes the target', () => {
+		for (const zone of zones) {
+			const bands = bandsInZone(zone);
+			expect(bands.length).toBeGreaterThan(0);
+			const config = createFreqIdConfig({ difficulty: 'easy', zone, roundCount: 5 });
+			for (let i = 0; i < RUNS; i++) expect(bands).toContain(config.generateRound().targetFreq);
+		}
+	});
+
+	it('scores 1 exact, 0.5 at the margin, 0 at twice the margin; passes at the margin', () => {
+		for (const difficulty of DIFFS) {
+			const config = createFreqIdConfig({ difficulty, zone: 'full', roundCount: 5 });
+			const m = FREQ_DIFF[difficulty].errorMarginOctaves;
+			const r = config.generateRound();
+			expect(config.scoreGuess!(r, r.targetFreq)).toBe(1);
+			expect(config.scoreGuess!(r, r.targetFreq * 2 ** (m * 0.9))).toBeGreaterThan(0.5);
+			expect(config.scoreGuess!(r, r.targetFreq * 2 ** (m * 1.1))).toBeLessThan(0.5);
+			expect(config.scoreGuess!(r, r.targetFreq * 2 ** (m * 2))).toBeCloseTo(0, 10);
+			expect(config.evaluateGuess(r, r.targetFreq * 2 ** (m * 0.9))).toBe(true);
+			expect(config.evaluateGuess(r, r.targetFreq * 2 ** (m * 1.1))).toBe(false);
+		}
+	});
+
+	it('Easy: the adjacent octave band is wrong but earns partial credit', () => {
+		const config = createFreqIdConfig({ difficulty: 'easy', zone: 'full', roundCount: 5 });
+		const r = { ...config.generateRound(), targetFreq: 1000 };
+		expect(config.evaluateGuess(r, 2000)).toBe(false);
+		expect(config.scoreGuess!(r, 2000)).toBeGreaterThan(0);
+	});
 });
 
 describe('panning', () => {
-	it('targets stay in zone, off-center, exact guess correct', () => {
+	const zones = Object.keys(PAN_ZONE) as (keyof typeof PAN_ZONE)[];
+
+	it('targets stay in zone; Easy snaps to positions, others stay off-center', () => {
 		for (const difficulty of DIFFS) {
-			for (const zone of Object.keys(PAN_ZONE) as (keyof typeof PAN_ZONE)[]) {
+			for (const zone of zones) {
 				const config = createPanningConfig({ difficulty, zone, roundCount: 5 });
 				const { min, max } = PAN_ZONE[zone];
 				for (let i = 0; i < RUNS; i++) {
 					const r = config.generateRound();
 					expect(r.targetPan).toBeGreaterThanOrEqual(min);
 					expect(r.targetPan).toBeLessThanOrEqual(max);
-					expect(Math.abs(r.targetPan)).toBeGreaterThanOrEqual(0.1);
+					if (difficulty === 'easy') expect(positionsInZone(zone)).toContain(r.targetPan);
+					else expect(Math.abs(r.targetPan)).toBeGreaterThanOrEqual(0.1);
 					expect(config.evaluateGuess(r, r.targetPan)).toBe(true);
 				}
 			}
 		}
+	});
+
+	it('scores by distance: 1 exact, 0.5 at the margin, 0 at twice the margin', () => {
+		for (const difficulty of DIFFS) {
+			const config = createPanningConfig({ difficulty, zone: 'full', roundCount: 5 });
+			const m = PAN_DIFF[difficulty].errorMarginPan;
+			const r = { ...config.generateRound(), targetPan: 0.2 };
+			expect(config.scoreGuess!(r, 0.2)).toBe(1);
+			expect(config.scoreGuess!(r, 0.2 + m)).toBeCloseTo(0.5, 10);
+			expect(config.scoreGuess!(r, 0.2 + 2 * m)).toBeCloseTo(0, 10);
+			expect(config.evaluateGuess(r, 0.2 + m * 0.9)).toBe(true);
+			expect(config.evaluateGuess(r, 0.2 + m * 1.1)).toBe(false);
+		}
+	});
+
+	it('Easy: the neighbouring position is wrong but earns partial credit', () => {
+		const config = createPanningConfig({ difficulty: 'easy', zone: 'full', roundCount: 5 });
+		const r = { ...config.generateRound(), targetPan: 0 };
+		expect(config.evaluateGuess(r, 0.5)).toBe(false);
+		expect(config.scoreGuess!(r, 0.5)).toBeGreaterThan(0);
 	});
 });
 

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import StereoStrip from '$lib/components/stereo-strip.svelte';
+	import ChoiceButtons from '$lib/components/game/choice-buttons.svelte';
 	import GameShell from '$lib/components/game/game-shell.svelte';
 	import OptionGroup from '$lib/components/game/option-group.svelte';
 	import { createGameController } from '$lib/stores/game-controller.svelte.js';
@@ -9,6 +10,7 @@
 		DIFFICULTY_CONFIG,
 		ZONE_CONFIG,
 		ROUND_COUNT_OPTIONS,
+		positionsInZone,
 		type PanRound,
 		type PanningOptions
 	} from '$lib/games/panning/config.js';
@@ -38,12 +40,16 @@
 
 	const zone = $derived(ZONE_CONFIG[ctrl.options.zone]);
 	const diff = $derived(DIFFICULTY_CONFIG[ctrl.options.difficulty]);
+	const snapChoices = $derived(
+		positionsInZone(ctrl.options.zone).map((value) => ({ value, label: formatPan(value) }))
+	);
 </script>
 
 <GameShell
 	{ctrl}
 	title="Panning"
-	intro={`Press PLAY to hear the audio. Identify where the signal is panned in the stereo field. Margin ±${Math.round(diff.errorMarginPan * 100)}%`}
+	graded
+	intro={`Use headphones. The track is summed to mono and panned — find where it sits. ${diff.input === 'buttons' ? 'Pick the nearest position.' : `Margin ±${Math.round(diff.errorMarginPan * 100)}%`}`}
 	formatRound={(round, i) => ({
 		label: `Round ${i + 1}`,
 		primary: formatPan(round.targetPan),
@@ -75,28 +81,37 @@
 	{/snippet}
 
 	{#snippet idle()}
-		<StereoStrip
-			onSelect={() => {}}
-			disabled={true}
-			panMin={zone.min}
-			panMax={zone.max}
-			errorMarginPan={diff.errorMarginPan}
-		/>
+		{#if diff.input === 'buttons'}
+			<ChoiceButtons choices={snapChoices} disabled />
+		{:else}
+			<StereoStrip
+				onSelect={() => {}}
+				disabled={true}
+				panMin={zone.min}
+				panMax={zone.max}
+				errorMarginPan={diff.errorMarginPan}
+			/>
+		{/if}
 	{/snippet}
 
 	{#snippet playing()}
-		<p class="text-sm text-muted-foreground">
-			{ctrl.isTouchDevice
-				? 'Hold to aim, release to submit'
-				: 'Click where you hear the signal panned'}
-		</p>
-		<StereoStrip
-			onSelect={(pan) => ctrl.submit(pan)}
-			disabled={false}
-			panMin={zone.min}
-			panMax={zone.max}
-			errorMarginPan={diff.errorMarginPan}
-		/>
+		{#if diff.input === 'buttons'}
+			<p class="text-sm text-muted-foreground">Where is the signal panned?</p>
+			<ChoiceButtons choices={snapChoices} onSelect={(pan) => ctrl.submit(pan)} />
+		{:else}
+			<p class="text-sm text-muted-foreground">
+				{ctrl.isTouchDevice
+					? 'Hold to aim, release to submit'
+					: 'Click where you hear the signal panned'}
+			</p>
+			<StereoStrip
+				onSelect={(pan) => ctrl.submit(pan)}
+				disabled={false}
+				panMin={zone.min}
+				panMax={zone.max}
+				errorMarginPan={diff.errorMarginPan}
+			/>
+		{/if}
 	{/snippet}
 
 	{#snippet summary(round: PanRound)}
@@ -111,14 +126,18 @@
 	{/snippet}
 
 	{#snippet resultVisual(round: PanRound)}
-		<StereoStrip
-			onSelect={() => {}}
-			disabled={true}
-			targetPan={round.targetPan}
-			guessPan={round.guess}
-			panMin={zone.min}
-			panMax={zone.max}
-			errorMarginPan={diff.errorMarginPan}
-		/>
+		{#if diff.input === 'buttons'}
+			<ChoiceButtons choices={snapChoices} target={round.targetPan} guess={round.guess} disabled />
+		{:else}
+			<StereoStrip
+				onSelect={() => {}}
+				disabled={true}
+				targetPan={round.targetPan}
+				guessPan={round.guess}
+				panMin={zone.min}
+				panMax={zone.max}
+				errorMarginPan={diff.errorMarginPan}
+			/>
+		{/if}
 	{/snippet}
 </GameShell>

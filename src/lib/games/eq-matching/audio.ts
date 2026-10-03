@@ -8,20 +8,14 @@
  */
 
 import { AudioPlayer } from '$lib/audio/player.js';
-import { averageSpectrum, eqLoudnessDeltaDb, type BandSpectrum } from '$lib/audio/spectrum.js';
+import {
+	averageSpectrum,
+	compensationGainDb,
+	monoMix,
+	type BandSpectrum
+} from '$lib/audio/spectrum.js';
 import type { EqBand } from './config.js';
 import { MAX_BANDS } from './config.js';
-
-const MAX_COMPENSATION_DB = 12;
-
-function monoMix(buffer: AudioBuffer): Float32Array {
-	const out = new Float32Array(buffer.length);
-	for (let c = 0; c < buffer.numberOfChannels; c++) {
-		const data = buffer.getChannelData(c);
-		for (let i = 0; i < out.length; i++) out[i] += data[i] / buffer.numberOfChannels;
-	}
-	return out;
-}
 
 function applyBand(filter: BiquadFilterNode, band: EqBand): void {
 	filter.frequency.value = band.freq;
@@ -101,8 +95,7 @@ export class EqMatchingAudio {
 			else f.gain.value = 0; // transparent
 		}
 		if (gain && this.spectrum) {
-			const delta = eqLoudnessDeltaDb(this.spectrum, bands);
-			const comp = Math.max(-MAX_COMPENSATION_DB, Math.min(MAX_COMPENSATION_DB, -delta));
+			const comp = compensationGainDb(this.spectrum, bands);
 			gain.gain.value = Math.pow(10, comp / 20);
 		}
 	}

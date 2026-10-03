@@ -4,6 +4,19 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-03 — Phase 15: Freq ID + Panning reworks
+
+| Item | Files touched |
+|------|--------------|
+| Freq ID: Easy octave-band buttons (boost-only, Q 1.4), per-difficulty Q/gain/cuts, graded octave-error score, loudness compensation | `src/lib/games/freq-id/*`, page |
+| Panning: mono-sum source, Easy snap-position buttons, graded by distance | `src/lib/games/panning/*`, `audio/effects.ts` (`createMonoSum`), page |
+| Shared `monoMix` + `compensationGainDb` (deduped from EQ Matching) | `src/lib/audio/spectrum.ts` |
+| 91 unit tests, 13 E2E (both input styles per game) | |
+
+**Next:** Level Change Hard JND tier + loudness-normalised samples; Phase 13 sample tooling; Phase 16 new exercises.
+
+---
+
 ## 2026-10-03 — Phase 15: Dynamics
 
 | Item | Files touched |

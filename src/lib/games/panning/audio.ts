@@ -1,11 +1,12 @@
 /**
- * Panning ID audio — assembles an `AudioChain` with a single stereo panner.
- * A mode = center (dry). B mode = panned signal.
+ * Panning ID audio — `AudioChain` of mono-sum → stereo panner. Summing to mono
+ * first makes the panner place one source (a stereo mix through a panner is
+ * just a balance control). B mode = panned signal; the game only plays B.
  */
 
 import { AudioPlayer } from '$lib/audio/player.js';
 import { AudioChain } from '$lib/audio/chain.js';
-import { createPanner, type PannerHandle } from '$lib/audio/effects.js';
+import { createMonoSum, createPanner, type PannerHandle } from '$lib/audio/effects.js';
 
 export interface PanningAudio {
 	chain: AudioChain;
@@ -18,6 +19,7 @@ export function createPanningAudio(): PanningAudio {
 	let panner: PannerHandle | null = null;
 
 	const chain = new AudioChain(player, [
+		(ctx) => createMonoSum(ctx),
 		(ctx) => {
 			panner = createPanner(ctx, 0);
 			return panner;

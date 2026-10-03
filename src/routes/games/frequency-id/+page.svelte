@@ -1,5 +1,6 @@
 <script lang="ts">
 	import FreqStrip from '$lib/components/freq-strip.svelte';
+	import ChoiceButtons from '$lib/components/game/choice-buttons.svelte';
 	import GameShell from '$lib/components/game/game-shell.svelte';
 	import OptionGroup from '$lib/components/game/option-group.svelte';
 	import { createGameController } from '$lib/stores/game-controller.svelte.js';
@@ -9,6 +10,7 @@
 		DIFFICULTY_CONFIG,
 		ZONE_CONFIG,
 		ROUND_COUNT_OPTIONS,
+		bandsInZone,
 		type FreqIdRound,
 		type FreqIdOptions
 	} from '$lib/games/freq-id/config.js';
@@ -21,8 +23,8 @@
 		gameId: 'freq-id',
 		defaultOptions: DEFAULT_OPTIONS,
 		createConfig: createFreqIdConfig,
-		audio: audio.chain,
-		prepareRound: (round) => audio.setFilter(round.targetFreq, round.gainDb, 2.5),
+		audio: audio.playable,
+		prepareRound: (round) => audio.setFilter(round.targetFreq, round.gainDb, round.q),
 		sessionMeta: (rounds, o) => ({
 			difficulty: o.difficulty,
 			zone: o.zone,
@@ -33,12 +35,19 @@
 
 	const zone = $derived(ZONE_CONFIG[ctrl.options.zone]);
 	const diff = $derived(DIFFICULTY_CONFIG[ctrl.options.difficulty]);
+	const bandChoices = $derived(
+		bandsInZone(ctrl.options.zone).map((value) => ({ value, label: formatFreq(value) }))
+	);
 </script>
 
 <GameShell
 	{ctrl}
 	title="Frequency ID"
-	intro={`Press PLAY to hear the audio. Identify the frequency band where the EQ is applied. Margin ${formatOctaves(diff.errorMarginOctaves)}`}
+	graded
+	intro={diff.input === 'buttons'
+		? 'Press PLAY to hear the audio. Pick the octave band that is boosted.'
+		: `Press PLAY to hear the audio. Find the frequency where the EQ is applied — boosts and cuts. Margin ${formatOctaves(diff.errorMarginOctaves)}`}
+	legend="Both versions are loudness-matched"
 	modeLabels={{ A: 'Original', B: "EQ'd" }}
 	formatRound={(round, i) => ({
 		label: `Round ${i + 1}`,
@@ -71,26 +80,35 @@
 	{/snippet}
 
 	{#snippet idle()}
-		<FreqStrip
-			onSelect={() => {}}
-			disabled={true}
-			freqMin={zone.min}
-			freqMax={zone.max}
-			errorMarginOctaves={diff.errorMarginOctaves}
-		/>
+		{#if diff.input === 'buttons'}
+			<ChoiceButtons choices={bandChoices} disabled />
+		{:else}
+			<FreqStrip
+				onSelect={() => {}}
+				disabled={true}
+				freqMin={zone.min}
+				freqMax={zone.max}
+				errorMarginOctaves={diff.errorMarginOctaves}
+			/>
+		{/if}
 	{/snippet}
 
 	{#snippet playing()}
-		<p class="text-sm text-muted-foreground">
-			{ctrl.isTouchDevice ? 'Hold to aim, release to submit' : 'Click the frequency you hear'}
-		</p>
-		<FreqStrip
-			onSelect={(freq) => ctrl.submit(freq)}
-			disabled={false}
-			freqMin={zone.min}
-			freqMax={zone.max}
-			errorMarginOctaves={diff.errorMarginOctaves}
-		/>
+		{#if diff.input === 'buttons'}
+			<p class="text-sm text-muted-foreground">Which octave band is boosted?</p>
+			<ChoiceButtons choices={bandChoices} onSelect={(freq) => ctrl.submit(freq)} />
+		{:else}
+			<p class="text-sm text-muted-foreground">
+				{ctrl.isTouchDevice ? 'Hold to aim, release to submit' : 'Click the frequency you hear'}
+			</p>
+			<FreqStrip
+				onSelect={(freq) => ctrl.submit(freq)}
+				disabled={false}
+				freqMin={zone.min}
+				freqMax={zone.max}
+				errorMarginOctaves={diff.errorMarginOctaves}
+			/>
+		{/if}
 	{/snippet}
 
 	{#snippet summary(round: FreqIdRound)}
@@ -104,19 +122,23 @@
 		{/if}
 		<span class="rounded border border-border px-2 py-0.5 font-mono text-xs uppercase">
 			{round.gainDb > 0 ? 'BOOST' : 'CUT'}
-			{Math.abs(round.gainDb)} dB
+			{Math.abs(round.gainDb)} dB · Q {round.q}
 		</span>
 	{/snippet}
 
 	{#snippet resultVisual(round: FreqIdRound)}
-		<FreqStrip
-			onSelect={() => {}}
-			disabled={true}
-			targetFreq={round.targetFreq}
-			guessFreq={round.guess}
-			freqMin={zone.min}
-			freqMax={zone.max}
-			errorMarginOctaves={diff.errorMarginOctaves}
-		/>
+		{#if diff.input === 'buttons'}
+			<ChoiceButtons choices={bandChoices} target={round.targetFreq} guess={round.guess} disabled />
+		{:else}
+			<FreqStrip
+				onSelect={() => {}}
+				disabled={true}
+				targetFreq={round.targetFreq}
+				guessFreq={round.guess}
+				freqMin={zone.min}
+				freqMax={zone.max}
+				errorMarginOctaves={diff.errorMarginOctaves}
+			/>
+		{/if}
 	{/snippet}
 </GameShell>
