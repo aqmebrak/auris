@@ -45,6 +45,9 @@
 - **EQ scoring**: `matchScore` in `audio/eq-math.ts` (symmetric RMS-ratio on response, 75–10k). Doing nothing = 0, exact = 1. Misplaced band ≈ 0.29, half-gain ≈ 0.67.
 - **Loudness compensation** for EQ games = `eqLoudnessDeltaDb(averageSpectrum(sample), bands)` → inverse gain; recompute on every knob change (cheap).
 
+- **Dynamics**: own compressor (`CompressorDsp`) shared by AudioWorklet and offline analysis. `?worker&url` import works with Vite 8 + adapter-vercel (IIFE bundle in `_app/immutable/workers/`). Don't use `DynamicsCompressorNode` for ear training (fixed lookahead/knee). Both A/B paths auto-makeup'd to dry RMS.
+- **Shell commands**: `pkill -f <pattern>` kills your own shell if the pattern is in the command line — use `fuser -k PORT/tcp`.
+
 ## Do-Not-Repeat
 
 - **[2026-10-02] Suggested diversifying sample genres** — wrong: app targets rock/metal on purpose.
