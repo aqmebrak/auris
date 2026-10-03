@@ -4,6 +4,22 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-03 — Phase 15: Dynamics
+
+| Item | Files touched |
+|------|--------------|
+| Compressor DSP (soft knee, attack/release smoothing, stereo-linked), auto makeup, threshold-from-level | `src/lib/audio/compressor-dsp.ts` (+15 tests) |
+| AudioWorklet + node factory (`?worker&url`, bundles to self-contained IIFE) | `src/lib/audio/worklets/compressor.worklet.ts`, `compressor-node.ts` |
+| `DynamicsAudio` dual-path engine (each path bypass or compressed) | `src/lib/games/dynamics/audio.ts` |
+| Dynamics config: 5 modes × 3 difficulties, graded match | `src/lib/games/dynamics/config.ts` (+tests) |
+| Page, `ChoiceButtons`, `CompressorPanel`, `DynamicsMatchResult` | `src/routes/games/dynamics/`, `src/lib/components/` |
+| Removed Compressorist + coming-soon card; dashboard now has Dynamics | `src/routes/+page.svelte` |
+| E2E for all 5 modes (+ no page errors); worklet verified in Chromium (-12.7 dB GR vs -13.5 theory) | `src/routes/games/games.e2e.ts` |
+
+**Next:** Freq ID / Panning reworks, or Phase 13 sample tooling.
+
+---
+
 ## 2026-10-02 — Phase 15: EQ Matching v2
 
 | Item | Files touched |

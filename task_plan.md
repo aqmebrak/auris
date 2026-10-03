@@ -120,7 +120,7 @@ Fixes P2, P3, P8, P9 structurally so per-game rework is small.
 | **Freq ID** | Easy: boost-only +12 dB, wide Q (1.4), pick one of 7 octave bands (buttons). Medium: ±9–12 dB, continuous, ±½ oct. Hard: ±6–12 incl. cuts, Q 2.5–4, ±⅓ oct. Graded score by octave error. Option: pink-noise source. | P6 |
 | **Panning** | Mono stems only (`pickSample({ channels: 1 })`), equal-power pan. Easy: 5 snap positions (L, L½, C, R½, R). Medium ±0.15, Hard ±0.08. Graded score by distance. | P4 |
 | **Level Change** | Keep 2AFC. Add Hard JND tier (0.5–2 dB). Loudness-normalized samples make magnitudes consistent. Minor. | P5 |
-| **Dynamics** (replaces Compressorist + "Dynamics" card) | One game, `mode` option, normalized drum/stem sources, threshold relative to sample LUFS, auto makeup (loudness-matched): **Compressed?** (yes/no) → **Ratio** (2:1 / 4:1 / 10:1) → **Attack** (fast 1 ms / med 10 / slow 50) → **Release** (fast 50 / slow 500) → **Match** (capstone: ratio+attack+release, graded per param, no makeup knob). Reuse knob + GR meter. | P2, P3, P7 |
+| **Dynamics** ✅ (replaces Compressorist + coming-soon card) | Own compressor DSP (`audio/compressor-dsp.ts`, AudioWorklet, no lookahead, true attack/release) instead of `DynamicsCompressorNode`. Threshold = sample RMS + offset, makeup auto-computed so both paths are loudness-matched. Modes: **Detect** (which of 2 clips is compressed) → **Ratio** → **Attack** → **Release** (original vs compressed, choose value) → **Match** (ratio+attack+release knobs, graded 1/0.5/0 per param, GR meter only on Your settings). 3 difficulties tune threshold offset, ratios and choice sets. | P2, P3, P7 |
 
 ---
 

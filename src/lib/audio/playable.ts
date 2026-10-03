@@ -1,6 +1,6 @@
 /**
  * Minimal audio surface the game controller drives. `AudioChain` already
- * satisfies it; custom dual-chain engines (Compressorist, EQ Matching) too.
+ * satisfies it; custom dual-path engines (Dynamics, EQ Matching) too.
  */
 export interface Playable {
 	load(url: string): Promise<void>;

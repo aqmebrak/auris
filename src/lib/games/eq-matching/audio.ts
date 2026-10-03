@@ -2,7 +2,7 @@
  * EQ Matching audio — dual parallel peaking-EQ chains on one AudioContext.
  * A mode = user's EQ (live-adjustable knobs).
  * B mode = target EQ (hidden).
- * Both paths are effected — mirrors CompressoristAudio pattern.
+ * Both paths are effected — same dual-path idea as DynamicsAudio.
  * Each path ends in a gain that cancels the EQ's estimated loudness change for
  * the loaded sample, so A/B differences are tonal, not "louder = better".
  */

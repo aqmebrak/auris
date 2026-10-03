@@ -12,7 +12,6 @@ import {
 	Q_FIXED,
 	Q_STEPS
 } from './eq-matching/config.js';
-import { createCompressoristConfig, DIFFICULTY_STEPS } from './compressorist/config.js';
 
 const DIFFS = ['easy', 'medium', 'hard'] as const;
 const RUNS = 100;
@@ -118,22 +117,5 @@ describe('eq-matching scoring', () => {
 		const score = config.scoreGuess!(r, half);
 		expect(score).toBeGreaterThan(0.5);
 		expect(score).toBeLessThan(1);
-	});
-});
-
-describe('compressorist', () => {
-	it('targets use only the difficulty steps and exact match passes', () => {
-		for (const difficulty of DIFFS) {
-			const config = createCompressoristConfig({ difficulty, roundCount: 5 });
-			const steps = DIFFICULTY_STEPS[difficulty];
-			for (let i = 0; i < RUNS; i++) {
-				const r = config.generateRound();
-				expect(steps.attacks).toContain(r.targetParams.attack);
-				expect(steps.releases).toContain(r.targetParams.release);
-				expect(steps.ratios).toContain(r.targetParams.ratio);
-				expect(steps.makeups).toContain(r.targetParams.makeup);
-				expect(config.evaluateGuess(r, r.targetParams)).toBe(true);
-			}
-		}
 	});
 });

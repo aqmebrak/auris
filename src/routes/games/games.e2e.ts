@@ -5,7 +5,30 @@ async function clickCenter(page: Page, role: 'slider') {
 	await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 }
 
-const GAMES = [
+interface Game {
+	name: string;
+	path: string;
+	hasAB: boolean;
+	setup?: (page: Page) => Promise<void>;
+	answer: (page: Page) => Promise<void>;
+}
+
+const dynamics = (mode: string, answer: Game['answer']): Game => ({
+	name: `dynamics-${mode}`,
+	path: '/games/dynamics',
+	hasAB: true,
+	setup: (page: Page) => page.getByRole('button', { name: mode, exact: true }).click(),
+	answer
+});
+const clickFirst = (name: RegExp) => (page: Page) =>
+	page.getByRole('button', { name }).first().click();
+
+const GAMES: Game[] = [
+	dynamics('Detect', clickFirst(/^Clip 1$/)),
+	dynamics('Ratio', clickFirst(/^(\d+(\.\d+)?|∞):1$/)),
+	dynamics('Attack', clickFirst(/^\d+ ms$/)),
+	dynamics('Release', clickFirst(/^\d+ ms$/)),
+	dynamics('Match', (page: Page) => page.getByRole('button', { name: 'SUBMIT' }).click()),
 	{
 		name: 'panning',
 		path: '/games/panning',
@@ -34,7 +57,10 @@ const GAMES = [
 
 for (const game of GAMES) {
 	test(`${game.name}: full 3-round session`, async ({ page }) => {
+		const errors: string[] = [];
+		page.on('pageerror', (e) => errors.push(e.message));
 		await page.goto(game.path);
+		await game.setup?.(page);
 		await page.getByRole('button', { name: '3', exact: true }).click();
 		await page.getByRole('button', { name: 'Easy' }).click();
 		await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
@@ -62,5 +88,6 @@ for (const game of GAMES) {
 		}
 
 		await expect(page.getByText('GAME OVER')).toBeVisible();
+		expect(errors).toEqual([]);
 	});
 }
