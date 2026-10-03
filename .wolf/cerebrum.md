@@ -48,6 +48,9 @@
 - **Dynamics**: own compressor (`CompressorDsp`) shared by AudioWorklet and offline analysis. `?worker&url` import works with Vite 8 + adapter-vercel (IIFE bundle in `_app/immutable/workers/`). Don't use `DynamicsCompressorNode` for ear training (fixed lookahead/knee). Both A/B paths auto-makeup'd to dry RMS.
 - **Shell commands**: `pkill -f <pattern>` kills your own shell if the pattern is in the command line — use `fuser -k PORT/tcp`.
 
+- **Graded scoring pattern** for continuous guesses: `score = max(0, 1 − err / (2·margin))`, `passThreshold 0.5` ⇒ correct exactly when err ≤ margin. Used by Freq ID and Panning. Easy = buttons (snap values), Medium/Hard = strip.
+- Games whose A/B changes spectrum use `compensationGainDb(spectrum, bands)` after the effect; spectrum from `averageSpectrum(monoMix(buffer), sampleRate)` on load.
+
 ## Do-Not-Repeat
 
 - **[2026-10-02] Suggested diversifying sample genres** — wrong: app targets rock/metal on purpose.
