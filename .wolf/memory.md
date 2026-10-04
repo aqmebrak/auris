@@ -235,3 +235,4 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 10:45 | Phase 13 sample library: pnpm samples, library.ts, FLAC migration, preload | scripts/, audio/library.ts, player/chain/controller | all green | ~70k |
+| 11:20 | Sample-aware targets in EQ Matching/Guess/Freq ID + tests | games/*/config.ts, audio/library.ts | all green | ~40k |
