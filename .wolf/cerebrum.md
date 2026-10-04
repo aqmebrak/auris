@@ -53,6 +53,9 @@
 
 - **UX rule (2026-10-04)**: no layout shift between game states. Elements shown in a later state are rendered from the start, disabled. Interactive controls need `cursor-pointer` (`cursor-not-allowed` when disabled). Planned in task_plan.md "UX consistency".
 
+- **Sample pipeline**: raw → `samples-src/` (gitignored, convention `{kind}_{source}_{bpm}_{name}`) → `pnpm samples` → `static/audio/*.flac` + `src/lib/audio/library.json` (generated, prettier-ignored) + CREDITS.md. Games call `pickTrack(filter?)`; use `audibleFreqs(sample, candidates, 'boost'|'cut')` to pick fair EQ targets. Thresholds: boost ≥ −30 dB, cut ≥ −20 dB re loudest 1/3-oct band.
+- Existing sample licences are **unverified** (freesound) — ask user before any public release.
+
 ## Do-Not-Repeat
 
 - **[2026-10-02] Suggested diversifying sample genres** — wrong: app targets rock/metal on purpose.
