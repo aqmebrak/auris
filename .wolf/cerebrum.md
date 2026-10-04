@@ -51,6 +51,8 @@
 - **Graded scoring pattern** for continuous guesses: `score = max(0, 1 − err / (2·margin))`, `passThreshold 0.5` ⇒ correct exactly when err ≤ margin. Used by Freq ID and Panning. Easy = buttons (snap values), Medium/Hard = strip.
 - Games whose A/B changes spectrum use `compensationGainDb(spectrum, bands)` after the effect; spectrum from `averageSpectrum(monoMix(buffer), sampleRate)` on load.
 
+- **UX rule (2026-10-04)**: no layout shift between game states. Elements shown in a later state are rendered from the start, disabled. Interactive controls need `cursor-pointer` (`cursor-not-allowed` when disabled). Planned in task_plan.md "UX consistency".
+
 ## Do-Not-Repeat
 
 - **[2026-10-02] Suggested diversifying sample genres** — wrong: app targets rock/metal on purpose.

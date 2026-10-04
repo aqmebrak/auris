@@ -91,6 +91,24 @@ Raised after playing EQ Matching: a boost/cut is only fair if the sample has ene
 
 ---
 
+## UX consistency across game states ⬜ (before Phase 16)
+
+Reported 2026-10-04: layout shifts between states. In EQ Matching the idle screen hides the A/B toggle but keeps the graph, then PLAY makes the buttons appear and the whole board jumps down.
+
+**Rule:** if an element appears in a later state of the same round, render it from the start in a disabled/inert state instead of mounting it later. Layout must not shift between `idle → playing → roundResult` (and next round's `idle`).
+
+| Task | Status | Notes |
+| ---- | ------ | ----- |
+| `GameShell`: always render the transport bar (A/B toggle + play/pause/replay) in idle, `disabled` until a round is playing; same slot, same height | ⬜ | removes the main jump in every game |
+| Idle boards mirror the playing board's structure (same containers/heights): EQ Matching shows all band knob groups disabled, Dynamics Match shows panel + submit disabled, choice games show disabled cards, SUBMIT visible-but-disabled | ⬜ | idle snippets currently differ from playing snippets |
+| Result screen keeps the board in place (disabled, with target overlay) and swaps only the transport for NEXT/FINISH | ⬜ | today the whole board is replaced by the summary card |
+| Reserve fixed height for variable text (intro/hint lines, result banner) so it can't push content | ⬜ | |
+| Disabled styling in one place (`opacity-50`, `pointer-events-none`, `aria-disabled`) — shared helper/class, not per component | ⬜ | |
+| Playwright layout-stability check: record bounding boxes of the board + transport in each state; assert no vertical shift | ⬜ | per game, desktop and 402px mobile |
+| `cursor-pointer` on interactive controls that lack it: A/B toggle buttons (`ab-toggle.svelte`), `choice-buttons.svelte`, `db-choice`, `eq-choice`; `cursor-not-allowed` when disabled | ⬜ | audit all `<button>` in `src/lib/components/` |
+
+---
+
 ## Phase 14 — Engine v2 ⬜
 
 Fixes P2, P3, P8, P9 structurally so per-game rework is small.
@@ -172,5 +190,6 @@ Ordered by value ÷ effort. All reuse engine v2 + shared components.
 
 1. **Phase 14** (engine v2) + **Phase 13** tooling in parallel — no samples needed to start.
 2. **Phase 15** reworks, P1 (EQ Guess tell) first — it's a 1-file fix.
-3. **Phase 16** #1, #4, #5 (work with mixes) → #2, #3, #6, #7 as samples arrive.
-4. **Phase 17**.
+3. **UX consistency** (above) — touches every game page, so do it before adding more.
+4. **Phase 16** #1, #4, #5 (work with mixes) → #2, #3, #6, #7 as samples arrive.
+5. **Phase 17**.
