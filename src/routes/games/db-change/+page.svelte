@@ -3,6 +3,7 @@
 	import GameShell from '$lib/components/game/game-shell.svelte';
 	import OptionGroup from '$lib/components/game/option-group.svelte';
 	import { createGameController } from '$lib/stores/game-controller.svelte.js';
+	import type { BoardState } from '$lib/game/board.js';
 	import {
 		createDbChangeConfig,
 		DEFAULT_OPTIONS,
@@ -38,6 +39,7 @@
 	{ctrl}
 	title="Level Change"
 	intro="Press PLAY to hear the audio. Switch between Original and Gained to compare. Select the correct dB value."
+	instruction="Select which dB value was applied to the signal"
 	modeLabels={{ A: 'Original', B: 'Gained' }}
 	formatRound={(round, i) => ({
 		label: `Round ${i + 1}`,
@@ -63,24 +65,18 @@
 		</div>
 	{/snippet}
 
-	{#snippet idle()}
-		<div class="grid grid-cols-2 gap-6">
-			{#each [0, 1] as i (i)}
-				<div
-					class="min-h-40 rounded border border-border p-8 font-mono text-3xl tracking-widest text-muted-foreground/30 select-none"
-				>
-					— dB
-				</div>
-			{/each}
-		</div>
+	{#snippet board(round: GainRound, ui: BoardState)}
+		<DbChoice
+			options={round.options}
+			targetDb={ui.revealed ? round.targetDb : null}
+			guess={ui.revealed ? round.guess : null}
+			disabled={!ui.interactive}
+			masked={ui.phase === 'idle'}
+			onSelect={(db) => ctrl.submit(db)}
+		/>
 	{/snippet}
 
-	{#snippet playing(round: GainRound)}
-		<p class="text-sm text-muted-foreground">Select which dB value was applied to the signal</p>
-		<DbChoice options={round.options} onSelect={(db) => ctrl.submit(db)} />
-	{/snippet}
-
-	{#snippet summary(round: GainRound)}
+	{#snippet feedback(round: GainRound)}
 		<span>
 			Target: <span class="font-mono text-foreground">{formatDb(round.targetDb)}</span>
 		</span>
@@ -89,14 +85,5 @@
 				Your guess: <span class="font-mono text-foreground">{formatDb(round.guess)}</span>
 			</span>
 		{/if}
-	{/snippet}
-
-	{#snippet resultVisual(round: GainRound)}
-		<DbChoice
-			options={round.options}
-			targetDb={round.targetDb}
-			guess={round.guess}
-			disabled={true}
-		/>
 	{/snippet}
 </GameShell>

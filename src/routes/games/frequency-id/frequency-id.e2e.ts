@@ -11,7 +11,10 @@ test('frequency id: play a full 3-round session with keyboard + mouse', async ({
 
 	for (let round = 1; round <= 3; round++) {
 		await page.keyboard.press('Enter'); // start via keyboard
-		await expect(page.getByText('Click the frequency you hear')).toBeVisible({ timeout: 20000 });
+		await expect(page.getByRole('button', { name: 'REPLAY', exact: true })).toBeEnabled({
+			timeout: 20000
+		});
+		await expect(page.getByText('Click the frequency you hear')).toBeVisible();
 
 		await page.keyboard.press('b'); // A/B shortcuts shouldn't throw
 		await page.keyboard.press('a');
@@ -37,5 +40,5 @@ test('frequency id: play a full 3-round session with keyboard + mouse', async ({
 	expect(stats.history[0].accuracy).toBeGreaterThanOrEqual(0);
 	expect(stats.history[0].meta.rounds).toHaveLength(3);
 	await page.getByRole('button', { name: 'PLAY AGAIN' }).click();
-	await expect(page.getByRole('button', { name: 'PLAY' })).toBeVisible();
+	await expect(page.getByRole('button', { name: 'PLAY', exact: true })).toBeVisible();
 });

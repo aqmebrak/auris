@@ -4,6 +4,7 @@
 	import GameShell from '$lib/components/game/game-shell.svelte';
 	import OptionGroup from '$lib/components/game/option-group.svelte';
 	import { createGameController } from '$lib/stores/game-controller.svelte.js';
+	import type { BoardState } from '$lib/game/board.js';
 	import {
 		createPanningConfig,
 		DEFAULT_OPTIONS,
@@ -50,6 +51,11 @@
 	title="Panning"
 	graded
 	intro={`Use headphones. The track is summed to mono and panned — find where it sits. ${diff.input === 'buttons' ? 'Pick the nearest position.' : `Margin ±${Math.round(diff.errorMarginPan * 100)}%`}`}
+	instruction={diff.input === 'buttons'
+		? 'Where is the signal panned?'
+		: ctrl.isTouchDevice
+			? 'Hold to aim, release to submit'
+			: 'Click where you hear the signal panned'}
 	formatRound={(round, i) => ({
 		label: `Round ${i + 1}`,
 		primary: formatPan(round.targetPan),
@@ -80,33 +86,21 @@
 		</div>
 	{/snippet}
 
-	{#snippet idle()}
+	{#snippet board(round: PanRound, ui: BoardState)}
 		{#if diff.input === 'buttons'}
-			<ChoiceButtons choices={snapChoices} disabled />
-		{:else}
-			<StereoStrip
-				onSelect={() => {}}
-				disabled={true}
-				panMin={zone.min}
-				panMax={zone.max}
-				errorMarginPan={diff.errorMarginPan}
+			<ChoiceButtons
+				choices={snapChoices}
+				target={ui.revealed ? round.targetPan : null}
+				guess={ui.revealed ? round.guess : null}
+				disabled={!ui.interactive}
+				onSelect={(pan) => ctrl.submit(pan)}
 			/>
-		{/if}
-	{/snippet}
-
-	{#snippet playing()}
-		{#if diff.input === 'buttons'}
-			<p class="text-sm text-muted-foreground">Where is the signal panned?</p>
-			<ChoiceButtons choices={snapChoices} onSelect={(pan) => ctrl.submit(pan)} />
 		{:else}
-			<p class="text-sm text-muted-foreground">
-				{ctrl.isTouchDevice
-					? 'Hold to aim, release to submit'
-					: 'Click where you hear the signal panned'}
-			</p>
 			<StereoStrip
 				onSelect={(pan) => ctrl.submit(pan)}
-				disabled={false}
+				disabled={!ui.interactive}
+				targetPan={ui.revealed ? round.targetPan : null}
+				guessPan={ui.revealed ? round.guess : null}
 				panMin={zone.min}
 				panMax={zone.max}
 				errorMarginPan={diff.errorMarginPan}
@@ -114,7 +108,7 @@
 		{/if}
 	{/snippet}
 
-	{#snippet summary(round: PanRound)}
+	{#snippet feedback(round: PanRound)}
 		<span>
 			Target: <span class="font-mono text-foreground">{formatPan(round.targetPan)}</span>
 		</span>
@@ -122,22 +116,6 @@
 			<span>
 				Your guess: <span class="font-mono text-foreground">{formatPan(round.guess)}</span>
 			</span>
-		{/if}
-	{/snippet}
-
-	{#snippet resultVisual(round: PanRound)}
-		{#if diff.input === 'buttons'}
-			<ChoiceButtons choices={snapChoices} target={round.targetPan} guess={round.guess} disabled />
-		{:else}
-			<StereoStrip
-				onSelect={() => {}}
-				disabled={true}
-				targetPan={round.targetPan}
-				guessPan={round.guess}
-				panMin={zone.min}
-				panMax={zone.max}
-				errorMarginPan={diff.errorMarginPan}
-			/>
 		{/if}
 	{/snippet}
 </GameShell>

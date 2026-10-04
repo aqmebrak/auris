@@ -3,6 +3,7 @@
 	import ChoiceButtons from '$lib/components/game/choice-buttons.svelte';
 	import CompressorPanel from '$lib/components/compressor-panel.svelte';
 	import DynamicsMatchResult from '$lib/components/dynamics-match-result.svelte';
+	import type { BoardState } from '$lib/game/board.js';
 	import GameShell from '$lib/components/game/game-shell.svelte';
 	import OptionGroup from '$lib/components/game/option-group.svelte';
 	import { createGameController } from '$lib/stores/game-controller.svelte.js';
@@ -77,6 +78,9 @@
 	title="Dynamics"
 	graded={mode === 'match'}
 	intro={`${MODE_CONFIG[mode].intro}${mode === 'match' ? ` You need a ${Math.round(diff.passThreshold * 100)}% match.` : ''}`}
+	instruction={mode === 'match'
+		? 'Make Your settings sound like the Target, then submit.'
+		: MODE_CONFIG[mode].intro}
 	modeLabels={modeSideLabels(mode)}
 	legend="Both versions are loudness-matched"
 	formatRound={(round, i) => ({
@@ -109,49 +113,44 @@
 		</div>
 	{/snippet}
 
-	{#snippet idle(round: DynamicsRound)}
-		{#if mode === 'match'}
-			<CompressorPanel spec={userSpec} {steps} disabled />
-		{:else}
-			<ChoiceButtons
-				choices={round.choices.map((value) => ({ value, label: choiceLabel(mode, value) }))}
-				disabled
-			/>
-		{/if}
-	{/snippet}
-
-	{#snippet playing(round: DynamicsRound)}
+	{#snippet board(round: DynamicsRound, ui: BoardState)}
 		{#if round.mode === 'match'}
-			<p class="text-sm text-muted-foreground">
-				Make Your settings sound like the Target, then submit.
-			</p>
 			<CompressorPanel
-				spec={userSpec}
+				spec={ui.revealed && round.guess ? (round.guess as CompSpec) : userSpec}
 				{steps}
+				disabled={!ui.interactive}
 				onChange={(s) => (userSpec = s)}
 				getReduction={() => audio.getReduction()}
-				meterActive={!ctrl.isPaused && ctrl.abMode === 'A'}
+				meterActive={ui.interactive && !ctrl.isPaused && ctrl.abMode === 'A'}
 			/>
 			<div class="flex justify-center">
 				<Button
 					size="lg"
 					class="px-12 text-sm tracking-widest"
+					disabled={!ui.interactive}
 					onclick={() => ctrl.submit({ ...userSpec })}
 				>
 					SUBMIT
 				</Button>
 			</div>
 		{:else}
-			<p class="text-sm text-muted-foreground">{MODE_CONFIG[round.mode].intro}</p>
 			<ChoiceButtons
 				choices={round.choices.map((value) => ({ value, label: choiceLabel(round.mode, value) }))}
+				target={ui.revealed ? (round.answer as number) : null}
+				guess={ui.revealed ? (round.guess as number | null) : null}
+				disabled={!ui.interactive}
 				onSelect={(v) => ctrl.submit(v)}
 			/>
 		{/if}
 	{/snippet}
 
-	{#snippet summary(round: DynamicsRound)}
-		{#if round.mode !== 'match'}
+	{#snippet feedback(round: DynamicsRound)}
+		{#if round.mode === 'match'}
+			<DynamicsMatchResult
+				target={round.answer as CompSpec}
+				guess={round.guess as CompSpec | null}
+			/>
+		{:else}
 			<span>
 				Answer: <span class="font-mono text-foreground">{answerLabel(round, round.answer)}</span>
 			</span>
@@ -160,22 +159,6 @@
 					Yours: <span class="font-mono text-foreground">{answerLabel(round, round.guess)}</span>
 				</span>
 			{/if}
-		{/if}
-	{/snippet}
-
-	{#snippet resultVisual(round: DynamicsRound)}
-		{#if round.mode === 'match'}
-			<DynamicsMatchResult
-				target={round.answer as CompSpec}
-				guess={round.guess as CompSpec | null}
-			/>
-		{:else}
-			<ChoiceButtons
-				choices={round.choices.map((value) => ({ value, label: choiceLabel(round.mode, value) }))}
-				target={round.answer as number}
-				guess={round.guess as number | null}
-				disabled
-			/>
 		{/if}
 	{/snippet}
 </GameShell>

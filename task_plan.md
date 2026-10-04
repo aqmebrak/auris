@@ -91,7 +91,7 @@ Raised after playing EQ Matching: a boost/cut is only fair if the sample has ene
 
 ---
 
-## UX consistency across game states ⬜ (before Phase 16)
+## UX consistency across game states ✅
 
 Reported 2026-10-04: layout shifts between states. In EQ Matching the idle screen hides the A/B toggle but keeps the graph, then PLAY makes the buttons appear and the whole board jumps down.
 
@@ -193,4 +193,5 @@ Ordered by value ÷ effort. All reuse engine v2 + shared components.
 3. **UX consistency** (above) — touches every game page, so do it before adding more.
 4. **Phase 16** #1, #4, #5 (work with mixes) → #2, #3, #6, #7 as samples arrive.
 5. **Phase 17**.
+
 

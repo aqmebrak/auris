@@ -3,6 +3,7 @@
 	import EqBandKnobs from '$lib/components/eq-band-knobs.svelte';
 	import EqCurve from '$lib/components/eq-curve.svelte';
 	import EqMatchResult from '$lib/components/eq-match-result.svelte';
+	import type { BoardState } from '$lib/game/board.js';
 	import GameShell from '$lib/components/game/game-shell.svelte';
 	import OptionGroup from '$lib/components/game/option-group.svelte';
 	import { createGameController } from '$lib/stores/game-controller.svelte.js';
@@ -69,6 +70,7 @@
 	title="EQ Matching"
 	graded
 	intro={`Press PLAY to hear the Target. Switch to Your EQ and adjust the band knobs until it sounds the same — the curve shows your EQ live. You need a ${Math.round(diff.passThreshold * 100)}% match.`}
+	instruction="Make Your EQ sound like the Target, then submit."
 	modeLabels={{ A: 'Your EQ', B: 'Target' }}
 	legend="Both versions are loudness-matched"
 	formatRound={(round, i) => ({
@@ -98,25 +100,18 @@
 		</div>
 	{/snippet}
 
-	{#snippet idle()}
-		<div class="rounded border border-zinc-800 bg-zinc-950 p-6 opacity-50" aria-hidden="true">
-			<EqCurve bands={userBands} class="h-56 md:h-80" />
-			<div class="mt-6 flex flex-wrap justify-around gap-8">
-				{#each userBands as band, i (i)}
-					<EqBandKnobs {band} gainPool={diff.gainPool} qEditable={diff.qEditable} disabled />
-				{/each}
-			</div>
-		</div>
-	{/snippet}
-
-	{#snippet playing()}
-		<p class="text-sm text-muted-foreground">Make Your EQ sound like the Target, then submit.</p>
+	{#snippet board(round: EqMatchingRound, ui: BoardState)}
+		{@const shown = ui.revealed && round.guess ? round.guess : userBands}
 		<!-- Pinned on small screens so the curve stays visible while turning knobs -->
 		<div class="sticky top-12 z-10 rounded border border-zinc-700 bg-zinc-950 p-3 md:static md:p-4">
-			<EqCurve bands={userBands} class="h-40 md:h-80" />
+			<EqCurve
+				bands={shown}
+				compare={ui.revealed ? round.targetBands : undefined}
+				class="h-40 md:h-80"
+			/>
 		</div>
 		<div class="flex flex-col gap-6">
-			{#each userBands as band, i (i)}
+			{#each shown as band, i (i)}
 				<div class="rounded border border-zinc-800 bg-zinc-950 px-6 py-4">
 					<p class="mb-4 text-xs font-medium tracking-widest text-zinc-500 uppercase">
 						Band {i + 1}
@@ -125,6 +120,7 @@
 						{band}
 						gainPool={diff.gainPool}
 						qEditable={diff.qEditable}
+						disabled={!ui.interactive}
 						onChange={(b) => (userBands[i] = b)}
 					/>
 				</div>
@@ -134,6 +130,7 @@
 			<Button
 				size="lg"
 				class="px-12 text-sm tracking-widest"
+				disabled={!ui.interactive}
 				onclick={() => ctrl.submit(userBands.map((b) => ({ ...b })))}
 			>
 				SUBMIT
@@ -141,7 +138,7 @@
 		</div>
 	{/snippet}
 
-	{#snippet summary(round: EqMatchingRound)}
+	{#snippet feedback(round: EqMatchingRound)}
 		<span>
 			Target: <span class="font-mono text-foreground">{bandSummary(round.targetBands)}</span>
 		</span>
@@ -149,10 +146,7 @@
 			<span>
 				Yours: <span class="font-mono text-foreground">{bandSummary(round.guess)}</span>
 			</span>
+			<EqMatchResult target={round.targetBands} guess={round.guess} showQ={diff.qEditable} />
 		{/if}
-	{/snippet}
-
-	{#snippet resultVisual(round: EqMatchingRound)}
-		<EqMatchResult target={round.targetBands} guess={round.guess ?? []} showQ={diff.qEditable} />
 	{/snippet}
 </GameShell>

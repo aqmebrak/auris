@@ -22,7 +22,7 @@
 <div class="grid grid-cols-2 gap-4 sm:flex sm:flex-wrap sm:justify-center">
 	{#each choices as choice (choice.value)}
 		<button
-			class="min-h-20 rounded border px-6 font-mono text-xl tracking-widest transition-colors sm:min-w-36 {cls(
+			class="min-h-20 cursor-pointer rounded border px-6 font-mono text-xl tracking-widest transition-colors disabled:cursor-not-allowed sm:min-w-36 {cls(
 				choice.value
 			)}"
 			{disabled}

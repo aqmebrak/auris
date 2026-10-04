@@ -101,15 +101,32 @@ owns header + phase switching. The page only supplies snippets.
   });
 </script>
 
-<GameShell {ctrl} title="My Game" intro="…" legend="A = … · B = …" formatRound={...}>
+<GameShell {ctrl} title="My Game" intro="…" instruction="…" modeLabels={{ A: 'Original', B: 'Processed' }}
+  formatRound={...}>
   {#snippet options()} <OptionGroup label="Difficulty" choices={labelled(DIFFICULTY_CONFIG)}
     selected={ctrl.options.difficulty} onSelect={(v) => ctrl.setOption('difficulty', v)} /> {/snippet}
-  {#snippet idle()} <!-- disabled input --> {/snippet}
-  {#snippet playing(round)} <!-- input; call ctrl.submit(guess) --> {/snippet}
-  {#snippet summary(round)} <!-- result text --> {/snippet}
-  {#snippet resultVisual(round)} <!-- optional --> {/snippet}
+
+  <!-- ONE board for every phase: same structure, only flags change -->
+  {#snippet board(round, ui)}
+    <MyInput
+      disabled={!ui.interactive}                 <!-- inputs live only while playing -->
+      target={ui.revealed ? round.target : null} <!-- answer shown only on the result screen -->
+      guess={ui.revealed ? round.guess : null}
+      onSelect={(g) => ctrl.submit(g)}
+    />
+    <!-- extra controls (e.g. SUBMIT) are rendered in every phase, disabled unless ui.interactive -->
+  {/snippet}
+
+  {#snippet feedback(round)} <!-- summary chips / tables, shown under the board on result --> {/snippet}
 </GameShell>
 ```
+
+**No layout shift.** Anything that appears in a later state of the round is rendered
+from the start, disabled (`ui.interactive`), never mounted later. Options, the hint line
+and the transport bar are always present (the shell handles them). Hide secret values
+with a `masked` mode, not by removing the element. `layout.e2e.ts` asserts options /
+hint / board keep their position and size through idle → playing → result → next idle,
+so register new games in `src/routes/games/game-fixtures.ts`.
 
 Rounds must carry `sampleUrl` (`SampleRound` in `types.ts`). Reference
 implementations: `frequency-id` (strip input), `db-change` (2AFC cards).

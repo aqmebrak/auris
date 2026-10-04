@@ -49,6 +49,11 @@ export function createGameController<
 		recorded = false;
 	}
 
+	/** The board stays mounted between phases; drop focus so Enter/Space shortcuts keep working. */
+	function releaseFocus() {
+		if (browser) (document.activeElement as HTMLElement | null)?.blur?.();
+	}
+
 	function halt() {
 		audio.stop();
 		isPaused = true;
@@ -133,11 +138,13 @@ export function createGameController<
 		},
 
 		submit(guess: TG): void {
+			releaseFocus();
 			halt();
 			game.submit(guess);
 		},
 
 		next(): void {
+			releaseFocus();
 			halt();
 			game.next();
 			if (game.phase === 'gameOver') record();

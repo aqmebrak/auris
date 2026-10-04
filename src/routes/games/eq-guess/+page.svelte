@@ -3,6 +3,7 @@
 	import GameShell from '$lib/components/game/game-shell.svelte';
 	import OptionGroup from '$lib/components/game/option-group.svelte';
 	import { createGameController } from '$lib/stores/game-controller.svelte.js';
+	import type { BoardState } from '$lib/game/board.js';
 	import {
 		createEqGuessConfig,
 		DEFAULT_OPTIONS,
@@ -44,6 +45,7 @@
 	{ctrl}
 	title="EQ Guess"
 	intro="Press PLAY to hear the EQ'd audio. Switch between Original and EQ'd to compare. Click the card that matches what you hear."
+	instruction="Click the EQ that matches what you hear."
 	modeLabels={{ A: 'Original', B: "EQ'd" }}
 	formatRound={(round, i) => ({
 		label: `Round ${i + 1}`,
@@ -69,23 +71,18 @@
 		</div>
 	{/snippet}
 
-	{#snippet idle()}
-		<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-			{#each [0, 1] as i (i)}
-				<div class="rounded border border-border p-4 opacity-30" aria-hidden="true">
-					<div class="h-20 w-full rounded bg-zinc-900"></div>
-					<p class="mt-3 font-mono text-xs text-muted-foreground">— Hz — dB · — Hz — dB</p>
-				</div>
-			{/each}
-		</div>
+	{#snippet board(round: EqGuessRound, ui: BoardState)}
+		<EqChoice
+			options={round.options}
+			targetEq={ui.revealed ? round.targetEq : null}
+			guess={ui.revealed ? round.guess : null}
+			disabled={!ui.interactive}
+			masked={ui.phase === 'idle'}
+			onSelect={(eq) => ctrl.submit(eq)}
+		/>
 	{/snippet}
 
-	{#snippet playing(round: EqGuessRound)}
-		<p class="text-sm text-muted-foreground">Click the EQ that matches what you hear in B.</p>
-		<EqChoice options={round.options} onSelect={(eq) => ctrl.submit(eq)} />
-	{/snippet}
-
-	{#snippet summary(round: EqGuessRound)}
+	{#snippet feedback(round: EqGuessRound)}
 		<span>
 			Target: <span class="font-mono text-foreground">{bandSummary(round.targetEq)}</span>
 		</span>
@@ -94,14 +91,5 @@
 				Your guess: <span class="font-mono text-foreground">{bandSummary(round.guess)}</span>
 			</span>
 		{/if}
-	{/snippet}
-
-	{#snippet resultVisual(round: EqGuessRound)}
-		<EqChoice
-			options={round.options}
-			targetEq={round.targetEq}
-			guess={round.guess}
-			disabled={true}
-		/>
 	{/snippet}
 </GameShell>

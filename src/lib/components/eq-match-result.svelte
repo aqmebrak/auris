@@ -1,5 +1,4 @@
 <script lang="ts">
-	import EqCurve from '$lib/components/eq-curve.svelte';
 	import type { EqBand } from '$lib/games/eq-matching/config.js';
 	import { formatFreq, formatDb, formatQ } from '$lib/format.js';
 
@@ -16,15 +15,7 @@
 	const guessSorted = $derived(byFreq(guess));
 </script>
 
-<div class="flex w-full flex-col gap-6">
-	<div class="rounded border border-zinc-800 bg-zinc-950 p-3">
-		<p class="mb-2 flex gap-4 text-xs tracking-widest uppercase">
-			<span class="text-green-500">- - Target</span>
-			<span class="text-primary">— Yours</span>
-		</p>
-		<EqCurve bands={guess} compare={target} class="h-56 md:h-72" />
-	</div>
-
+<div class="w-full">
 	<table class="w-full border-collapse font-mono text-sm">
 		<thead>
 			<tr class="text-xs tracking-widest text-muted-foreground uppercase">

@@ -4,6 +4,23 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-04 — UX consistency across game states
+
+| Item | Files touched |
+|------|--------------|
+| Single `board(round, ui)` snippet per game, rendered in idle/playing/result; `BoardState` flags (interactive/revealed) | `src/lib/game/board.ts`, all 6 game pages |
+| Shell: options always rendered (locked after start), fixed-height hint (grid-stacked texts), result banner under the board, transport always present | `game-shell.svelte`, `transport-bar.svelte`, `result-banner.svelte` |
+| `.is-locked` utility; `masked` DbChoice/EqChoice; `cursor-pointer`/`not-allowed` on toggle + choice buttons | `layout.css`, components |
+| Controller drops focus on submit/next (board persists, so Enter/Space shortcuts kept dying on the focused strip) | `game-controller.svelte.ts` |
+| Result banner scrolls into view above the sticky bar; option rows wrap on mobile | shell, `option-group` |
+| Layout-stability E2E: options/hint/board position+size and transport height across 4 states, 9 game configs × desktop/mobile | `layout.e2e.ts`, `game-fixtures.ts` |
+
+35 E2E, 109 unit.
+
+**Next:** Phase 16 new exercises (Filter Finder first), or Level Change Hard tier.
+
+---
+
 ## 2026-10-04 — Sample-aware targets
 
 | Item | Files touched |
