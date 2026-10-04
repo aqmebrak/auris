@@ -236,3 +236,4 @@
 |------|--------|---------|---------|--------|
 | 10:45 | Phase 13 sample library: pnpm samples, library.ts, FLAC migration, preload | scripts/, audio/library.ts, player/chain/controller | all green | ~70k |
 | 11:20 | Sample-aware targets in EQ Matching/Guess/Freq ID + tests | games/*/config.ts, audio/library.ts | all green | ~40k |
+| 12:30 | UX consistency: board snippet, transport always present, layout E2E, focus fix | game-shell, transport-bar, all game pages, layout.e2e.ts | 35 e2e green | ~120k |
