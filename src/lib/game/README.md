@@ -20,7 +20,8 @@ src/lib/audio/           ← you compose these
   player.ts              AudioPlayer (owns context + buffer cache)
   effects.ts             createPeakingEq / createCompressor / createPanner
   chain.ts               AudioChain (player + effects + A/B routing)
-  samples.ts             SAMPLES + pickTrack()
+  library.ts             typed sample library, filters, spectrum queries (see scripts/README.md)
+  samples.ts             pickTrack(filter?) → URL
 
 src/lib/components/game/ ← you render these
   game-shell.svelte      header + phase switching, driven by a controller

@@ -108,6 +108,9 @@ export function createGameController<
 				audio.play('B');
 				isPaused = false;
 				game.start();
+				// Decode next round's sample while the player listens
+				const upcoming = game.session.rounds[game.roundIndex + 1];
+				if (upcoming) audio.preload?.(upcoming.sampleUrl)?.catch(() => {});
 			} finally {
 				isLoading = false;
 			}

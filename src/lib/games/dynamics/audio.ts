@@ -57,6 +57,10 @@ export class DynamicsAudio implements Playable {
 		this.applyAll();
 	}
 
+	preload(url: string): Promise<void> {
+		return this.player.preload(url);
+	}
+
 	/** Threshold = sample RMS + offset (negative = compress more of the signal). */
 	setThresholdOffset(db: number): void {
 		this.thresholdOffsetDb = db;

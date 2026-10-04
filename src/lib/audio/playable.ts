@@ -4,6 +4,8 @@
  */
 export interface Playable {
 	load(url: string): Promise<void>;
+	/** Optional: decode a sample ahead of time (next round) so PLAY starts instantly. */
+	preload?(url: string): Promise<void>;
 	play(mode?: 'A' | 'B'): void;
 	stop(): void;
 	pause(): void;

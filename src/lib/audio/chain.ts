@@ -35,6 +35,11 @@ export class AudioChain {
 		this.build();
 	}
 
+	/** Warms the sample cache without changing what's loaded. */
+	preload(url: string): Promise<void> {
+		return this.player.preload(url);
+	}
+
 	/** Builds effects once. No-op on subsequent calls / in SSR. */
 	private build(): void {
 		if (this.built) return;

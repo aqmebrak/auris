@@ -24,3 +24,5 @@ vite.config.ts.timestamp-*
 test-results
 
 auris-venv/
+# Raw sample sources (large; processed into static/audio by `pnpm samples`)
+samples-src/

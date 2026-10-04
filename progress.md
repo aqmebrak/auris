@@ -4,6 +4,20 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-04 — Phase 13: sample library
+
+| Item | Files touched |
+|------|--------------|
+| `pnpm samples`: ffmpeg-static two-pass loudnorm → FLAC, analysis, manifest, credits | `scripts/prepare-samples.ts`, `scripts/README.md`, `scripts/sample-meta.json` |
+| Typed library: naming parser, filters, `pickSample`, `bandRelDb`, `audibleFreqs` | `src/lib/audio/library.ts`, `library.json` (generated) |
+| Existing 8 tracks renamed to the convention, re-encoded (46 → 30 MB); raw copies in gitignored `samples-src/` | `static/audio/*.flac` |
+| Next-round sample preload | `audio/player.ts`, `chain.ts`, `game-controller` |
+| New dev deps: `ffmpeg-static`, `tsx` | `package.json`, `pnpm-workspace.yaml` |
+
+**Next:** sample-aware targets in EQ Matching / EQ Guess / Freq ID (use `audibleFreqs`), then UX consistency pass.
+
+---
+
 ## 2026-10-03 — Phase 15: Freq ID + Panning reworks
 
 | Item | Files touched |

@@ -43,6 +43,7 @@ export function createFreqIdAudio(): FreqIdAudio {
 			const buffer = player.currentBuffer;
 			spectrum = buffer ? averageSpectrum(monoMix(buffer), buffer.sampleRate) : null;
 		},
+		preload: (url) => chain.preload(url),
 		play: (mode) => chain.play(mode),
 		stop: () => chain.stop(),
 		pause: () => chain.pause(),

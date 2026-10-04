@@ -119,6 +119,10 @@ export class EqMatchingAudio {
 		if (this._targetBands) this._applyTargetBands(this._targetBands);
 	}
 
+	preload(url: string): Promise<void> {
+		return this.player.preload(url);
+	}
+
 	setUserBands(bands: EqBand[]): void {
 		this._userBands = bands;
 		if (this.userFilters.length) this._applyUserBands(bands);

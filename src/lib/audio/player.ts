@@ -24,22 +24,38 @@ export class AudioPlayer {
 		return this._currentBuffer;
 	}
 
-	/** Fetches, decodes, and caches the sample at `url`. */
+	private pending = new Map<string, Promise<AudioBuffer>>();
+
+	/** Fetches + decodes `url` once; concurrent callers share the same request. */
+	private fetchBuffer(url: string): Promise<AudioBuffer> {
+		const cached = this.bufferCache.get(url);
+		if (cached) return Promise.resolve(cached);
+		let request = this.pending.get(url);
+		if (!request) {
+			const ctx = this.getContext();
+			request = fetch(url)
+				.then((r) => r.arrayBuffer())
+				.then((data) => ctx.decodeAudioData(data))
+				.then((decoded) => {
+					this.bufferCache.set(url, decoded);
+					return decoded;
+				})
+				.finally(() => this.pending.delete(url));
+			this.pending.set(url, request);
+		}
+		return request;
+	}
+
+	/** Fetches, decodes, and caches the sample at `url`, making it current. */
 	async load(url: string): Promise<void> {
 		if (typeof window === 'undefined') return;
-		const ctx = this.getContext();
+		this._currentBuffer = await this.fetchBuffer(url);
+	}
 
-		const cached = this.bufferCache.get(url);
-		if (cached) {
-			this._currentBuffer = cached;
-			return;
-		}
-
-		const response = await fetch(url);
-		const arrayBuffer = await response.arrayBuffer();
-		const decoded = await ctx.decodeAudioData(arrayBuffer);
-		this.bufferCache.set(url, decoded);
-		this._currentBuffer = decoded;
+	/** Warms the cache (e.g. next round's sample) without changing the current buffer. */
+	async preload(url: string): Promise<void> {
+		if (typeof window === 'undefined') return;
+		await this.fetchBuffer(url);
 	}
 
 	/** Suspends the underlying context (pauses all sources). */
@@ -66,6 +82,7 @@ export class AudioPlayer {
 			this.ctx = null;
 		}
 		this.bufferCache.clear();
+		this.pending.clear();
 		this._currentBuffer = null;
 	}
 }

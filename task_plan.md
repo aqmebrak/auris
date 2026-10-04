@@ -71,19 +71,19 @@ Pink noise generated in code — no file needed.
 
 | Task | Status | Notes |
 | ---- | ------ | ----- |
-| `scripts/prepare-samples.sh` (ffmpeg): loudnorm −18 LUFS / −1 dBTP, 44.1 kHz, trim ≤30 s, encode **FLAC** (gapless loops; lossy codecs add priming gaps) | ⬜ | raw input in `samples-src/` (gitignored) → `static/audio/` |
-| `src/lib/audio/library.ts`: typed manifest `{ id, url, kind, source, channels, bpm?, lufs, credit }` + `pickSample(filter)` replacing `pickTrack()` | ⬜ | games declare requirements, e.g. `{ kind: 'stem', channels: 1 }` |
-| Re-encode current 8 tracks, drop WAVs; verify freesound licenses → `static/audio/CREDITS.md` | ⬜ | 46 MB → ~15 MB est. |
-| Preload next round's sample during result screen (`AudioPlayer.preload`) | ⬜ | |
-| Unit tests: `pickSample` filtering + fallback | ⬜ | |
+| `scripts/prepare-samples.sh` (ffmpeg): loudnorm −18 LUFS / −1 dBTP, 44.1 kHz, trim ≤30 s, encode **FLAC** (gapless loops; lossy codecs add priming gaps) | ✅ | two-pass loudnorm −18 LUFS/−1 dBTP, ≤30 s with 20 ms fades when trimmed, 44.1 kHz FLAC, band profile → library.json, CREDITS.md; see scripts/README.md |
+| `src/lib/audio/library.ts`: typed manifest `{ id, url, kind, source, channels, bpm?, lufs, credit }` + `pickSample(filter)` replacing `pickTrack()` | ✅ | `pickSample(filter)` (kind/channels/source, falls back to whole library), `audibleFreqs`, `bandRelDb`; `pickTrack(filter?)` kept as thin wrapper |
+| Re-encode current 8 tracks, drop WAVs; verify freesound licenses → `static/audio/CREDITS.md` | ✅ | 46 MB WAV/MP3 → 30 MB FLAC. **Licences still unverified** — `scripts/sample-meta.json` marks them `unverified` |
+| Preload next round's sample during result screen (`AudioPlayer.preload`) | ✅ | |
+| Unit tests: `pickSample` filtering + fallback | ✅ | |
 
 ---
 
-## Sample-aware targets ⬜ (add to Phase 13 manifest + Phase 15 games)
+## Sample-aware targets 🔄 (library side done; games next) (add to Phase 13 manifest + Phase 15 games)
 
 Raised after playing EQ Matching: a boost/cut is only fair if the sample has energy there (a bass-only loop gives nothing to hear for a cut at 8 kHz; boosting empty bands is inaudible too).
 
-- `prepare-samples` computes a per-sample band-energy profile (reuse `audio/spectrum.ts`, 1/3-oct, dB relative to the sample's loudest band) and stores it in the manifest.
+- ✅ `pnpm samples` computes a per-sample band-energy profile (reuse `audio/spectrum.ts`, 1/3-oct, dB relative to the sample's loudest band) and stores it in the manifest.
 - Games ask the library for **feasible frequencies**: `audibleFreqs(sample, { kind: 'cut' | 'boost', minRelDb })` — cuts need energy ≥ −20 dB re peak at the target, boosts ≥ −30 dB. Round generation picks the sample first, then candidates from its profile.
 - Optional hand-written overrides per sample (`avoid: [...]`, `tags`) for edge cases the numbers miss.
 - Per-game policy lives in the game config (EQ games: both; Freq ID: boost-only on Easy; Panning: needs wideband content).
