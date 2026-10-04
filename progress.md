@@ -4,6 +4,21 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-04 — Sample-aware targets
+
+| Item | Files touched |
+|------|--------------|
+| `isAudible`, null-safe `audibleFreqs` | `src/lib/audio/library.ts` |
+| Rounds pick the sample first, then boost/cut frequencies it can reveal | `games/{eq-matching,eq-guess,freq-id}/config.ts` |
+| EQ Guess distractors also move bands to audible places (easy/medium) / flip an audible band (hard) | `games/eq-guess/config.ts` |
+| 10 new tests with a synthetic bass-only sample (109 unit total) | `src/lib/games/sample-aware.test.ts` |
+
+On the current 8 tracks only the drum loop (cuts: 125/250 Hz) and housing loop (cuts: 125/250 Hz) are restricted; dense mixes have energy everywhere. Bigger effect once dry stems arrive.
+
+**Next:** UX consistency pass (no layout shift between states, cursor-pointer).
+
+---
+
 ## 2026-10-04 — Phase 13: sample library
 
 | Item | Files touched |

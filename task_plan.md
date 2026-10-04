@@ -79,12 +79,12 @@ Pink noise generated in code — no file needed.
 
 ---
 
-## Sample-aware targets 🔄 (library side done; games next) (add to Phase 13 manifest + Phase 15 games)
+## Sample-aware targets ✅ (EQ Matching, EQ Guess, Freq ID; Panning/Dynamics need no frequency targets) (add to Phase 13 manifest + Phase 15 games)
 
 Raised after playing EQ Matching: a boost/cut is only fair if the sample has energy there (a bass-only loop gives nothing to hear for a cut at 8 kHz; boosting empty bands is inaudible too).
 
 - ✅ `pnpm samples` computes a per-sample band-energy profile (reuse `audio/spectrum.ts`, 1/3-oct, dB relative to the sample's loudest band) and stores it in the manifest.
-- Games ask the library for **feasible frequencies**: `audibleFreqs(sample, { kind: 'cut' | 'boost', minRelDb })` — cuts need energy ≥ −20 dB re peak at the target, boosts ≥ −30 dB. Round generation picks the sample first, then candidates from its profile.
+- ✅ Games ask the library for **feasible frequencies**: `audibleFreqs(sample, { kind: 'cut' | 'boost', minRelDb })` — cuts need energy ≥ −20 dB re peak at the target, boosts ≥ −30 dB. Round generation picks the sample first, then candidates from its profile.
 - Optional hand-written overrides per sample (`avoid: [...]`, `tags`) for edge cases the numbers miss.
 - Per-game policy lives in the game config (EQ games: both; Freq ID: boost-only on Easy; Panning: needs wideband content).
 - Same mechanism feeds difficulty: Easy only picks bands where the sample is strong.
@@ -193,3 +193,4 @@ Ordered by value ÷ effort. All reuse engine v2 + shared components.
 3. **UX consistency** (above) — touches every game page, so do it before adding more.
 4. **Phase 16** #1, #4, #5 (work with mixes) → #2, #3, #6, #7 as samples arrive.
 5. **Phase 17**.
+

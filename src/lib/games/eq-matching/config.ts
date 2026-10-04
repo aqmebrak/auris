@@ -8,7 +8,7 @@
 
 import { defineGame } from '$lib/game/config.js';
 import type { RoundBase } from '$lib/game/types.js';
-import { pickTrack } from '$lib/audio/samples.js';
+import { audibleFreqs, pickSample, type SampleEntry } from '$lib/audio/library.js';
 import { matchScore } from '$lib/audio/eq-math.js';
 
 export interface EqBand {
@@ -96,18 +96,21 @@ function randomFrom<T>(arr: readonly T[]): T {
 	return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function generateTarget(
+export function generateTarget(
 	bandCount: number,
 	gainPool: readonly number[],
-	qEditable: boolean
+	qEditable: boolean,
+	sample?: Pick<SampleEntry, 'spectrum'>
 ): EqBand[] {
-	const freqs = [...FREQ_STEPS].sort(() => Math.random() - 0.5).slice(0, bandCount);
-	freqs.sort((a, b) => a - b);
-	return freqs.map((freq) => ({
-		freq,
-		gainDb: randomFrom(gainPool),
-		q: qEditable ? randomFrom(Q_STEPS) : Q_FIXED
-	}));
+	const remaining: number[] = [...FREQ_STEPS];
+	const bands: EqBand[] = [];
+	for (let i = 0; i < bandCount; i++) {
+		const gainDb = randomFrom(gainPool);
+		const freq = randomFrom(audibleFreqs(sample, remaining, gainDb > 0 ? 'boost' : 'cut'));
+		remaining.splice(remaining.indexOf(freq), 1);
+		bands.push({ freq, gainDb, q: qEditable ? randomFrom(Q_STEPS) : Q_FIXED });
+	}
+	return bands.sort((a, b) => a.freq - b.freq);
 }
 
 export function createEqMatchingConfig(opts: EqMatchingOptions = DEFAULT_OPTIONS) {
@@ -116,12 +119,15 @@ export function createEqMatchingConfig(opts: EqMatchingOptions = DEFAULT_OPTIONS
 	return defineGame<EqMatchingRound, EqBand[]>({
 		id: 'eq-matching',
 		roundCount: opts.roundCount,
-		generateRound: () => ({
-			targetBands: generateTarget(bandCount, gainPool, qEditable),
-			sampleUrl: pickTrack(),
-			guess: null,
-			result: 'pending'
-		}),
+		generateRound: () => {
+			const sample = pickSample();
+			return {
+				targetBands: generateTarget(bandCount, gainPool, qEditable, sample),
+				sampleUrl: sample.url,
+				guess: null,
+				result: 'pending'
+			};
+		},
 		scoreGuess: (round, guess) => matchScore(round.targetBands, guess),
 		passThreshold,
 		evaluateGuess: (round, guess) => matchScore(round.targetBands, guess) >= passThreshold

@@ -111,17 +111,30 @@ export function bandRelDb(profile: SpectrumProfile, freq: number): number {
 /** Minimum energy (dB re loudest band) for a boost / cut at a frequency to be audible. */
 export const AUDIBLE_REL_DB = { boost: -30, cut: -20 } as const;
 
+type Profiled = Pick<SampleEntry, 'spectrum'>;
+
+/** Whether a boost (`gainDb > 0`) or cut (`< 0`) at `freq` is audible on this sample. */
+export function isAudible(
+	sample: Profiled | null | undefined,
+	freq: number,
+	gainDb: number
+): boolean {
+	if (!sample) return true;
+	return bandRelDb(sample.spectrum, freq) >= AUDIBLE_REL_DB[gainDb >= 0 ? 'boost' : 'cut'];
+}
+
 /**
  * Candidate frequencies where a boost or cut will actually be audible on this
  * sample (a cut where there is nothing to cut, or a boost of silence, is a
- * coin flip). Returns all candidates if none qualify.
+ * coin flip). Returns all candidates if none qualify or no sample is given.
  */
 export function audibleFreqs(
-	sample: Pick<SampleEntry, 'spectrum'>,
+	sample: Profiled | null | undefined,
 	candidates: readonly number[],
 	kind: 'boost' | 'cut',
 	minRelDb: number = AUDIBLE_REL_DB[kind]
 ): number[] {
+	if (!sample) return [...candidates];
 	const ok = candidates.filter((f) => bandRelDb(sample.spectrum, f) >= minRelDb);
 	return ok.length > 0 ? ok : [...candidates];
 }

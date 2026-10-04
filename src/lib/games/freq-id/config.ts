@@ -9,7 +9,8 @@
 
 import { defineGame } from '$lib/game/config.js';
 import type { SampleRound } from '$lib/game/types.js';
-import { pickTrack } from '$lib/audio/samples.js';
+import { audibleFreqs, pickSample, type SampleEntry } from '$lib/audio/library.js';
+import { logGrid } from '$lib/audio/eq-math.js';
 
 export interface FreqIdRound extends SampleRound<number> {
 	targetFreq: number;
@@ -94,29 +95,42 @@ export function freqScore(target: number, guess: number, marginOctaves: number):
 	return Math.max(0, 1 - err / (2 * marginOctaves));
 }
 
+/**
+ * Target frequency the sample can reveal: an audible octave band (Easy) or a
+ * random point on the log scale restricted to audible regions (strip).
+ */
+export function pickTargetFreq(
+	sample: Pick<SampleEntry, 'spectrum'>,
+	input: 'buttons' | 'strip',
+	zoneKey: FreqZone,
+	kind: 'boost' | 'cut'
+): number {
+	if (input === 'buttons') return randomFrom(audibleFreqs(sample, bandsInZone(zoneKey), kind));
+	const { min, max } = ZONE_CONFIG[zoneKey];
+	const grid = audibleFreqs(sample, logGrid(min, max, 6), kind);
+	const jitter = 2 ** ((Math.random() - 0.5) / 6); // ± half a grid step
+	return Math.round(Math.min(max, Math.max(min, randomFrom(grid) * jitter)));
+}
+
 function randomFrom<T>(arr: readonly T[]): T {
 	return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export function createFreqIdConfig(opts: FreqIdOptions = DEFAULT_OPTIONS) {
 	const diff = DIFFICULTY_CONFIG[opts.difficulty];
-	const zone = ZONE_CONFIG[opts.zone];
-	const bands = bandsInZone(opts.zone);
 
 	return defineGame<FreqIdRound, number>({
 		id: 'freq-id',
 		roundCount: opts.roundCount,
 		generateRound: () => {
+			const sample = pickSample();
 			const gainMag = randomFrom(diff.gainOptions);
-			const targetFreq =
-				diff.input === 'buttons'
-					? randomFrom(bands)
-					: Math.round(zone.min * Math.pow(zone.max / zone.min, Math.random()));
+			const cut = diff.allowCuts && Math.random() < 0.5;
 			return {
-				targetFreq,
-				gainDb: diff.allowCuts && Math.random() < 0.5 ? -gainMag : gainMag,
+				targetFreq: pickTargetFreq(sample, diff.input, opts.zone, cut ? 'cut' : 'boost'),
+				gainDb: cut ? -gainMag : gainMag,
 				q: randomFrom(diff.qOptions),
-				sampleUrl: pickTrack(),
+				sampleUrl: sample.url,
 				guess: null,
 				result: 'pending'
 			};
