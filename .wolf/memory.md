@@ -238,3 +238,4 @@
 | 11:20 | Sample-aware targets in EQ Matching/Guess/Freq ID + tests | games/*/config.ts, audio/library.ts | all green | ~40k |
 | 12:30 | UX consistency: board snippet, transport always present, layout E2E, focus fix | game-shell, transport-bar, all game pages, layout.e2e.ts | 35 e2e green | ~120k |
 | 10:20 | Phase 16 Filter Finder + pass-filter math + compensated playable + Button resolve fix | games/filter-finder, audio/* | 123 unit / 41 e2e green | ~80k |
+| 07:40 | Stereo Width game + sideDb analysis + reanalyze | games/stereo-width, scripts, audio/effects | 132 unit / 44 e2e | ~60k |
