@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { createSession, startRound, submitGuess, nextRound, scoreSession } from './session.js';
+import {
+	accuracySession,
+	createSession,
+	startRound,
+	submitGuess,
+	nextRound,
+	scoreSession
+} from './session.js';
 import type { GameConfig, RoundBase } from './types.js';
 
 interface TestRound extends RoundBase<number> {
@@ -83,5 +90,46 @@ describe('scoreSession', () => {
 		s = nextRound(s, config);
 		s = submitGuess(startRound(s), config, 100);
 		expect(scoreSession(s)).toBe(2);
+	});
+});
+
+describe('graded scoring', () => {
+	const graded: GameConfig<TestRound, number> = {
+		...config,
+		scoreGuess: (round, guess) => 1 - Math.abs(guess - round.target) / 100,
+		passThreshold: 0.8
+	};
+
+	it('derives result from passThreshold and stores the score', () => {
+		let s = submitGuess(startRound(createSession(graded)), graded, 90);
+		expect(s.rounds[0].score).toBeCloseTo(0.9);
+		expect(s.rounds[0].result).toBe('correct');
+		s = nextRound(s, graded);
+		s = submitGuess(startRound(s), graded, 50);
+		expect(s.rounds[1].score).toBeCloseTo(0.5);
+		expect(s.rounds[1].result).toBe('wrong');
+	});
+
+	it('clamps score to 0..1', () => {
+		const s = submitGuess(startRound(createSession(graded)), graded, 1000);
+		expect(s.rounds[0].score).toBe(0);
+	});
+
+	it('binary games score 1 or 0', () => {
+		const s = submitGuess(startRound(createSession(config)), config, 100);
+		expect(s.rounds[0].score).toBe(1);
+	});
+});
+
+describe('accuracySession', () => {
+	it('is 0 with no answered rounds', () => {
+		expect(accuracySession(createSession(config))).toBe(0);
+	});
+
+	it('averages over answered rounds only', () => {
+		let s = submitGuess(startRound(createSession(config)), config, 100);
+		s = nextRound(s, config);
+		s = submitGuess(startRound(s), config, 0);
+		expect(accuracySession(s)).toBe(50);
 	});
 });

@@ -1,20 +1,23 @@
 <script lang="ts">
-	import type { EqBand } from '$lib/games/eq-guess/config.js';
+	import { responseDb, type PeakingBand as EqBand } from '$lib/audio/eq-math.js';
 
 	interface Props {
 		bands: EqBand[];
-		width?: number;
-		height?: number;
+		/** Second curve drawn dashed in green (e.g. the target next to the player's). */
+		compare?: EqBand[];
+		/** Tailwind classes sizing the container; the plot fills it. */
+		class?: string;
 	}
 
-	let { bands, width = 400, height = 80 }: Props = $props();
+	let { bands, compare, class: className = 'h-24' }: Props = $props();
 
 	const FREQ_MIN = 20;
 	const FREQ_MAX = 20000;
 	const DB_RANGE = 15; // ±15 dB visible
-	const POINTS = 200;
+	const POINTS = 240;
+	const PAD = { left: 30, right: 8, top: 8, bottom: 18 };
 
-	const TICK_FREQS = [50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+	const TICK_FREQS = [50, 100, 200, 500, 1000, 2000, 5000, 10000];
 	const TICK_LABELS: Record<number, string> = {
 		50: '50',
 		100: '100',
@@ -23,74 +26,93 @@
 		1000: '1k',
 		2000: '2k',
 		5000: '5k',
-		10000: '10k',
-		20000: '20k'
+		10000: '10k'
 	};
+	const DB_LINES = [-12, -6, 0, 6, 12];
 
-	// Gaussian bell curve approximation of a peaking EQ band
-	function peakingGainAt(f: number, band: EqBand): number {
-		const logRatio = Math.log2(f / band.freq);
-		const sigma = 1.0 / (Math.SQRT2 * band.q);
-		return band.gainDb * Math.exp(-0.5 * (logRatio / sigma) ** 2);
-	}
+	let boxWidth = $state(400);
+	let boxHeight = $state(96);
 
-	function totalGainDb(f: number): number {
-		return bands.reduce((sum, b) => sum + peakingGainAt(f, b), 0);
-	}
+	const plotW = $derived(Math.max(1, boxWidth - PAD.left - PAD.right));
+	const plotH = $derived(Math.max(1, boxHeight - PAD.top - PAD.bottom));
 
-	function freqToX(f: number): number {
-		return (Math.log(f / FREQ_MIN) / Math.log(FREQ_MAX / FREQ_MIN)) * width;
-	}
+	const freqToX = (f: number) =>
+		PAD.left + (Math.log(f / FREQ_MIN) / Math.log(FREQ_MAX / FREQ_MIN)) * plotW;
+	const dbToY = (db: number) => PAD.top + plotH / 2 - (db / DB_RANGE) * (plotH / 2);
 
-	function dbToY(db: number): number {
-		return height / 2 - (db / DB_RANGE) * (height / 2);
-	}
-
-	const curvePath = $derived(() => {
+	function pathFor(curve: EqBand[]): string {
 		const pts = Array.from({ length: POINTS }, (_, i) => {
-			const t = i / (POINTS - 1);
-			const f = FREQ_MIN * (FREQ_MAX / FREQ_MIN) ** t;
-			const x = freqToX(f).toFixed(1);
-			const y = Math.max(0, Math.min(height, dbToY(totalGainDb(f)))).toFixed(1);
-			return `${x},${y}`;
+			const f = FREQ_MIN * (FREQ_MAX / FREQ_MIN) ** (i / (POINTS - 1));
+			const db = Math.max(-DB_RANGE, Math.min(DB_RANGE, responseDb(f, curve)));
+			return `${freqToX(f).toFixed(1)},${dbToY(db).toFixed(1)}`;
 		});
 		return 'M ' + pts.join(' L ');
-	});
+	}
+
+	const curvePath = $derived(pathFor(bands));
+	const comparePath = $derived(compare ? pathFor(compare) : null);
+	// Show band markers only when the curve is the player's own (no overlay)
+	const showMarkers = $derived(!compare);
 </script>
 
-<svg viewBox="0 0 {width} {height}" class="w-full" style="height: {height}px;" aria-hidden="true">
-	<!-- 0 dB baseline -->
-	<line
-		x1="0"
-		y1={height / 2}
-		x2={width}
-		y2={height / 2}
-		stroke="#3f3f46"
-		stroke-width="1"
-		stroke-dasharray="4 3"
-	/>
+<div class="w-full {className}" bind:clientWidth={boxWidth} bind:clientHeight={boxHeight}>
+	<svg width={boxWidth} height={boxHeight} aria-hidden="true" class="block">
+		<!-- dB gridlines + labels -->
+		{#each DB_LINES as db (db)}
+			<line
+				x1={PAD.left}
+				x2={boxWidth - PAD.right}
+				y1={dbToY(db)}
+				y2={dbToY(db)}
+				stroke={db === 0 ? '#52525b' : '#27272a'}
+				stroke-width="1"
+				stroke-dasharray={db === 0 ? '4 3' : undefined}
+			/>
+			<text
+				x={PAD.left - 5}
+				y={dbToY(db) + 3}
+				text-anchor="end"
+				font-size="9"
+				fill="#52525b"
+				font-family="monospace">{db > 0 ? '+' : ''}{db}</text
+			>
+		{/each}
 
-	<!-- Frequency tick marks -->
-	{#each TICK_FREQS as f (f)}
-		{@const x = freqToX(f)}
-		<line x1={x} y1={height - 10} x2={x} y2={height} stroke="#3f3f46" stroke-width="1" />
-		<text
-			{x}
-			y={height - 1}
-			text-anchor="middle"
-			font-size="7"
-			fill="#52525b"
-			font-family="monospace">{TICK_LABELS[f]}</text
-		>
-	{/each}
+		<!-- Frequency gridlines + labels -->
+		{#each TICK_FREQS as f (f)}
+			<line
+				x1={freqToX(f)}
+				x2={freqToX(f)}
+				y1={PAD.top}
+				y2={PAD.top + plotH}
+				stroke="#27272a"
+				stroke-width="1"
+			/>
+			<text
+				x={freqToX(f)}
+				y={boxHeight - 4}
+				text-anchor="middle"
+				font-size="9"
+				fill="#52525b"
+				font-family="monospace">{TICK_LABELS[f]}</text
+			>
+		{/each}
 
-	<!-- EQ response curve -->
-	<path d={curvePath()} fill="none" stroke="oklch(0.7 0.28 340)" stroke-width="1.5" />
+		{#if comparePath}
+			<path d={comparePath} fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="6 4" />
+		{/if}
 
-	<!-- Band peak markers -->
-	{#each bands as band (band.freq)}
-		{@const px = freqToX(band.freq)}
-		{@const py = dbToY(band.gainDb)}
-		<circle cx={px} cy={py} r="3" fill="oklch(0.7 0.28 340)" />
-	{/each}
-</svg>
+		<path d={curvePath} fill="none" stroke="oklch(0.7 0.28 340)" stroke-width="2" />
+
+		{#if showMarkers}
+			{#each bands as band, i (i)}
+				<circle
+					cx={freqToX(band.freq)}
+					cy={dbToY(Math.max(-DB_RANGE, Math.min(DB_RANGE, band.gainDb)))}
+					r="4"
+					fill="oklch(0.7 0.28 340)"
+				/>
+			{/each}
+		{/if}
+	</svg>
+</div>

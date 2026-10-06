@@ -71,11 +71,41 @@ Pink noise generated in code — no file needed.
 
 | Task | Status | Notes |
 | ---- | ------ | ----- |
-| `scripts/prepare-samples.sh` (ffmpeg): loudnorm −18 LUFS / −1 dBTP, 44.1 kHz, trim ≤30 s, encode **FLAC** (gapless loops; lossy codecs add priming gaps) | ⬜ | raw input in `samples-src/` (gitignored) → `static/audio/` |
-| `src/lib/audio/library.ts`: typed manifest `{ id, url, kind, source, channels, bpm?, lufs, credit }` + `pickSample(filter)` replacing `pickTrack()` | ⬜ | games declare requirements, e.g. `{ kind: 'stem', channels: 1 }` |
-| Re-encode current 8 tracks, drop WAVs; verify freesound licenses → `static/audio/CREDITS.md` | ⬜ | 46 MB → ~15 MB est. |
-| Preload next round's sample during result screen (`AudioPlayer.preload`) | ⬜ | |
-| Unit tests: `pickSample` filtering + fallback | ⬜ | |
+| `scripts/prepare-samples.sh` (ffmpeg): loudnorm −18 LUFS / −1 dBTP, 44.1 kHz, trim ≤30 s, encode **FLAC** (gapless loops; lossy codecs add priming gaps) | ✅ | two-pass loudnorm −18 LUFS/−1 dBTP, ≤30 s with 20 ms fades when trimmed, 44.1 kHz FLAC, band profile → library.json, CREDITS.md; see scripts/README.md |
+| `src/lib/audio/library.ts`: typed manifest `{ id, url, kind, source, channels, bpm?, lufs, credit }` + `pickSample(filter)` replacing `pickTrack()` | ✅ | `pickSample(filter)` (kind/channels/source, falls back to whole library), `audibleFreqs`, `bandRelDb`; `pickTrack(filter?)` kept as thin wrapper |
+| Re-encode current 8 tracks, drop WAVs; verify freesound licenses → `static/audio/CREDITS.md` | ✅ | 46 MB WAV/MP3 → 30 MB FLAC. **Licences still unverified** — `scripts/sample-meta.json` marks them `unverified` |
+| Preload next round's sample during result screen (`AudioPlayer.preload`) | ✅ | |
+| Unit tests: `pickSample` filtering + fallback | ✅ | |
+
+---
+
+## Sample-aware targets ✅ (EQ Matching, EQ Guess, Freq ID; Panning/Dynamics need no frequency targets) (add to Phase 13 manifest + Phase 15 games)
+
+Raised after playing EQ Matching: a boost/cut is only fair if the sample has energy there (a bass-only loop gives nothing to hear for a cut at 8 kHz; boosting empty bands is inaudible too).
+
+- ✅ `pnpm samples` computes a per-sample band-energy profile (reuse `audio/spectrum.ts`, 1/3-oct, dB relative to the sample's loudest band) and stores it in the manifest.
+- ✅ Games ask the library for **feasible frequencies**: `audibleFreqs(sample, { kind: 'cut' | 'boost', minRelDb })` — cuts need energy ≥ −20 dB re peak at the target, boosts ≥ −30 dB. Round generation picks the sample first, then candidates from its profile.
+- Optional hand-written overrides per sample (`avoid: [...]`, `tags`) for edge cases the numbers miss.
+- Per-game policy lives in the game config (EQ games: both; Freq ID: boost-only on Easy; Panning: needs wideband content).
+- Same mechanism feeds difficulty: Easy only picks bands where the sample is strong.
+
+---
+
+## UX consistency across game states ✅
+
+Reported 2026-10-04: layout shifts between states. In EQ Matching the idle screen hides the A/B toggle but keeps the graph, then PLAY makes the buttons appear and the whole board jumps down.
+
+**Rule:** if an element appears in a later state of the same round, render it from the start in a disabled/inert state instead of mounting it later. Layout must not shift between `idle → playing → roundResult` (and next round's `idle`).
+
+| Task | Status | Notes |
+| ---- | ------ | ----- |
+| `GameShell`: always render the transport bar (A/B toggle + play/pause/replay) in idle, `disabled` until a round is playing; same slot, same height | ⬜ | removes the main jump in every game |
+| Idle boards mirror the playing board's structure (same containers/heights): EQ Matching shows all band knob groups disabled, Dynamics Match shows panel + submit disabled, choice games show disabled cards, SUBMIT visible-but-disabled | ⬜ | idle snippets currently differ from playing snippets |
+| Result screen keeps the board in place (disabled, with target overlay) and swaps only the transport for NEXT/FINISH | ⬜ | today the whole board is replaced by the summary card |
+| Reserve fixed height for variable text (intro/hint lines, result banner) so it can't push content | ⬜ | |
+| Disabled styling in one place (`opacity-50`, `pointer-events-none`, `aria-disabled`) — shared helper/class, not per component | ⬜ | |
+| Playwright layout-stability check: record bounding boxes of the board + transport in each state; assert no vertical shift | ⬜ | per game, desktop and 402px mobile |
+| `cursor-pointer` on interactive controls that lack it: A/B toggle buttons (`ab-toggle.svelte`), `choice-buttons.svelte`, `db-choice`, `eq-choice`; `cursor-not-allowed` when disabled | ⬜ | audit all `<button>` in `src/lib/components/` |
 
 ---
 
@@ -85,14 +115,17 @@ Fixes P2, P3, P8, P9 structurally so per-game rework is small.
 
 | Task | Status | Notes |
 | ---- | ------ | ----- |
-| Graded scoring: optional `scoreGuess(round, guess) → 0..1` + `passThreshold` in `GameConfig`; `result` derived from threshold; session score = mean % | ⬜ | binary games keep `evaluateGuess` (score 0/1) |
-| Stats store: record `accuracy` (0–100) alongside `score`; read old entries unchanged | ⬜ | no localStorage migration needed |
-| `src/lib/audio/loudness.ts`: `measureRms(chain)` via `OfflineAudioContext` (render ~5 s of A and B) → compensation gain on effected path | ⬜ | fixes A/B loudness bias |
-| `createGameController()` (`.ts`): audio load/play/pause/replay/A-B, stop on submit, preload next, record stats once on gameOver, rebuild on option change | ⬜ | removes ~100 lines per page |
-| `<GameShell>`: idle screen with generic option groups (difficulty / mode / rounds from config), header, phase snippets | ⬜ | |
-| Keyboard: `Space` play/pause, `A`/`B` or `Tab` toggle, `Enter` submit/next | ⬜ | |
-| Unit tests per game config: generate in range, evaluate/score edge cases | ⬜ | |
-| Port Freq ID first as reference, then other 5 pages; each page ≤150 lines | ⬜ | |
+| Graded scoring: optional `scoreGuess(round, guess) → 0..1` + `passThreshold` in `GameConfig`; `result` derived from threshold; `accuracySession` = mean % | ✅ | binary games keep `evaluateGuess` (score 0/1) |
+| Stats store: record `accuracy` (0–100) alongside `score`; read old entries unchanged | ✅ | API only; pages wired during port |
+| `src/lib/audio/loudness.ts`: `rmsDb` + `compensationDb` pure math | ✅ | |
+| Loudness compensation: spectrum-weighted estimate (`audio/spectrum.ts`, `eqLoudnessDeltaDb`) applied per path — no offline render needed | ✅ | wired in EQ Matching; reuse for EQ Guess / Freq ID / Dynamics (compressor needs measured RMS instead) |
+| `createGameController()` (`.svelte.ts`): audio load/play/pause/replay/A-B, stop on submit, record stats once on gameOver, rebuild on option change | ✅ | preload-next waits on Phase 13 |
+| `<GameShell>` + `<OptionGroup>`: header, phase snippets, option selectors | ✅ | |
+| Keyboard: `Space` play/pause, `A`/`B` toggle, `Enter` start/next (ignored while a button has focus) | ✅ | `src/lib/game/keys.ts` |
+| Unit tests per game config: generate in range, evaluate/score edge cases | ✅ | `src/lib/games/configs.test.ts`, `eq-guess/config.test.ts` |
+| Port Freq ID, Panning, dB Change, EQ Guess (all ≤125 lines) | ✅ | E2E full-session test each |
+| Port EQ Matching | ✅ | via Phase 15 rework |
+| Port Compressorist | ⬜ | via Phase 15 Dynamics rework |
 
 ---
 
@@ -100,12 +133,12 @@ Fixes P2, P3, P8, P9 structurally so per-game rework is small.
 
 | Game | Change | Fixes |
 | ---- | ------ | ----- |
-| **EQ Guess** | Random sign per band. Distractor differs by difficulty: Easy = every band shifted 2 steps; Medium = 1 band shifted 1 step; Hard = 1 band sign- or freq-changed. Options: Easy 2, Medium 3, Hard 4. Test: no option is identifiable from curve shape alone. | P1 |
-| **EQ Matching** | Score = RMS dB difference of magnitude responses on 1/12-oct grid 75 Hz–10 kHz → 0–100. Pass: Easy ≥70, Medium ≥80, Hard ≥90. Easy: freq+gain only (Q fixed, shown). Hard adds Q. Result screen shows score + overlaid curves. Loudness-compensated. | P2, P3 |
-| **Freq ID** | Easy: boost-only +12 dB, wide Q (1.4), pick one of 7 octave bands (buttons). Medium: ±9–12 dB, continuous, ±½ oct. Hard: ±6–12 incl. cuts, Q 2.5–4, ±⅓ oct. Graded score by octave error. Option: pink-noise source. | P6 |
-| **Panning** | Mono stems only (`pickSample({ channels: 1 })`), equal-power pan. Easy: 5 snap positions (L, L½, C, R½, R). Medium ±0.15, Hard ±0.08. Graded score by distance. | P4 |
+| **EQ Guess** ✅ | Random sign per band; distractor keeps gain pattern. Easy = all bands shifted 2 steps; Medium = 1 band moved to nearest free step; Hard = 1 band flips boost/cut. Still 2 options (3/4 options deferred). Tested: no sign tell. | P1 |
+| **EQ Matching** ✅ (UX: Target / Your EQ buttons, big responsive curve, sticky transport) | Graded: `matchScore` = 1 − RMS(Δ response) ÷ (RMS(target)+RMS(guess)) on a 1/12-oct grid 75 Hz–10 kHz, using exact biquad math. Pass: Easy ≥70%, Medium ≥80%, Hard ≥90%. Q fixed on Easy/Medium (knob hidden), editable on Hard. Both paths loudness-compensated per sample (spectrum-weighted). Result: overlaid target/yours curves + band table. | P2, P3 |
+| **Freq ID** ✅ | Easy: boost-only +12 dB, Q 1.4, pick an octave band (buttons). Medium: ±9/12 dB, Q 2, strip, ±½ oct. Hard: ±6/9/12, Q 2.5–4, strip, ±⅓ oct. Graded by octave error (1 exact, 0.5 at margin, 0 at 2×). Loudness-matched via spectrum compensation. Pink-noise source option still open. | P6 |
+| **Panning** ✅ (partial) | Source summed to mono before the panner (placement, not balance). Easy: 5 snap positions as buttons; Medium ±0.15, Hard ±0.08; graded by distance. Still to do once you provide dry mono stems: `pickSample({ channels: 1 })`. | P4 |
 | **Level Change** | Keep 2AFC. Add Hard JND tier (0.5–2 dB). Loudness-normalized samples make magnitudes consistent. Minor. | P5 |
-| **Dynamics** (replaces Compressorist + "Dynamics" card) | One game, `mode` option, normalized drum/stem sources, threshold relative to sample LUFS, auto makeup (loudness-matched): **Compressed?** (yes/no) → **Ratio** (2:1 / 4:1 / 10:1) → **Attack** (fast 1 ms / med 10 / slow 50) → **Release** (fast 50 / slow 500) → **Match** (capstone: ratio+attack+release, graded per param, no makeup knob). Reuse knob + GR meter. | P2, P3, P7 |
+| **Dynamics** ✅ (replaces Compressorist + coming-soon card) | Own compressor DSP (`audio/compressor-dsp.ts`, AudioWorklet, no lookahead, true attack/release) instead of `DynamicsCompressorNode`. Threshold = sample RMS + offset, makeup auto-computed so both paths are loudness-matched. Modes: **Detect** (which of 2 clips is compressed) → **Ratio** → **Attack** → **Release** (original vs compressed, choose value) → **Match** (ratio+attack+release knobs, graded 1/0.5/0 per param, GR meter only on Your settings). 3 difficulties tune threshold offset, ratios and choice sets. | P2, P3, P7 |
 
 ---
 
@@ -115,7 +148,7 @@ Ordered by value ÷ effort. All reuse engine v2 + shared components.
 
 | # | Game | Trains | Audio | UI | Samples | Effort |
 | - | ---- | ------ | ----- | -- | ------- | ------ |
-| 1 | **Filter Finder** | HPF/LPF cutoff placement | `BiquadFilterNode` highpass/lowpass, 12/24 dB/oct (cascade) | reuse `freq-strip` | mixes ✅ | S |
+| 1 | **Filter Finder** ✅ | HPF/LPF cutoff placement | Butterworth 12/24 dB/oct (1–2 biquads; Web Audio Q is in dB), loudness-matched | reuse `freq-strip` / choice buttons | mixes ✅ | S |
 | 2 | **Room Reader** | Reverb decay (RT60) | `ConvolverNode`, generated exp-decay IR — spec below | new `rt60-strip` (log 0.1–8 s, room labels) | dry stems 🎧 | M |
 | 3 | **Delay Time** | Slapback / 1/16 / 1/8 / 1/4 / dotted 1/8 at track BPM | `DelayNode` + feedback gain | choice cards | dry drums/stems + BPM 🎧 | S |
 | 4 | **Phase / Comb** | In phase vs polarity flip vs comb (0.1–5 ms) | sum source + delayed/inverted copy | 3AFC → Hard: estimate delay | mixes ✅, mono stems better | S |
@@ -157,5 +190,8 @@ Ordered by value ÷ effort. All reuse engine v2 + shared components.
 
 1. **Phase 14** (engine v2) + **Phase 13** tooling in parallel — no samples needed to start.
 2. **Phase 15** reworks, P1 (EQ Guess tell) first — it's a 1-file fix.
-3. **Phase 16** #1, #4, #5 (work with mixes) → #2, #3, #6, #7 as samples arrive.
-4. **Phase 17**.
+3. **UX consistency** (above) — touches every game page, so do it before adding more.
+4. **Phase 16** #1, #4, #5 (work with mixes) → #2, #3, #6, #7 as samples arrive.
+5. **Phase 17**.
+
+

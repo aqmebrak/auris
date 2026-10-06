@@ -2,10 +2,18 @@
  * EQ Matching audio — dual parallel peaking-EQ chains on one AudioContext.
  * A mode = user's EQ (live-adjustable knobs).
  * B mode = target EQ (hidden).
- * Both paths are effected — mirrors CompressoristAudio pattern.
+ * Both paths are effected — same dual-path idea as DynamicsAudio.
+ * Each path ends in a gain that cancels the EQ's estimated loudness change for
+ * the loaded sample, so A/B differences are tonal, not "louder = better".
  */
 
 import { AudioPlayer } from '$lib/audio/player.js';
+import {
+	averageSpectrum,
+	compensationGainDb,
+	monoMix,
+	type BandSpectrum
+} from '$lib/audio/spectrum.js';
 import type { EqBand } from './config.js';
 import { MAX_BANDS } from './config.js';
 
@@ -23,6 +31,9 @@ export class EqMatchingAudio {
 
 	private userFilters: BiquadFilterNode[] = [];
 	private targetFilters: BiquadFilterNode[] = [];
+	private userGain: GainNode | null = null;
+	private targetGain: GainNode | null = null;
+	private spectrum: BandSpectrum | null = null;
 
 	private _userBands: EqBand[] | null = null;
 	private _targetBands: EqBand[] | null = null;
@@ -58,51 +69,58 @@ export class EqMatchingAudio {
 			this.targetFilters.push(tf);
 		}
 
-		// Wire user path in series → destination
+		this.userGain = ctx.createGain();
+		this.targetGain = ctx.createGain();
+
+		// Wire each path in series → loudness compensation → destination
 		for (let i = 0; i < MAX_BANDS - 1; i++) {
 			this.userFilters[i].connect(this.userFilters[i + 1]);
-		}
-		this.userFilters[MAX_BANDS - 1].connect(ctx.destination);
-
-		// Wire target path in series → destination
-		for (let i = 0; i < MAX_BANDS - 1; i++) {
 			this.targetFilters[i].connect(this.targetFilters[i + 1]);
 		}
-		this.targetFilters[MAX_BANDS - 1].connect(ctx.destination);
+		this.userFilters[MAX_BANDS - 1].connect(this.userGain);
+		this.targetFilters[MAX_BANDS - 1].connect(this.targetGain);
+		this.userGain.connect(ctx.destination);
+		this.targetGain.connect(ctx.destination);
 
 		// Apply pending bands if already set
 		if (this._userBands) this._applyUserBands(this._userBands);
 		if (this._targetBands) this._applyTargetBands(this._targetBands);
 	}
 
-	private _applyUserBands(bands: EqBand[]): void {
+	private applyBands(filters: BiquadFilterNode[], gain: GainNode | null, bands: EqBand[]): void {
 		for (let i = 0; i < MAX_BANDS; i++) {
-			const f = this.userFilters[i];
+			const f = filters[i];
 			if (!f) continue;
-			if (bands[i]) {
-				applyBand(f, bands[i]);
-			} else {
-				f.gain.value = 0; // transparent
-			}
+			if (bands[i]) applyBand(f, bands[i]);
+			else f.gain.value = 0; // transparent
+		}
+		if (gain && this.spectrum) {
+			const comp = compensationGainDb(this.spectrum, bands);
+			gain.gain.value = Math.pow(10, comp / 20);
 		}
 	}
 
+	private _applyUserBands(bands: EqBand[]): void {
+		this.applyBands(this.userFilters, this.userGain, bands);
+	}
+
 	private _applyTargetBands(bands: EqBand[]): void {
-		for (let i = 0; i < MAX_BANDS; i++) {
-			const f = this.targetFilters[i];
-			if (!f) continue;
-			if (bands[i]) {
-				applyBand(f, bands[i]);
-			} else {
-				f.gain.value = 0;
-			}
-		}
+		this.applyBands(this.targetFilters, this.targetGain, bands);
 	}
 
 	async load(url: string): Promise<void> {
 		if (typeof window === 'undefined') return;
 		await this.player.load(url);
-		this.ensureContext();
+		const ctx = this.ensureContext();
+		const buffer = this.player.currentBuffer;
+		this.spectrum = buffer ? averageSpectrum(monoMix(buffer), ctx.sampleRate) : null;
+		// Re-apply so compensation reflects the newly loaded sample
+		if (this._userBands) this._applyUserBands(this._userBands);
+		if (this._targetBands) this._applyTargetBands(this._targetBands);
+	}
+
+	preload(url: string): Promise<void> {
+		return this.player.preload(url);
 	}
 
 	setUserBands(bands: EqBand[]): void {
@@ -166,5 +184,8 @@ export class EqMatchingAudio {
 		this.ctx = null;
 		this.userFilters = [];
 		this.targetFilters = [];
+		this.userGain = null;
+		this.targetGain = null;
+		this.spectrum = null;
 	}
 }

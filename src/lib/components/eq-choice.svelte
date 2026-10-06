@@ -9,9 +9,18 @@
 		guess?: EqConfig | null;
 		onSelect?: (eq: EqConfig) => void;
 		disabled?: boolean;
+		/** Before listening: same cards, curves and labels hidden. */
+		masked?: boolean;
 	}
 
-	let { options, targetEq = null, guess = null, onSelect, disabled = false }: Props = $props();
+	let {
+		options,
+		targetEq = null,
+		guess = null,
+		onSelect,
+		disabled = false,
+		masked = false
+	}: Props = $props();
 
 	function isTarget(eq: EqConfig): boolean {
 		return targetEq !== null && eqConfigsEqual(eq, targetEq);
@@ -40,8 +49,10 @@
 			onclick={() => !disabled && onSelect?.(eq)}
 			disabled={disabled && targetEq === null}
 		>
-			<EqCurve bands={eq} />
-			<p class="font-mono text-xs text-muted-foreground">{bandLabel(eq)}</p>
+			<EqCurve bands={masked ? [] : eq} />
+			<p class="font-mono text-xs text-muted-foreground">
+				{masked ? '— Hz — dB · — Hz — dB' : bandLabel(eq)}
+			</p>
 		</button>
 	{/each}
 </div>

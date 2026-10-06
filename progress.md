@@ -4,6 +4,141 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-06 — Phase 16 #1: Filter Finder
+
+| Item | Files touched |
+|------|--------------|
+| Pass-filter math (RBJ high/low-pass, Butterworth 12/24 dB/oct), `qToDb` | `src/lib/audio/eq-math.ts` |
+| Generic loudness compensation (`loudnessDeltaDb`, `compensationFromResponse`) | `src/lib/audio/spectrum.ts` |
+| `audibleCutoffs` (energy must exist in the removed region) | `src/lib/audio/library.ts` |
+| `createPassFilter` effect; `createCompensatedPlayable` (shared with Freq ID) | `audio/effects.ts`, `audio/compensated-chain.ts` |
+| Filter Finder game: High-pass / Low-pass / Mixed, 3 difficulties, graded octave error | `src/lib/games/filter-finder/*`, `src/routes/games/filter-finder/` |
+| `freqScore` moved to `frequency.ts` | `src/lib/frequency.ts` |
+| Fixed Button's `resolve()` typing breaking at 8+ routes | `ui/button/button.svelte` |
+| 123 unit, 41 E2E (session + layout for 2 new configs); filter cascade verified in Chromium | |
+
+**Next:** Phase 16 #4 Phase/Comb, #5 Stereo Width (work on mixes), then #2/#3/#6/#7 as samples arrive.
+
+---
+
+## 2026-10-04 — UX consistency across game states
+
+| Item | Files touched |
+|------|--------------|
+| Single `board(round, ui)` snippet per game, rendered in idle/playing/result; `BoardState` flags (interactive/revealed) | `src/lib/game/board.ts`, all 6 game pages |
+| Shell: options always rendered (locked after start), fixed-height hint (grid-stacked texts), result banner under the board, transport always present | `game-shell.svelte`, `transport-bar.svelte`, `result-banner.svelte` |
+| `.is-locked` utility; `masked` DbChoice/EqChoice; `cursor-pointer`/`not-allowed` on toggle + choice buttons | `layout.css`, components |
+| Controller drops focus on submit/next (board persists, so Enter/Space shortcuts kept dying on the focused strip) | `game-controller.svelte.ts` |
+| Result banner scrolls into view above the sticky bar; option rows wrap on mobile | shell, `option-group` |
+| Layout-stability E2E: options/hint/board position+size and transport height across 4 states, 9 game configs × desktop/mobile | `layout.e2e.ts`, `game-fixtures.ts` |
+
+35 E2E, 109 unit.
+
+**Next:** Phase 16 new exercises (Filter Finder first), or Level Change Hard tier.
+
+---
+
+## 2026-10-04 — Sample-aware targets
+
+| Item | Files touched |
+|------|--------------|
+| `isAudible`, null-safe `audibleFreqs` | `src/lib/audio/library.ts` |
+| Rounds pick the sample first, then boost/cut frequencies it can reveal | `games/{eq-matching,eq-guess,freq-id}/config.ts` |
+| EQ Guess distractors also move bands to audible places (easy/medium) / flip an audible band (hard) | `games/eq-guess/config.ts` |
+| 10 new tests with a synthetic bass-only sample (109 unit total) | `src/lib/games/sample-aware.test.ts` |
+
+On the current 8 tracks only the drum loop (cuts: 125/250 Hz) and housing loop (cuts: 125/250 Hz) are restricted; dense mixes have energy everywhere. Bigger effect once dry stems arrive.
+
+**Next:** UX consistency pass (no layout shift between states, cursor-pointer).
+
+---
+
+## 2026-10-04 — Phase 13: sample library
+
+| Item | Files touched |
+|------|--------------|
+| `pnpm samples`: ffmpeg-static two-pass loudnorm → FLAC, analysis, manifest, credits | `scripts/prepare-samples.ts`, `scripts/README.md`, `scripts/sample-meta.json` |
+| Typed library: naming parser, filters, `pickSample`, `bandRelDb`, `audibleFreqs` | `src/lib/audio/library.ts`, `library.json` (generated) |
+| Existing 8 tracks renamed to the convention, re-encoded (46 → 30 MB); raw copies in gitignored `samples-src/` | `static/audio/*.flac` |
+| Next-round sample preload | `audio/player.ts`, `chain.ts`, `game-controller` |
+| New dev deps: `ffmpeg-static`, `tsx` | `package.json`, `pnpm-workspace.yaml` |
+
+**Next:** sample-aware targets in EQ Matching / EQ Guess / Freq ID (use `audibleFreqs`), then UX consistency pass.
+
+---
+
+## 2026-10-03 — Phase 15: Freq ID + Panning reworks
+
+| Item | Files touched |
+|------|--------------|
+| Freq ID: Easy octave-band buttons (boost-only, Q 1.4), per-difficulty Q/gain/cuts, graded octave-error score, loudness compensation | `src/lib/games/freq-id/*`, page |
+| Panning: mono-sum source, Easy snap-position buttons, graded by distance | `src/lib/games/panning/*`, `audio/effects.ts` (`createMonoSum`), page |
+| Shared `monoMix` + `compensationGainDb` (deduped from EQ Matching) | `src/lib/audio/spectrum.ts` |
+| 91 unit tests, 13 E2E (both input styles per game) | |
+
+**Next:** Level Change Hard JND tier + loudness-normalised samples; Phase 13 sample tooling; Phase 16 new exercises.
+
+---
+
+## 2026-10-03 — Phase 15: Dynamics
+
+| Item | Files touched |
+|------|--------------|
+| Compressor DSP (soft knee, attack/release smoothing, stereo-linked), auto makeup, threshold-from-level | `src/lib/audio/compressor-dsp.ts` (+15 tests) |
+| AudioWorklet + node factory (`?worker&url`, bundles to self-contained IIFE) | `src/lib/audio/worklets/compressor.worklet.ts`, `compressor-node.ts` |
+| `DynamicsAudio` dual-path engine (each path bypass or compressed) | `src/lib/games/dynamics/audio.ts` |
+| Dynamics config: 5 modes × 3 difficulties, graded match | `src/lib/games/dynamics/config.ts` (+tests) |
+| Page, `ChoiceButtons`, `CompressorPanel`, `DynamicsMatchResult` | `src/routes/games/dynamics/`, `src/lib/components/` |
+| Removed Compressorist + coming-soon card; dashboard now has Dynamics | `src/routes/+page.svelte` |
+| E2E for all 5 modes (+ no page errors); worklet verified in Chromium (-12.7 dB GR vs -13.5 theory) | `src/routes/games/games.e2e.ts` |
+
+**Next:** Freq ID / Panning reworks, or Phase 13 sample tooling.
+
+---
+
+## 2026-10-02 — Phase 15: EQ Matching v2
+
+| Item | Files touched |
+|------|--------------|
+| Exact peaking-EQ response + `matchScore` + `logGrid` | `src/lib/audio/eq-math.ts` |
+| Average spectrum (FFT) + `eqLoudnessDeltaDb` | `src/lib/audio/spectrum.ts` |
+| EQ Matching: graded scoring, Q fixed on easy/medium, per-path loudness compensation | `src/lib/games/eq-matching/{config,audio}.ts` |
+| Page rebuilt on shell; `EqBandKnobs`, `EqMatchResult`; `EqCurve` uses exact math + overlay | `src/routes/games/eq-matching/`, `src/lib/components/` |
+| Graded display (`% match`, session accuracy) in shared result/game-over | `src/lib/components/game/*` |
+| 58 unit tests, 6 E2E | |
+
+**Next:** Phase 15 Dynamics (replaces Compressorist), Freq ID/Panning reworks; or Phase 13 sample tooling.
+
+---
+
+## 2026-10-02 — Engine v2 part 2: controller + shell
+
+| Item | Files touched |
+|------|--------------|
+| `createGameController`, `Playable`, key mapping | `src/lib/stores/game-controller.svelte.ts`, `src/lib/audio/playable.ts`, `src/lib/game/keys.ts` |
+| `<GameShell>`, `<OptionGroup>`, option builders | `src/lib/components/game/*`, `src/lib/game/options.ts` |
+| Ported Freq ID, Panning, dB Change, EQ Guess (394→~110 lines avg) | `src/routes/games/*/+page.svelte` |
+| **Bug fixed:** Level Change cards ignored clicks (inverted guard) | `src/lib/components/db-choice.svelte` |
+| E2E: full 3-round session per ported game | `src/routes/games/**/*.e2e.ts` |
+
+**Next:** Phase 13 sample tooling, or Phase 15 reworks (EQ Matching, Dynamics) on the shell.
+
+---
+
+## 2026-10-02 — Engine v2 part 1 (Phase 14) + EQ Guess fix
+
+| Item | Files touched |
+|------|--------------|
+| Graded scoring: `scoreGuess`/`passThreshold`, `RoundBase.score`, `accuracySession`, store `accuracy` | `src/lib/game/*`, `src/lib/stores/*` |
+| Stats entries carry optional `accuracy` | `src/lib/stores/stats-store.svelte.ts` |
+| Loudness math (`rmsDb`, `compensationDb`) | `src/lib/audio/loudness.ts` |
+| EQ Guess sign tell removed, per-difficulty distractors | `src/lib/games/eq-guess/config.ts` |
+| Unit tests: 34 total (session, loudness, all game configs); vitest `$lib` alias | `*.test.ts`, `vitest.config.ts` |
+
+**Next:** `createGameController` + `<GameShell>`, port Freq ID as reference.
+
+---
+
 ## 2026-10-02 — Assessment + roadmap (Phases 13–17)
 
 | Item | Files touched |

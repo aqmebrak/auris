@@ -8,9 +8,18 @@
 		guess?: number | null;
 		onSelect?: (db: number) => void;
 		disabled?: boolean;
+		/** Before listening: same cards, values hidden ("— dB"). */
+		masked?: boolean;
 	}
 
-	let { options, targetDb = null, guess = null, onSelect, disabled = false }: Props = $props();
+	let {
+		options,
+		targetDb = null,
+		guess = null,
+		onSelect,
+		disabled = false,
+		masked = false
+	}: Props = $props();
 
 	function cardClass(opt: number): string {
 		const isTarget = targetDb !== null && opt === targetDb;
@@ -29,12 +38,12 @@
 				opt
 			)}"
 			onclick={() => {
-				if (!disabled || targetDb !== null) return;
+				if (disabled) return;
 				onSelect?.(opt);
 			}}
 			disabled={disabled && targetDb === null}
 		>
-			{formatDb(opt)}
+			{masked ? '— dB' : formatDb(opt)}
 		</button>
 	{/each}
 </div>

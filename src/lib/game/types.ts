@@ -11,6 +11,13 @@ export type RoundResult = 'correct' | 'wrong' | 'pending';
 export interface RoundBase<TGuess> {
 	guess: TGuess | null;
 	result: RoundResult;
+	/** 0..1 closeness of the guess. Set on submit; absent for binary games and pending rounds. */
+	score?: number;
+}
+
+/** A round backed by a sample; what the game controller needs to play it. */
+export interface SampleRound<TGuess> extends RoundBase<TGuess> {
+	sampleUrl: string;
 }
 
 export interface GameConfig<TRound extends RoundBase<TGuess>, TGuess> {
@@ -22,6 +29,12 @@ export interface GameConfig<TRound extends RoundBase<TGuess>, TGuess> {
 	generateRound: () => TRound;
 	/** Returns true if the guess is correct for this round. */
 	evaluateGuess: (round: TRound, guess: TGuess) => boolean;
+	/**
+	 * Optional graded scoring (0..1). When set, a round is `correct` if its score
+	 * reaches `passThreshold` (default 1) and `evaluateGuess` is ignored.
+	 */
+	scoreGuess?: (round: TRound, guess: TGuess) => number;
+	passThreshold?: number;
 }
 
 export interface GameSession<TRound> {

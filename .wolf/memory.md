@@ -218,3 +218,23 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 19:45 | Removed Drizzle/Neon/Better Auth; plan retargeted to rock/metal audience | package.json, svelte.config.js, task_plan.md, CLAUDE.md | gates pending | ~10k |
+| 21:50 | Engine v2 pt1: graded scoring, loudness math, EQ Guess tell fix, 34 unit tests | src/lib/game, src/lib/audio/loudness.ts, eq-guess/config.ts | tests green | ~40k |
+| 22:30 | Phase 15 EQ Matching v2: graded scoring, spectrum loudness compensation, shell port | audio/eq-math.ts, audio/spectrum.ts, eq-matching/* | gates green | ~60k |
+| 15:43 | Created src/lib/components/eq-curve.svelte | — | ~889 |
+| 07:50 | EQ Matching UX: real-named toggle, responsive big curve, sticky transport, pinned curve on mobile | eq-curve, ab-toggle, playback-controls, game-shell, eq-matching page | gates pending | ~40k |
+| 08:40 | Phase 15 Dynamics: compressor DSP + worklet, 5-mode game, E2E | audio/compressor-*, games/dynamics, routes/games/dynamics | all green | ~90k |
+| 09:30 | Freq ID + Panning reworks (graded, buttons on Easy, loudness/mono) | games/freq-id, games/panning, audio/spectrum | all green | ~60k |
+
+## Session: 2026-10-04 10:02
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-04 10:02
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:45 | Phase 13 sample library: pnpm samples, library.ts, FLAC migration, preload | scripts/, audio/library.ts, player/chain/controller | all green | ~70k |
+| 11:20 | Sample-aware targets in EQ Matching/Guess/Freq ID + tests | games/*/config.ts, audio/library.ts | all green | ~40k |
+| 12:30 | UX consistency: board snippet, transport always present, layout E2E, focus fix | game-shell, transport-bar, all game pages, layout.e2e.ts | 35 e2e green | ~120k |
+| 10:20 | Phase 16 Filter Finder + pass-filter math + compensated playable + Button resolve fix | games/filter-finder, audio/* | 123 unit / 41 e2e green | ~80k |

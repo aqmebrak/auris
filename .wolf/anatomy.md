@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-02T17:27:47.016Z
-> Files: 180 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-03T13:43:22.527Z
+> Files: 179 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../.claude/
 
@@ -246,7 +246,7 @@
 - `ab-toggle.svelte` — Svelte: ab-toggle, TS, 1 stores (~216 tok)
 - `db-choice.svelte` — Set on roundResult to reveal correct answer. (~357 tok)
 - `eq-choice.svelte` — Svelte: eq-choice (~429 tok)
-- `eq-curve.svelte` — Svelte: eq-curve (~659 tok)
+- `eq-curve.svelte` — Second curve drawn dashed in green (e.g. the target next to the player's). (~889 tok)
 - `freq-id-heatmap.svelte` — Svelte: freq-id-heatmap, TS, 4 stores (~762 tok)
 - `freq-strip.svelte` — When set, shows a persistent target marker (result phase). (~1626 tok)
 - `game-card.svelte` — Svelte: game-card, TS, 3 stores (~245 tok)
@@ -316,7 +316,6 @@
 
 - `audio.ts` — Panning ID audio — assembles an `AudioChain` with a single stereo panner. (~224 tok)
 - `config.ts` — Panning ID game — config + round type. (~613 tok)
-
 - `index.ts` — Exports db (~96 tok)
 - `schema.ts` — Exports task (~66 tok)
 

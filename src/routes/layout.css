@@ -168,3 +168,10 @@
 		@apply font-mono;
 	}
 }
+
+/* One look for "present but not usable right now" (game options, idle controls). */
+@utility is-locked {
+	opacity: 0.5;
+	pointer-events: none;
+	user-select: none;
+}

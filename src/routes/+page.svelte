@@ -34,16 +34,16 @@
 			available: true
 		},
 		{
-			title: 'Compressorist',
-			description: 'Match the compression settings by ear',
-			href: '/games/compressorist',
+			title: 'Filter Finder',
+			description: 'Find the cutoff of a high-pass or low-pass filter',
+			href: '/games/filter-finder',
 			available: true
 		},
 		{
 			title: 'Dynamics',
-			description: 'Recognize compression characteristics',
+			description: 'Detect compression, then identify ratio, attack and release',
 			href: '/games/dynamics',
-			available: false
+			available: true
 		}
 	];
 </script>
