@@ -61,6 +61,10 @@
 - **Game page API (2026-10-04)**: `GameShell` takes `board(round, ui)` + `feedback(round)`; board is rendered in every phase (ui.interactive / ui.revealed). Never mount elements late. New games must be added to `src/routes/games/game-fixtures.ts` (drives session + layout-stability E2E). Secret values: `masked` prop, not removal.
 - E2E: REPLAY exists (disabled) in idle — wait for `toBeEnabled()` to know a round is playing.
 
+- **Web Audio gotcha**: `BiquadFilterNode` `Q` for lowpass/highpass is in **dB**, not linear — use `qToDb(q)` (`audio/eq-math.ts`). Butterworth: 12 dB/oct Q=0.7071; 24 dB/oct = two stages Q=0.5412 and 1.3066.
+- **Adding a route can break `svelte-check`** in `ui/button/button.svelte` (`resolve()` union too big) — the cast there is `href as '/'` on purpose.
+- `createCompensatedPlayable(chain, player)` gives a Playable + `spectrum()` for loudness-matched A/B games; compensate with `compensationFromResponse(spectrum, f => responseDb(f))`.
+
 ## Do-Not-Repeat
 
 - **[2026-10-02] Suggested diversifying sample genres** — wrong: app targets rock/metal on purpose.
