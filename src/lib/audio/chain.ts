@@ -30,8 +30,8 @@ export class AudioChain {
 	}
 
 	/** Loads the sample and eagerly builds the effect graph. */
-	async load(url: string): Promise<void> {
-		await this.player.load(url);
+	async load(url: string, opts?: { mono?: boolean }): Promise<void> {
+		await this.player.load(url, opts);
 		this.build();
 	}
 

@@ -151,7 +151,7 @@ Ordered by value ÷ effort. All reuse engine v2 + shared components.
 | 1 | **Filter Finder** ✅ | HPF/LPF cutoff placement | Butterworth 12/24 dB/oct (1–2 biquads; Web Audio Q is in dB), loudness-matched | reuse `freq-strip` / choice buttons | mixes ✅ | S |
 | 2 | **Room Reader** | Reverb decay (RT60) | `ConvolverNode`, generated exp-decay IR — spec below | new `rt60-strip` (log 0.1–8 s, room labels) | dry stems 🎧 | M |
 | 3 | **Delay Time** | Slapback / 1/16 / 1/8 / 1/4 / dotted 1/8 at track BPM | `DelayNode` + feedback gain | choice cards | dry drums/stems + BPM 🎧 | S |
-| 4 | **Phase / Comb** | In phase vs polarity flip vs comb (0.1–5 ms) | sum source + delayed/inverted copy | 3AFC → Hard: estimate delay | mixes ✅, mono stems better | S |
+| 4 | **Phase / Comb** ✅ | In-phase comb vs polarity-flipped copy; identify the delay (0.1–5 ms) | `x + ±x(t−d)` on a mono-summed source, spectrum-compensated | choice buttons | mixes ✅ | S |
 | 5 | **Stereo Width** ✅ | Mono / narrow / normal / wide | M/S matrix (`createStereoWidth`), power-compensated from the sample's side/mid ratio | choice buttons (%) | stereo mixes with real side content ✅ | S |
 | 6 | **Saturation** | Clean vs drive amount | `WaveShaperNode` tanh curve, oversample 4x, loudness-matched | 3AFC drive levels | stems 🎧 | S |
 | 7 | **Instrument Spotlight** | Which stem got +3/+6 dB in the mix | N synced `AudioBufferSourceNode`s, per-stem gain | stem choice list | multitracks 🎧 | M (engine: multi-source playback) |
