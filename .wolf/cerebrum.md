@@ -67,6 +67,8 @@
 
 - **Library `sideDb`**: stereo side/mid energy (dB). −60 = dual-mono. Use `pickSample({ channels: 2, minSideDb: -20 })` for anything width/stereo related. Two current samples (`rockin`, `rock-seq`) are dual-mono. New analysis fields: add to `analyze()` in the script and run `pnpm samples --reanalyze`.
 
+- **Mono A/B**: `createCompensatedPlayable(chain, player, { mono: true })` plays the channel-average for BOTH paths so a stereo→mono fold-down never differs between A and B (Phase/Comb). Web Audio `DelayNode` under ~5 samples is interpolated: a 0.1 ms comb notch is ~-29 dB, not a full null.
+
 ## Do-Not-Repeat
 
 - **[2026-10-02] Suggested diversifying sample genres** — wrong: app targets rock/metal on purpose.
