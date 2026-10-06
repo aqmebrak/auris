@@ -4,6 +4,23 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-06 — Phase 16 #1: Filter Finder
+
+| Item | Files touched |
+|------|--------------|
+| Pass-filter math (RBJ high/low-pass, Butterworth 12/24 dB/oct), `qToDb` | `src/lib/audio/eq-math.ts` |
+| Generic loudness compensation (`loudnessDeltaDb`, `compensationFromResponse`) | `src/lib/audio/spectrum.ts` |
+| `audibleCutoffs` (energy must exist in the removed region) | `src/lib/audio/library.ts` |
+| `createPassFilter` effect; `createCompensatedPlayable` (shared with Freq ID) | `audio/effects.ts`, `audio/compensated-chain.ts` |
+| Filter Finder game: High-pass / Low-pass / Mixed, 3 difficulties, graded octave error | `src/lib/games/filter-finder/*`, `src/routes/games/filter-finder/` |
+| `freqScore` moved to `frequency.ts` | `src/lib/frequency.ts` |
+| Fixed Button's `resolve()` typing breaking at 8+ routes | `ui/button/button.svelte` |
+| 123 unit, 41 E2E (session + layout for 2 new configs); filter cascade verified in Chromium | |
+
+**Next:** Phase 16 #4 Phase/Comb, #5 Stereo Width (work on mixes), then #2/#3/#6/#7 as samples arrive.
+
+---
+
 ## 2026-10-04 — UX consistency across game states
 
 | Item | Files touched |

@@ -88,19 +88,25 @@ export function averageSpectrum(
 }
 
 /**
- * Estimated loudness change (dB, power-weighted) of applying `bands` to a
- * signal with the given spectrum. 0 when the spectrum is empty or bands flat.
+ * Estimated loudness change (dB, power-weighted) of a filter with frequency
+ * response `response(f)` (dB) applied to a signal with this spectrum.
+ * 0 when the spectrum is empty or the response is flat.
  */
-export function eqLoudnessDeltaDb(spectrum: BandSpectrum, bands: PeakingBand[]): number {
+export function loudnessDeltaDb(spectrum: BandSpectrum, response: (f: number) => number): number {
 	let total = 0;
 	let shaped = 0;
 	for (let i = 0; i < spectrum.freqs.length; i++) {
 		const p = spectrum.power[i];
 		total += p;
-		shaped += p * Math.pow(10, responseDb(spectrum.freqs[i], bands) / 10);
+		shaped += p * Math.pow(10, response(spectrum.freqs[i]) / 10);
 	}
 	if (total === 0 || shaped === 0) return 0;
 	return 10 * Math.log10(shaped / total);
+}
+
+/** Loudness change of peaking bands in series. */
+export function eqLoudnessDeltaDb(spectrum: BandSpectrum, bands: PeakingBand[]): number {
+	return loudnessDeltaDb(spectrum, (f) => responseDb(f, bands));
 }
 
 /** Average of all channels as one Float32Array. */
@@ -118,14 +124,23 @@ export function monoMix(buffer: {
 }
 
 /**
- * Gain (dB) that cancels the loudness change `bands` cause on this material,
- * clamped to ±`limit` so a pathological case can't blast the listener.
+ * Gain (dB) that cancels the loudness change a filter response causes on this
+ * material, clamped to ±`limit` so a pathological case can't blast the listener.
  */
+export function compensationFromResponse(
+	spectrum: BandSpectrum | null,
+	response: (f: number) => number,
+	limit = 12
+): number {
+	if (!spectrum) return 0;
+	return Math.max(-limit, Math.min(limit, -loudnessDeltaDb(spectrum, response)));
+}
+
+/** Compensation for peaking bands in series. */
 export function compensationGainDb(
 	spectrum: BandSpectrum | null,
 	bands: PeakingBand[],
 	limit = 12
 ): number {
-	if (!spectrum) return 0;
-	return Math.max(-limit, Math.min(limit, -eqLoudnessDeltaDb(spectrum, bands)));
+	return compensationFromResponse(spectrum, (f) => responseDb(f, bands), limit);
 }

@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { logGrid, matchScore, peakingMagnitudeDb, responseDb } from './eq-math.js';
+import {
+	PASS_STAGE_Q,
+	logGrid,
+	matchScore,
+	passResponseDb,
+	peakingMagnitudeDb,
+	qToDb,
+	responseDb
+} from './eq-math.js';
 
 describe('peakingMagnitudeDb', () => {
 	it('equals the band gain at the center frequency', () => {
@@ -77,5 +85,31 @@ describe('matchScore', () => {
 		const oneRight = matchScore(two, [two[0], { freq: 1000, gainDb: -6, q: 1.5 }]);
 		expect(oneRight).toBeGreaterThan(0.4);
 		expect(oneRight).toBeLessThan(0.6);
+	});
+});
+
+describe('passResponseDb', () => {
+	it('is −3 dB at the cutoff for both slopes and both types (Butterworth)', () => {
+		for (const slope of [12, 24] as const) {
+			expect(passResponseDb(1000, 'lowpass', 1000, slope)).toBeCloseTo(-3.01, 0);
+			expect(passResponseDb(1000, 'highpass', 1000, slope)).toBeCloseTo(-3.01, 0);
+		}
+	});
+
+	it('rolls off ~12 or ~24 dB one octave past the cutoff', () => {
+		expect(passResponseDb(2000, 'lowpass', 1000, 12)).toBeCloseTo(-12.3, 0);
+		expect(passResponseDb(2000, 'lowpass', 1000, 24)).toBeCloseTo(-24.1, 0);
+		expect(passResponseDb(500, 'highpass', 1000, 12)).toBeCloseTo(-12.3, 0);
+		expect(passResponseDb(500, 'highpass', 1000, 24)).toBeCloseTo(-24.1, 0);
+	});
+
+	it('is flat in the passband', () => {
+		expect(Math.abs(passResponseDb(100, 'lowpass', 5000, 24))).toBeLessThan(0.1);
+		expect(Math.abs(passResponseDb(8000, 'highpass', 200, 24))).toBeLessThan(0.1);
+	});
+
+	it('converts linear Q to the dB value Web Audio expects', () => {
+		expect(qToDb(Math.SQRT1_2)).toBeCloseTo(-3.01, 1);
+		expect(PASS_STAGE_Q[24]).toHaveLength(2);
 	});
 });

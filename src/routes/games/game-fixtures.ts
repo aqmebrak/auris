@@ -38,6 +38,20 @@ export const GAMES: Game[] = [
 		answer: clickFirst(/Hz$/)
 	},
 	{
+		name: 'filter-finder-easy-buttons',
+		path: '/games/filter-finder',
+		hasAB: true,
+		answer: clickFirst(/Hz$/)
+	},
+	{
+		name: 'filter-finder-mixed-strip',
+		path: '/games/filter-finder',
+		hasAB: true,
+		difficulty: 'Medium',
+		setup: (page: Page) => page.getByRole('button', { name: 'Mixed', exact: true }).click(),
+		answer: (page: Page) => clickCenter(page, 'slider')
+	},
+	{
 		name: 'panning-easy-buttons',
 		path: '/games/panning',
 		hasAB: false,

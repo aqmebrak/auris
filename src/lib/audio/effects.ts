@@ -6,6 +6,8 @@
  * tweaking — the chain does not care about those extras.
  */
 
+import { PASS_STAGE_Q, qToDb, type PassSlope, type PassType } from './eq-math.js';
+
 export interface EffectHandle {
 	input: AudioNode;
 	output: AudioNode;
@@ -98,4 +100,36 @@ export function createMonoSum(ctx: AudioContext): EffectHandle {
 	node.channelCountMode = 'explicit';
 	node.channelInterpretation = 'speakers';
 	return { input: node, output: node };
+}
+
+export interface PassFilterHandle extends EffectHandle {
+	set(type: PassType, cutoff: number, slope: PassSlope): void;
+}
+
+/**
+ * High- or low-pass at 12 or 24 dB/oct (Butterworth): one biquad, or two in
+ * series with the second one transparent (zero-gain peaking) for 12 dB/oct.
+ */
+export function createPassFilter(ctx: AudioContext): PassFilterHandle {
+	const s1 = ctx.createBiquadFilter();
+	const s2 = ctx.createBiquadFilter();
+	s1.connect(s2);
+	return {
+		input: s1,
+		output: s2,
+		set(type, cutoff, slope) {
+			const [q1, q2] = PASS_STAGE_Q[slope];
+			s1.type = type;
+			s1.frequency.value = cutoff;
+			s1.Q.value = qToDb(q1); // Web Audio takes lowpass/highpass Q in dB
+			if (q2 !== undefined) {
+				s2.type = type;
+				s2.frequency.value = cutoff;
+				s2.Q.value = qToDb(q2);
+			} else {
+				s2.type = 'peaking';
+				s2.gain.value = 0;
+			}
+		}
+	};
 }

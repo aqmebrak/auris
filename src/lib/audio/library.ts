@@ -138,3 +138,24 @@ export function audibleFreqs(
 	const ok = candidates.filter((f) => bandRelDb(sample.spectrum, f) >= minRelDb);
 	return ok.length > 0 ? ok : [...candidates];
 }
+
+/** Energy (dB re loudest band) that must sit in the removed region for a filter to be audible. */
+export const AUDIBLE_PASS_REL_DB = -25;
+
+/**
+ * Cutoffs where a high/low-pass will audibly change this sample: the region it
+ * removes (an octave beyond the cutoff) must carry energy. Returns all
+ * candidates if none qualify or no sample is given.
+ */
+export function audibleCutoffs(
+	sample: Profiled | null | undefined,
+	candidates: readonly number[],
+	type: 'highpass' | 'lowpass',
+	minRelDb: number = AUDIBLE_PASS_REL_DB
+): number[] {
+	if (!sample) return [...candidates];
+	const ok = candidates.filter(
+		(f) => bandRelDb(sample.spectrum, type === 'highpass' ? f / 2 : f * 2) >= minRelDb
+	);
+	return ok.length > 0 ? ok : [...candidates];
+}

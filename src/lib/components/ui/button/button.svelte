@@ -47,6 +47,9 @@
 </script>
 
 <script lang="ts">
+	// `href` is an arbitrary string, so it is cast to a single valid route below (types only; the value is untouched): typing it as SvelteKit's
+	// route union stops compiling once the app has enough routes (TS can't distribute that many
+	// tuple overloads).
 	import { resolve } from '$app/paths';
 
 	let {
@@ -67,7 +70,7 @@
 		bind:this={ref}
 		data-slot="button"
 		class={cn(buttonVariants({ variant, size }), className)}
-		href={disabled ? undefined : resolve(href as Parameters<typeof resolve>[0])}
+		href={disabled ? undefined : resolve(href as '/')}
 		aria-disabled={disabled}
 		role={disabled ? 'link' : undefined}
 		tabindex={disabled ? -1 : undefined}

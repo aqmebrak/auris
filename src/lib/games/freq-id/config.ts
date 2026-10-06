@@ -11,6 +11,7 @@ import { defineGame } from '$lib/game/config.js';
 import type { SampleRound } from '$lib/game/types.js';
 import { audibleFreqs, pickSample, type SampleEntry } from '$lib/audio/library.js';
 import { logGrid } from '$lib/audio/eq-math.js';
+import { freqScore } from '$lib/frequency.js';
 
 export interface FreqIdRound extends SampleRound<number> {
 	targetFreq: number;
@@ -87,12 +88,6 @@ export const ROUND_COUNT_OPTIONS = [3, 5, 10] as const;
 export function bandsInZone(zone: FreqZone): number[] {
 	const { min, max } = ZONE_CONFIG[zone];
 	return OCTAVE_BANDS.filter((f) => f >= min && f <= max);
-}
-
-/** 1 at the exact frequency, 0.5 at the margin, 0 at twice the margin. */
-export function freqScore(target: number, guess: number, marginOctaves: number): number {
-	const err = Math.abs(Math.log2(guess / target));
-	return Math.max(0, 1 - err / (2 * marginOctaves));
 }
 
 /**

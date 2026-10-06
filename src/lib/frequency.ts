@@ -18,3 +18,9 @@ export function posToFreqInRange(x: number, width: number, min: number, max: num
 export function freqToPctInRange(freq: number, min: number, max: number): number {
 	return (Math.log(freq / min) / Math.log(max / min)) * 100;
 }
+
+/** Closeness of two frequencies by octave error: 1 exact, 0.5 at the margin, 0 at twice the margin. */
+export function freqScore(target: number, guess: number, marginOctaves: number): number {
+	const err = Math.abs(Math.log2(guess / target));
+	return Math.max(0, 1 - err / (2 * marginOctaves));
+}

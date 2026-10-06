@@ -148,7 +148,7 @@ Ordered by value ÷ effort. All reuse engine v2 + shared components.
 
 | # | Game | Trains | Audio | UI | Samples | Effort |
 | - | ---- | ------ | ----- | -- | ------- | ------ |
-| 1 | **Filter Finder** | HPF/LPF cutoff placement | `BiquadFilterNode` highpass/lowpass, 12/24 dB/oct (cascade) | reuse `freq-strip` | mixes ✅ | S |
+| 1 | **Filter Finder** ✅ | HPF/LPF cutoff placement | Butterworth 12/24 dB/oct (1–2 biquads; Web Audio Q is in dB), loudness-matched | reuse `freq-strip` / choice buttons | mixes ✅ | S |
 | 2 | **Room Reader** | Reverb decay (RT60) | `ConvolverNode`, generated exp-decay IR — spec below | new `rt60-strip` (log 0.1–8 s, room labels) | dry stems 🎧 | M |
 | 3 | **Delay Time** | Slapback / 1/16 / 1/8 / 1/4 / dotted 1/8 at track BPM | `DelayNode` + feedback gain | choice cards | dry drums/stems + BPM 🎧 | S |
 | 4 | **Phase / Comb** | In phase vs polarity flip vs comb (0.1–5 ms) | sum source + delayed/inverted copy | 3AFC → Hard: estimate delay | mixes ✅, mono stems better | S |

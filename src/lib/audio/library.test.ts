@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+	audibleCutoffs,
 	audibleFreqs,
 	bandRelDb,
 	filterSamples,
@@ -90,5 +91,33 @@ describe('bandRelDb / audibleFreqs', () => {
 	it('falls back to all candidates when none qualify', () => {
 		const silent = { spectrum: { freqs: [100, 1000], relDb: [-90, -90] } };
 		expect(audibleFreqs(silent, [100, 1000], 'cut')).toEqual([100, 1000]);
+	});
+});
+
+describe('audibleCutoffs', () => {
+	// energy only below ~500 Hz
+	const bassy = {
+		spectrum: { freqs: [100, 250, 500, 1000, 4000, 16000], relDb: [0, -3, -10, -40, -60, -80] }
+	};
+	// energy only above ~2 kHz (thin / bright)
+	const bright = {
+		spectrum: { freqs: [100, 250, 500, 1000, 4000, 16000], relDb: [-80, -60, -40, -15, 0, -5] }
+	};
+
+	it('high-pass is audible only if there is energy below the cutoff', () => {
+		const cands = [100, 400, 1600, 6400];
+		expect(audibleCutoffs(bassy, cands, 'highpass')).toEqual([100, 400]);
+		expect(audibleCutoffs(bright, cands, 'highpass')).toEqual([1600, 6400]);
+	});
+
+	it('low-pass is audible only if there is energy above the cutoff', () => {
+		const cands = [250, 500, 8000];
+		expect(audibleCutoffs(bassy, cands, 'lowpass')).toEqual([250]);
+		expect(audibleCutoffs(bright, [500, 2000, 8000], 'lowpass')).toEqual([500, 2000, 8000]);
+	});
+
+	it('falls back to all candidates when none qualify or no sample', () => {
+		expect(audibleCutoffs(bassy, [8000, 16000], 'lowpass')).toEqual([8000, 16000]);
+		expect(audibleCutoffs(null, [100, 200], 'highpass')).toEqual([100, 200]);
 	});
 });
