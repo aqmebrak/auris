@@ -25,3 +25,22 @@ export function compensationDb(referenceDb: number, effectedDb: number, limit = 
 	if (referenceDb <= SILENCE_DB || effectedDb <= SILENCE_DB) return 0;
 	return Math.max(-limit, Math.min(limit, referenceDb - effectedDb));
 }
+
+/**
+ * Side-to-mid energy ratio of a stereo signal in dB (0 = as much side as mid,
+ * −∞ = mono). Floors at −60 dB. Mid = (L+R)/2, side = (L−R)/2.
+ */
+export function sideToMidDb(left: ArrayLike<number>, right: ArrayLike<number>): number {
+	let mid = 0;
+	let side = 0;
+	const n = Math.min(left.length, right.length);
+	for (let i = 0; i < n; i++) {
+		const m = (left[i] + right[i]) / 2;
+		const s = (left[i] - right[i]) / 2;
+		mid += m * m;
+		side += s * s;
+	}
+	if (side === 0) return -60;
+	if (mid === 0) return 60;
+	return Math.max(-60, Math.min(60, 10 * Math.log10(side / mid)));
+}

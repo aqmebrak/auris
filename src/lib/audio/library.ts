@@ -32,6 +32,8 @@ export interface SampleEntry {
 	/** Integrated loudness after normalisation (target −18 LUFS). */
 	lufs: number;
 	spectrum: SpectrumProfile;
+	/** Side/mid energy ratio in dB (stereo only; ≈ stereo width of the mix). null for mono. */
+	sideDb?: number | null;
 	credit?: string;
 	license?: string;
 	tags?: string[];
@@ -68,6 +70,8 @@ export interface SampleFilter {
 	kind?: SampleKind | SampleKind[];
 	channels?: 1 | 2;
 	source?: string;
+	/** Only stereo samples whose side/mid energy ratio is at least this (dB). */
+	minSideDb?: number;
 }
 
 export function filterSamples(
@@ -79,7 +83,8 @@ export function filterSamples(
 		(s) =>
 			(!kinds || kinds.includes(s.kind)) &&
 			(filter.channels === undefined || s.channels === filter.channels) &&
-			(filter.source === undefined || s.source === filter.source)
+			(filter.source === undefined || s.source === filter.source) &&
+			(filter.minSideDb === undefined || (s.sideDb ?? -Infinity) >= filter.minSideDb)
 	);
 }
 

@@ -52,6 +52,12 @@ export const GAMES: Game[] = [
 		answer: (page: Page) => clickCenter(page, 'slider')
 	},
 	{
+		name: 'stereo-width',
+		path: '/games/stereo-width',
+		hasAB: true,
+		answer: clickFirst(/^(Mono|\d+%)$/)
+	},
+	{
 		name: 'panning-easy-buttons',
 		path: '/games/panning',
 		hasAB: false,

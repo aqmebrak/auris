@@ -60,6 +60,15 @@ describe('filterSamples / pickSample', () => {
 		expect(filterSamples({ source: 'kit' }, lib).map((s) => s.id)).toEqual(['c']);
 	});
 
+	it('filters by minimum side/mid energy (mono and dual-mono excluded)', () => {
+		const wide = [
+			entry({ id: 'w', sideDb: -8 }),
+			entry({ id: 'n', sideDb: -60 }),
+			entry({ id: 'm', channels: 1, sideDb: null })
+		];
+		expect(filterSamples({ minSideDb: -20 }, wide).map((s) => s.id)).toEqual(['w']);
+	});
+
 	it('picks from matches, falling back to the whole library when none match', () => {
 		for (let i = 0; i < 20; i++) expect(pickSample({ kind: 'stem' }, lib).id).toBe('b');
 		const ids = new Set(Array.from({ length: 100 }, () => pickSample({ kind: 'multi' }, lib).id));

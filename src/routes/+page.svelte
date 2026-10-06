@@ -40,6 +40,12 @@
 			available: true
 		},
 		{
+			title: 'Stereo Width',
+			description: 'Judge how much wider or narrower the stereo image has been made',
+			href: '/games/stereo-width',
+			available: true
+		},
+		{
 			title: 'Dynamics',
 			description: 'Detect compression, then identify ratio, attack and release',
 			href: '/games/dynamics',

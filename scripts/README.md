@@ -17,6 +17,6 @@ Processes raw audio in `samples-src/` (gitignored) into app-ready assets.
 
 **What it does:** two-pass loudness normalisation to −18 LUFS / −1 dBTP (linear, keeps dynamics) → 44.1 kHz FLAC in `static/audio/` → analysis (channels, duration, loudness, 1/3-octave energy profile) written to `src/lib/audio/library.json` → `static/audio/CREDITS.md`.
 
-Add credit/licence/tags in `scripts/sample-meta.json` (keyed by sample id). Re-run is incremental; `--force` reprocesses all, `--only <text>` filters.
+Add credit/licence/tags in `scripts/sample-meta.json` (keyed by sample id). Analysis also records the stereo side/mid energy ratio (`sideDb`; −60 = dual-mono). `pnpm samples --reanalyze` recomputes analysis from the committed FLACs only (no raw files needed). Re-run is incremental; `--force` reprocesses all, `--only <text>` filters.
 
 Commit `library.json`, `static/audio/*.flac`, `CREDITS.md` and `sample-meta.json`; never `samples-src/`.
