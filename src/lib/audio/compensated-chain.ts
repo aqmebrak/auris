@@ -12,13 +12,17 @@ import { averageSpectrum, monoMix, type BandSpectrum } from './spectrum.js';
 export function createCompensatedPlayable(
 	chain: AudioChain,
 	player: AudioPlayer,
-	onDestroy?: () => void
+	opts: {
+		/** Play (and analyse) the channel average. */
+		mono?: boolean;
+		onDestroy?: () => void;
+	} = {}
 ): { playable: Playable; spectrum: () => BandSpectrum | null } {
 	let spectrum: BandSpectrum | null = null;
 
 	const playable: Playable = {
 		async load(url) {
-			await chain.load(url);
+			await chain.load(url, { mono: opts.mono });
 			const buffer = player.currentBuffer;
 			spectrum = buffer ? averageSpectrum(monoMix(buffer), buffer.sampleRate) : null;
 		},
@@ -30,7 +34,7 @@ export function createCompensatedPlayable(
 		setMode: (mode) => chain.setMode(mode),
 		destroy() {
 			chain.destroy();
-			onDestroy?.();
+			opts.onDestroy?.();
 		}
 	};
 

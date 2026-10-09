@@ -46,6 +46,12 @@
 			available: true
 		},
 		{
+			title: 'Phase / Comb',
+			description: 'Hear comb filtering and polarity-flipped copies',
+			href: '/games/phase-comb',
+			available: true
+		},
+		{
 			title: 'Dynamics',
 			description: 'Detect compression, then identify ratio, attack and release',
 			href: '/games/dynamics',
