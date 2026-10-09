@@ -34,9 +34,11 @@ export function createFilterFinderAudio(): FilterFinderAudio {
 		},
 		(ctx) => (compensation = createGain(ctx, 0))
 	]);
-	const { playable, spectrum } = createCompensatedPlayable(chain, player, () => {
-		pass = null;
-		compensation = null;
+	const { playable, spectrum } = createCompensatedPlayable(chain, player, {
+		onDestroy: () => {
+			pass = null;
+			compensation = null;
+		}
 	});
 
 	return {

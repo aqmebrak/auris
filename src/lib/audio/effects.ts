@@ -181,3 +181,27 @@ export function createStereoWidth(ctx: AudioContext): StereoWidthHandle {
 		}
 	};
 }
+
+export interface CombHandle extends EffectHandle {
+	/** `x + polarity · x(t − delayMs)`. */
+	set(delayMs: number, polarity: 1 | -1): void;
+}
+
+export function createComb(ctx: AudioContext): CombHandle {
+	const input = ctx.createGain();
+	const output = ctx.createGain();
+	const delay = ctx.createDelay(0.05);
+	const polarityGain = ctx.createGain();
+	input.connect(output);
+	input.connect(delay);
+	delay.connect(polarityGain);
+	polarityGain.connect(output);
+	return {
+		input,
+		output,
+		set(delayMs, polarity) {
+			delay.delayTime.value = delayMs / 1000;
+			polarityGain.gain.value = polarity;
+		}
+	};
+}

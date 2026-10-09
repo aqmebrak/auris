@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	PASS_STAGE_Q,
+	combResponseDb,
 	logGrid,
 	matchScore,
 	passResponseDb,
@@ -111,5 +112,26 @@ describe('passResponseDb', () => {
 	it('converts linear Q to the dB value Web Audio expects', () => {
 		expect(qToDb(Math.SQRT1_2)).toBeCloseTo(-3.01, 1);
 		expect(PASS_STAGE_Q[24]).toHaveLength(2);
+	});
+});
+
+describe('combResponseDb', () => {
+	it('in-phase comb: +6 dB at DC-aligned frequencies, deep notch at 1/(2d)', () => {
+		expect(combResponseDb(0.0001, 1, 1)).toBeCloseTo(6.02, 1);
+		expect(combResponseDb(1000, 1, 1)).toBeCloseTo(6.02, 1); // multiple of 1/d
+		expect(combResponseDb(500, 1, 1)).toBe(-60); // 1/(2·1 ms) → cancels
+	});
+
+	it('polarity-flipped: cancels at 0 Hz and multiples of 1/d, +6 dB at 1/(2d)', () => {
+		expect(combResponseDb(0.0001, 1, -1)).toBe(-60);
+		expect(combResponseDb(1000, 1, -1)).toBe(-60);
+		expect(combResponseDb(500, 1, -1)).toBeCloseTo(6.02, 1);
+	});
+
+	it('averages to 0 dB power-wise (+3 dB in power ≈ energy doubling)', () => {
+		let sum = 0;
+		const n = 4000;
+		for (let i = 1; i <= n; i++) sum += Math.pow(10, combResponseDb((i / n) * 5000, 1, 1) / 10);
+		expect(sum / n).toBeCloseTo(2, 1);
 	});
 });

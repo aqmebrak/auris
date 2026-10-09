@@ -114,7 +114,7 @@ export function monoMix(buffer: {
 	length: number;
 	numberOfChannels: number;
 	getChannelData(channel: number): Float32Array;
-}): Float32Array {
+}): Float32Array<ArrayBuffer> {
 	const out = new Float32Array(buffer.length);
 	for (let c = 0; c < buffer.numberOfChannels; c++) {
 		const data = buffer.getChannelData(c);

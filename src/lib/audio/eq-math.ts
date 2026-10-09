@@ -131,3 +131,13 @@ export function passResponseDb(
 		0
 	);
 }
+
+/**
+ * Magnitude (dB) of `x + polarity · x(t − delay)` at `f`: a comb filter
+ * (polarity +1: notches at odd multiples of 1/(2·delay)) or its polarity-flipped
+ * twin (−1: notches at 0 and multiples of 1/delay). Floors at −60 dB.
+ */
+export function combResponseDb(f: number, delayMs: number, polarity: 1 | -1): number {
+	const power = 2 + 2 * polarity * Math.cos(2 * Math.PI * f * (delayMs / 1000));
+	return Math.max(-60, 10 * Math.log10(Math.max(power, 1e-6)));
+}

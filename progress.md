@@ -4,6 +4,35 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-09 — Phase 17: progression & dashboard
+
+| Item | Files touched |
+|------|--------------|
+| Game registry (single source: id, route, category); test that every route is registered | `src/lib/games/registry.ts` |
+| Pure stats helpers: legacy-safe accuracy, summaries, difficulty suggestion, recommendation | `src/lib/stats.ts` |
+| Dashboard v2: summary + "practise next", categories, per-game sparkline cards; old FreqId-only panel removed | `src/routes/+page.svelte`, `game-card`, `dashboard-summary`, `sparkline` |
+| Difficulty suggestion line + one-click apply on every game page (fixed height, layout-stable) | `game-shell.svelte` |
+| Controller `onOptionsChange` hook (EQ Matching / Dynamics resets now fire for shell-applied changes) | `game-controller.svelte.ts`, pages |
+| 158 unit, 54 E2E (dashboard from seeded storage, suggestions) | |
+
+**Left in Phase 17:** daily mix (cross-game session) and generalising the Freq ID heatmap (also fits Filter Finder).
+**Next:** Level Change Hard tier; Phase 16 stem-based games when samples arrive.
+
+---
+
+## 2026-10-07 — Phase 16 #4: Phase / Comb
+
+| Item | Files touched |
+|------|--------------|
+| `combResponseDb`; `createComb` effect (verified in Chromium) | `audio/eq-math.ts`, `audio/effects.ts` |
+| `AudioPlayer.load(url, { mono })` (cached mono fold-down); `createCompensatedPlayable({ mono })` | `audio/player.ts`, `chain.ts`, `compensated-chain.ts` |
+| Phase/Comb game: Type (comb vs polarity-flipped) and Delay modes × 3 difficulties | `src/lib/games/phase-comb/*`, route |
+| 140 unit, 50 E2E | |
+
+**Next:** Phase 16 remaining (Room Reader, Delay Time, Saturation, Instrument Spotlight) need dry stems/BPM. Then Phase 17 progression, or Level Change Hard tier.
+
+---
+
 ## 2026-10-06 — Phase 16 #5: Stereo Width
 
 | Item | Files touched |

@@ -26,6 +26,8 @@ export interface GameControllerOptions<
 	sessionMeta: (rounds: TR[], options: TO) => Record<string, unknown>;
 	/** False for games without an A/B comparison. */
 	hasAB?: boolean;
+	/** Called after any option changes (page-level resets, e.g. knob defaults). */
+	onOptionsChange?: (options: TO) => void;
 }
 
 export function createGameController<
@@ -99,6 +101,7 @@ export function createGameController<
 		setOption<K extends keyof TO>(key: K, value: TO[K]): void {
 			options[key] = value;
 			rebuild();
+			opts.onOptionsChange?.(options);
 		},
 
 		async start(): Promise<void> {

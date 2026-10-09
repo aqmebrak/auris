@@ -33,6 +33,7 @@
 		defaultOptions: DEFAULT_OPTIONS,
 		createConfig: createDynamicsConfig,
 		audio,
+		onOptionsChange: (o) => (userSpec = defaultSpec(o.difficulty)),
 		prepareRound: (round) => {
 			audio.setThresholdOffset(round.thresholdOffsetDb);
 			userSpec = defaultSpec(ctrl.options.difficulty);
@@ -60,11 +61,6 @@
 	$effect(() => {
 		if (mode === 'match') audio.setPath('A', { ...userSpec });
 	});
-
-	function setDifficulty(value: DynamicsOptions['difficulty']) {
-		ctrl.setOption('difficulty', value);
-		userSpec = defaultSpec(value);
-	}
 
 	const specSummary = (s: CompSpec) =>
 		`${formatRatio(s.ratio)} · ${formatAttack(s.attackMs)} · ${formatRelease(s.releaseMs)}`;
@@ -102,7 +98,7 @@
 				label="Difficulty"
 				choices={labelled(DIFFICULTY_CONFIG)}
 				selected={ctrl.options.difficulty}
-				onSelect={setDifficulty}
+				onSelect={(v) => ctrl.setOption('difficulty', v)}
 			/>
 			<OptionGroup
 				label="Rounds"
