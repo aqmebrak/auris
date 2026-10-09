@@ -84,3 +84,17 @@ Never call `playground-link` for code that lives in this repo.
 **No duplicate logic.** Before writing a helper, check `src/lib/` for an existing one. `format.ts` owns formatting, `frequency.ts` owns log-scale math. Add to existing modules; do not copy-paste.
 
 **Composable by default.** Components receive data and callbacks via props — no internal fetching, no tight coupling to parent state. This makes them reusable across game modes without rewiring.
+
+## Agent skills
+
+### Issue tracker
+
+Issues are GitHub Issues on `aqmebrak/auris` (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
