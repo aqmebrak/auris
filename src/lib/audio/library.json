@@ -80,7 +80,8 @@
 		"license": "unverified",
 		"tags": [
 			"drums"
-		]
+		],
+		"sideDb": -20.7
 	},
 	{
 		"id": "mix_badoink_0_suburbs",
@@ -163,7 +164,8 @@
 		"license": "unverified",
 		"tags": [
 			"rock"
-		]
+		],
+		"sideDb": null
 	},
 	{
 		"id": "mix_badoink_120_industrial-metal-fusion",
@@ -246,7 +248,8 @@
 		"license": "unverified",
 		"tags": [
 			"metal"
-		]
+		],
+		"sideDb": -16.1
 	},
 	{
 		"id": "mix_badoink_140_rockin",
@@ -329,7 +332,8 @@
 		"license": "unverified",
 		"tags": [
 			"rock"
-		]
+		],
+		"sideDb": -60
 	},
 	{
 		"id": "mix_badoink_170_rock-seq",
@@ -412,7 +416,8 @@
 		"license": "unverified",
 		"tags": [
 			"rock"
-		]
+		],
+		"sideDb": -60
 	},
 	{
 		"id": "mix_bainmack_0_metal-song-short",
@@ -495,7 +500,8 @@
 		"license": "unverified",
 		"tags": [
 			"metal"
-		]
+		],
+		"sideDb": -8.7
 	},
 	{
 		"id": "mix_digimistic_0_metal-2-step-intro",
@@ -578,7 +584,8 @@
 		"license": "unverified",
 		"tags": [
 			"metal"
-		]
+		],
+		"sideDb": -4.9
 	},
 	{
 		"id": "mix_johntrap_130_housing-loop",
@@ -661,6 +668,7 @@
 		"license": "unverified",
 		"tags": [
 			"loop"
-		]
+		],
+		"sideDb": -11.2
 	}
 ]

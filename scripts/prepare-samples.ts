@@ -1,5 +1,5 @@
 /**
- * pnpm samples [--force] [--only <substring>]
+ * pnpm samples [--force] [--only <substring>] [--reanalyze]
  *
  * Turns raw files in `samples-src/` (gitignored) into app-ready assets:
  *   - loudness-normalised to −18 LUFS / −1 dBTP (two-pass, linear, so loops keep their dynamics)
@@ -8,6 +8,7 @@
  *   - analysed (channels, duration, loudness, 1/3-octave energy profile) into `src/lib/audio/library.json`
  * Credits/licence/tags come from `scripts/sample-meta.json`, keyed by sample id.
  * Files already processed (same size + mtime) are skipped unless --force.
+ * --reanalyze recomputes the analysis (spectrum, stereo side/mid) from the committed FLACs only.
  */
 
 import { execFile, spawn } from 'node:child_process';
@@ -16,6 +17,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { join, resolve } from 'node:path';
 import ffmpegPath from 'ffmpeg-static';
 import { averageSpectrum } from '../src/lib/audio/spectrum.ts';
+import { sideToMidDb } from '../src/lib/audio/loudness.ts';
 import { parseSampleName, type SampleEntry } from '../src/lib/audio/library.ts';
 
 const run = promisify(execFile);
@@ -94,23 +96,53 @@ async function measure(file: string): Promise<Loudness> {
 	return parseLoudnorm(err);
 }
 
-async function decodeMono(file: string): Promise<Float32Array> {
+async function decodePcm(file: string, channels: 1 | 2): Promise<Float32Array> {
 	return new Promise((res, rej) => {
 		const chunks: Buffer[] = [];
 		const p = spawn(
 			ffmpeg,
-			['-hide_banner', '-nostdin', '-i', file, '-ac', '1', '-ar', String(RATE), '-f', 'f32le', '-'],
-			{
-				stdio: ['ignore', 'pipe', 'ignore']
-			}
+			[
+				'-hide_banner',
+				'-nostdin',
+				'-i',
+				file,
+				'-ac',
+				String(channels),
+				'-ar',
+				String(RATE),
+				'-f',
+				'f32le',
+				'-'
+			],
+			{ stdio: ['ignore', 'pipe', 'ignore'] }
 		);
 		p.stdout.on('data', (c: Buffer) => chunks.push(c));
 		p.on('error', rej);
 		p.on('close', () => {
 			const buf = Buffer.concat(chunks);
-			res(new Float32Array(buf.buffer, buf.byteOffset, Math.floor(buf.length / 4)));
+			// copy: the Buffer's pool slice may not be 4-byte aligned
+			const copy = new Float32Array(Math.floor(buf.length / 4));
+			for (let i = 0; i < copy.length; i++) copy[i] = buf.readFloatLE(i * 4);
+			res(copy);
 		});
 	});
+}
+
+/** Analysis that only needs the encoded FLAC (so it can be redone without the raw source). */
+async function analyze(flac: string, channels: 1 | 2) {
+	const spectrum = profile(await decodePcm(flac, 1));
+	let sideDb: number | null = null;
+	if (channels === 2) {
+		const pcm = await decodePcm(flac, 2);
+		const left = new Float32Array(pcm.length / 2);
+		const right = new Float32Array(pcm.length / 2);
+		for (let i = 0; i < left.length; i++) {
+			left[i] = pcm[2 * i];
+			right[i] = pcm[2 * i + 1];
+		}
+		sideDb = Math.round(sideToMidDb(left, right) * 10) / 10;
+	}
+	return { spectrum, sideDb };
 }
 
 function profile(samples: Float32Array): SampleEntry['spectrum'] {
@@ -161,18 +193,35 @@ async function process(file: string, id: string, force: boolean): Promise<Partia
 	]);
 
 	const after = await measure(outPath);
-	const spectrum = profile(await decodeMono(outPath));
+	const { spectrum, sideDb } = await analyze(outPath, channels);
 	return {
 		channels,
 		durationSec: Math.round(durationSec * 100) / 100,
 		lufs: Math.round(+after.input_i * 10) / 10,
 		spectrum,
+		sideDb,
 		srcStamp: stamp
 	};
 }
 
+/** Recompute FLAC-derived analysis for every manifest entry (no raw sources needed). */
+async function reanalyze() {
+	const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8')) as Stored[];
+	for (const entry of manifest) {
+		const flac = join(OUT, `${entry.id}.flac`);
+		if (!existsSync(flac)) {
+			console.warn(`skip  ${entry.id}  (no ${flac})`);
+			continue;
+		}
+		Object.assign(entry, await analyze(flac, entry.channels));
+		console.log(`done  ${entry.id}  side/mid ${entry.sideDb ?? 'mono'} dB`);
+	}
+	writeFileSync(MANIFEST, JSON.stringify(manifest, null, '\t') + '\n');
+}
+
 async function main() {
 	const args = process_argv();
+	if (args.reanalyze) return reanalyze();
 	mkdirSync(SRC, { recursive: true });
 	mkdirSync(OUT, { recursive: true });
 	if (!existsSync(MANIFEST)) writeFileSync(MANIFEST, '[]\n');
@@ -238,7 +287,11 @@ function writeCredits(manifest: Stored[]) {
 function process_argv() {
 	const argv = globalThis.process.argv.slice(2);
 	const only = argv.indexOf('--only');
-	return { force: argv.includes('--force'), only: only >= 0 ? argv[only + 1] : undefined };
+	return {
+		force: argv.includes('--force'),
+		reanalyze: argv.includes('--reanalyze'),
+		only: only >= 0 ? argv[only + 1] : undefined
+	};
 }
 
 main().catch((e) => {

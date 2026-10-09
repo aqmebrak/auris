@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { compensationDb, rmsDb } from './loudness.js';
+import { compensationDb, rmsDb, sideToMidDb } from './loudness.js';
 
 describe('rmsDb', () => {
 	it('full-scale square wave is 0 dB', () => {
@@ -38,5 +38,21 @@ describe('compensationDb', () => {
 
 	it('ignores silent renders', () => {
 		expect(compensationDb(-18, -120)).toBe(0);
+	});
+});
+
+describe('sideToMidDb', () => {
+	it('is the floor for mono and positive for out-of-phase material', () => {
+		expect(sideToMidDb([1, -1, 0.5], [1, -1, 0.5])).toBe(-60);
+		expect(sideToMidDb([1, -1], [-1, 1])).toBe(60);
+	});
+
+	it('is 0 dB when side and mid carry equal energy (one channel only)', () => {
+		expect(sideToMidDb([1, -1, 1, -1], [0, 0, 0, 0])).toBeCloseTo(0, 10);
+	});
+
+	it('is 6 dB down for a 50% side component', () => {
+		// L = M + 0.5 M... build M=1, S=0.5 → L=1.5, R=0.5 → ratio (0.5/1)^2 → -6 dB
+		expect(sideToMidDb([1.5, 1.5], [0.5, 0.5])).toBeCloseTo(-6.02, 1);
 	});
 });

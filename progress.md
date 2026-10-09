@@ -4,6 +4,22 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-06 — Phase 16 #5: Stereo Width
+
+| Item | Files touched |
+|------|--------------|
+| `sideToMidDb`; `sideDb` in analysis; `pnpm samples --reanalyze` (from FLACs) | `audio/loudness.ts`, `scripts/prepare-samples.ts`, `library.json` |
+| `minSideDb` filter | `audio/library.ts` |
+| `createStereoWidth` M/S effect (verified exact in Chromium) | `audio/effects.ts` |
+| Stereo Width game (Easy/Medium/Hard width choices), power compensation | `src/lib/games/stereo-width/*`, route |
+| 132 unit, 44 E2E | |
+
+Finding: `rockin` and `rock-seq` are **dual-mono** "stereo" files (side −60 dB) — excluded from width questions by `minSideDb: −20`.
+
+**Next:** Phase 16 #4 Phase/Comb.
+
+---
+
 ## 2026-10-06 — Phase 16 #1: Filter Finder
 
 | Item | Files touched |

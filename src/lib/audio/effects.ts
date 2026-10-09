@@ -133,3 +133,51 @@ export function createPassFilter(ctx: AudioContext): PassFilterHandle {
 		}
 	};
 }
+
+export interface StereoWidthHandle extends EffectHandle {
+	/** 0 = mono, 1 = unchanged, 2 = side doubled. */
+	setWidth(width: number): void;
+}
+
+/**
+ * Mid/side width control: M = (L+R)/2, S = (L−R)/2, out = M ± width·S.
+ * Mono input is up-mixed to dual-mono (no side), so width has no effect on it.
+ */
+export function createStereoWidth(ctx: AudioContext): StereoWidthHandle {
+	const input = ctx.createGain();
+	input.channelCount = 2;
+	input.channelCountMode = 'explicit';
+	const splitter = ctx.createChannelSplitter(2);
+	const merger = ctx.createChannelMerger(2);
+	const mid = ctx.createGain();
+	const side = ctx.createGain();
+	const sideScaled = ctx.createGain();
+	const sideInverted = ctx.createGain();
+	sideInverted.gain.value = -1;
+
+	const tap = (channel: 0 | 1, to: AudioNode, gain: number) => {
+		const g = ctx.createGain();
+		g.gain.value = gain;
+		splitter.connect(g, channel);
+		g.connect(to);
+	};
+	input.connect(splitter);
+	tap(0, mid, 0.5);
+	tap(1, mid, 0.5);
+	tap(0, side, 0.5);
+	tap(1, side, -0.5);
+	side.connect(sideScaled);
+	mid.connect(merger, 0, 0);
+	mid.connect(merger, 0, 1);
+	sideScaled.connect(merger, 0, 0);
+	sideScaled.connect(sideInverted);
+	sideInverted.connect(merger, 0, 1);
+
+	return {
+		input,
+		output: merger,
+		setWidth(width) {
+			sideScaled.gain.value = width;
+		}
+	};
+}
