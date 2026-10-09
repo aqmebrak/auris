@@ -17,13 +17,6 @@ tasks/
 # Serena project config
 .serena/
 
-# OpenWolf context files (managed externally)
-.wolf/
-
-# Planning / session log files
-task_plan.md
-findings.md
-progress.md
 
 # Project CLAUDE.md (managed externally)
 CLAUDE.md

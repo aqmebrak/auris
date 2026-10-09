@@ -31,9 +31,11 @@ export function createFreqIdAudio(): FreqIdAudio {
 		(ctx) => (peaking = createPeakingEq(ctx, { freq: 1000, gainDb: 0, q: 2 })),
 		(ctx) => (compensation = createGain(ctx, 0))
 	]);
-	const { playable, spectrum } = createCompensatedPlayable(chain, player, () => {
-		peaking = null;
-		compensation = null;
+	const { playable, spectrum } = createCompensatedPlayable(chain, player, {
+		onDestroy: () => {
+			peaking = null;
+			compensation = null;
+		}
 	});
 
 	return {

@@ -7,6 +7,7 @@
 	import type { GameController } from '$lib/stores/game-controller.svelte.js';
 	import type { SampleRound, RoundResult as Result } from '$lib/game/types.js';
 	import { boardState, type BoardState } from '$lib/game/board.js';
+	import { suggestDifficulty } from '$lib/stats.js';
 
 	interface Row {
 		label: string;
@@ -64,6 +65,20 @@
 
 	const game = $derived(ctrl.game);
 	const phase = $derived(game.phase);
+	/** Step up/down suggestion from recent sessions at the current difficulty (and mode). */
+	const current = $derived(ctrl.options as Record<string, unknown>);
+	const suggestion = $derived(
+		typeof current.difficulty === 'string'
+			? suggestDifficulty(ctrl.stats.history, {
+					difficulty: current.difficulty,
+					mode: typeof current.mode === 'string' ? current.mode : undefined
+				})
+			: null
+	);
+	function applySuggestion() {
+		if (suggestion) ctrl.setOption('difficulty' as keyof TO, suggestion.to as TO[keyof TO]);
+	}
+
 	/** Options only change before the first round starts. */
 	const optionsLocked = $derived(phase !== 'idle' || game.roundIndex > 0);
 </script>
@@ -100,6 +115,22 @@
 				aria-disabled={optionsLocked}
 			>
 				{@render options?.()}
+				<!-- Always occupies one line so a suggestion appearing can't move anything -->
+				<p
+					data-testid="suggestion"
+					class="mt-3 min-h-5 text-xs text-muted-foreground {optionsLocked ? 'invisible' : ''}"
+				>
+					{#if suggestion}
+						Last {suggestion.sessions} sessions on {String(current.difficulty)}: {suggestion.avg}% —
+						<button
+							type="button"
+							class="cursor-pointer text-primary underline underline-offset-2"
+							onclick={applySuggestion}
+						>
+							try {suggestion.to}
+						</button>
+					{/if}
+				</p>
 			</div>
 
 			<!-- Both texts share one grid cell, so the hint is always as tall as the longer one -->

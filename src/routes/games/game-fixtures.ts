@@ -52,6 +52,19 @@ export const GAMES: Game[] = [
 		answer: (page: Page) => clickCenter(page, 'slider')
 	},
 	{
+		name: 'phase-comb-type',
+		path: '/games/phase-comb',
+		hasAB: true,
+		answer: clickFirst(/^In phase/)
+	},
+	{
+		name: 'phase-comb-delay',
+		path: '/games/phase-comb',
+		hasAB: true,
+		setup: (page: Page) => page.getByRole('button', { name: 'Delay', exact: true }).click(),
+		answer: clickFirst(/^[\d.]+ ms$/)
+	},
+	{
 		name: 'stereo-width',
 		path: '/games/stereo-width',
 		hasAB: true,

@@ -4,6 +4,8 @@
  * SSR-safe: every method no-ops when `window` is undefined.
  */
 
+import { monoMix } from './spectrum.js';
+
 export class AudioPlayer {
 	private ctx: AudioContext | null = null;
 	private bufferCache = new Map<string, AudioBuffer>();
@@ -46,10 +48,29 @@ export class AudioPlayer {
 		return request;
 	}
 
-	/** Fetches, decodes, and caches the sample at `url`, making it current. */
-	async load(url: string): Promise<void> {
+	private monoCache = new Map<string, AudioBuffer>();
+
+	/** Channel-average of a multichannel buffer, cached per url. */
+	private toMono(url: string, buffer: AudioBuffer): AudioBuffer {
+		if (buffer.numberOfChannels === 1) return buffer;
+		let mono = this.monoCache.get(url);
+		if (!mono) {
+			mono = this.getContext().createBuffer(1, buffer.length, buffer.sampleRate);
+			mono.copyToChannel(monoMix(buffer), 0);
+			this.monoCache.set(url, mono);
+		}
+		return mono;
+	}
+
+	/**
+	 * Fetches, decodes, and caches the sample at `url`, making it current.
+	 * `mono` plays the channel average instead (e.g. so a stereo→mono fold-down
+	 * doesn't differ between the A and B paths).
+	 */
+	async load(url: string, opts: { mono?: boolean } = {}): Promise<void> {
 		if (typeof window === 'undefined') return;
-		this._currentBuffer = await this.fetchBuffer(url);
+		const buffer = await this.fetchBuffer(url);
+		this._currentBuffer = opts.mono ? this.toMono(url, buffer) : buffer;
 	}
 
 	/** Warms the cache (e.g. next round's sample) without changing the current buffer. */
@@ -83,6 +104,7 @@ export class AudioPlayer {
 		}
 		this.bufferCache.clear();
 		this.pending.clear();
+		this.monoCache.clear();
 		this._currentBuffer = null;
 	}
 }
