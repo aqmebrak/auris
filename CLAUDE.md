@@ -36,7 +36,7 @@ SvelteKit 2 + Svelte 5 runes, Tailwind v4 (`@theme` tokens in `src/routes/layout
 
 - Touching audio, scoring, samples or game pages: read `docs/gotchas.md` (non-obvious facts and decisions) first.
 - Adding a game: `src/lib/game/README.md`.
-- Remaining work and roadmap: `task_plan.md`.
+- Remaining work and roadmap: GitHub Issues (`gh issue list`; see `docs/agents/issue-tracker.md`).
 
 ## Agent skills
 
