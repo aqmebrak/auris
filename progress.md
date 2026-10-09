@@ -4,6 +4,22 @@ One entry per session. Most recent first.
 
 ---
 
+## 2026-10-09 — Phase 17: progression & dashboard
+
+| Item | Files touched |
+|------|--------------|
+| Game registry (single source: id, route, category); test that every route is registered | `src/lib/games/registry.ts` |
+| Pure stats helpers: legacy-safe accuracy, summaries, difficulty suggestion, recommendation | `src/lib/stats.ts` |
+| Dashboard v2: summary + "practise next", categories, per-game sparkline cards; old FreqId-only panel removed | `src/routes/+page.svelte`, `game-card`, `dashboard-summary`, `sparkline` |
+| Difficulty suggestion line + one-click apply on every game page (fixed height, layout-stable) | `game-shell.svelte` |
+| Controller `onOptionsChange` hook (EQ Matching / Dynamics resets now fire for shell-applied changes) | `game-controller.svelte.ts`, pages |
+| 158 unit, 54 E2E (dashboard from seeded storage, suggestions) | |
+
+**Left in Phase 17:** daily mix (cross-game session) and generalising the Freq ID heatmap (also fits Filter Finder).
+**Next:** Level Change Hard tier; Phase 16 stem-based games when samples arrive.
+
+---
+
 ## 2026-10-07 — Phase 16 #4: Phase / Comb
 
 | Item | Files touched |
