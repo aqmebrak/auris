@@ -31,6 +31,7 @@
 		defaultOptions: DEFAULT_OPTIONS,
 		createConfig: createEqMatchingConfig,
 		audio,
+		onOptionsChange: (o) => (userBands = defaultBands(DIFFICULTY_CONFIG[o.difficulty].bandCount)),
 		prepareRound: (round) => {
 			userBands = defaultBands(diff.bandCount);
 			audio.setTargetBands(round.targetBands);
@@ -54,11 +55,6 @@
 	$effect(() => {
 		audio.setUserBands([...userBands]);
 	});
-
-	function setDifficulty(value: EqMatchingOptions['difficulty']) {
-		ctrl.setOption('difficulty', value);
-		userBands = defaultBands(DIFFICULTY_CONFIG[value].bandCount);
-	}
 
 	function bandSummary(bands: EqBand[]): string {
 		return bands.map((b) => `${formatFreq(b.freq)} ${formatDb(b.gainDb)}`).join(' · ');
@@ -89,7 +85,7 @@
 					label: `${c.label} — ${c.bandCount} band${c.bandCount > 1 ? 's' : ''}`
 				}))}
 				selected={ctrl.options.difficulty}
-				onSelect={setDifficulty}
+				onSelect={(v) => ctrl.setOption('difficulty', v)}
 			/>
 			<OptionGroup
 				label="Rounds"

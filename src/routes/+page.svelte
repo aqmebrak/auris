@@ -1,63 +1,31 @@
 <script lang="ts">
-	import StatsPanel from '$lib/components/stats-panel.svelte';
+	import { browser } from '$app/environment';
+	import DashboardSummary from '$lib/components/dashboard-summary.svelte';
+	import FreqIdHeatmap from '$lib/components/freq-id-heatmap.svelte';
 	import GameCard from '$lib/components/game-card.svelte';
+	import { CATEGORIES, GAMES, gamesByCategory } from '$lib/games/registry.js';
+	import { recommend, summarize, type GameSummary } from '$lib/stats.js';
+	import { createStatsStore } from '$lib/stores/stats-store.svelte.js';
 
-	const GAMES = [
-		{
-			title: 'EQ Matching',
-			description: 'Match the EQ curve by ear',
-			href: '/games/eq-matching',
-			available: true
-		},
-		{
-			title: 'Frequency ID',
-			description: 'Identify the boosted frequency band',
-			href: '/games/frequency-id',
-			available: true
-		},
-		{
-			title: 'Level Change',
-			description: 'Identify how much gain was applied to the signal',
-			href: '/games/db-change',
-			available: true
-		},
-		{
-			title: 'Panning',
-			description: 'Guess where the signal is panned in the stereo field',
-			href: '/games/panning',
-			available: true
-		},
-		{
-			title: 'EQ Guess',
-			description: 'Identify which EQ was applied by ear',
-			href: '/games/eq-guess',
-			available: true
-		},
-		{
-			title: 'Filter Finder',
-			description: 'Find the cutoff of a high-pass or low-pass filter',
-			href: '/games/filter-finder',
-			available: true
-		},
-		{
-			title: 'Stereo Width',
-			description: 'Judge how much wider or narrower the stereo image has been made',
-			href: '/games/stereo-width',
-			available: true
-		},
-		{
-			title: 'Phase / Comb',
-			description: 'Hear comb filtering and polarity-flipped copies',
-			href: '/games/phase-comb',
-			available: true
-		},
-		{
-			title: 'Dynamics',
-			description: 'Detect compression, then identify ratio, attack and release',
-			href: '/games/dynamics',
-			available: true
-		}
-	];
+	const stores = Object.fromEntries(GAMES.map((g) => [g.id, createStatsStore(g.id)]));
+
+	$effect(() => {
+		if (browser) for (const store of Object.values(stores)) store.refresh();
+	});
+
+	const summaries = $derived(
+		Object.fromEntries(GAMES.map((g) => [g.id, summarize(stores[g.id].history)])) as Record<
+			string,
+			GameSummary
+		>
+	);
+	const recommendation = $derived(
+		recommend(
+			GAMES.map((g) => g.id),
+			summaries
+		)
+	);
+	const categories = gamesByCategory();
 </script>
 
 <svelte:head>
@@ -65,23 +33,39 @@
 </svelte:head>
 
 <main class="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-14">
-	<StatsPanel />
+	<DashboardSummary {summaries} {recommendation} />
 
-	<section aria-label="Training modules" class="mt-12">
-		<h2 class="mb-6 text-sm font-medium tracking-widest text-muted-foreground uppercase">
+	<section aria-label="Training modules" class="mt-12 flex flex-col gap-12">
+		<h2 class="text-sm font-medium tracking-widest text-muted-foreground uppercase">
 			TRAINING MODULES
 		</h2>
-		<ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-			{#each GAMES as game (game.href)}
-				<li>
-					<GameCard
-						title={game.title}
-						description={game.description}
-						href={game.href}
-						available={game.available}
-					/>
-				</li>
-			{/each}
-		</ul>
+		{#each categories as { category, games } (category)}
+			<div>
+				<h3 class="mb-1 text-xs font-semibold tracking-widest uppercase">
+					{CATEGORIES[category].label}
+				</h3>
+				<p class="mb-5 text-xs text-muted-foreground">{CATEGORIES[category].blurb}</p>
+				<ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+					{#each games as game (game.id)}
+						<li>
+							<GameCard
+								{game}
+								summary={summaries[game.id]}
+								suggested={recommendation?.gameId === game.id}
+							/>
+						</li>
+					{/each}
+				</ul>
+			</div>
+		{/each}
 	</section>
+
+	{#if summaries['freq-id'].sessions > 0}
+		<section
+			aria-label="Frequency heatmap"
+			class="mt-12 rounded-lg border border-border bg-card p-8"
+		>
+			<FreqIdHeatmap history={stores['freq-id'].history} />
+		</section>
+	{/if}
 </main>
