@@ -9,10 +9,10 @@
  * (see `DynamicsAudio`), so there is never a loudness cue.
  */
 
-import { defineGame } from '$lib/game/config.js';
-import type { SampleRound } from '$lib/game/types.js';
-import { pickTrack } from '$lib/audio/samples.js';
-import { formatAttack, formatRatio, formatRelease } from '$lib/format.js';
+import { defineGame } from '#lib/game/config.js';
+import type { SampleRound } from '#lib/game/types.js';
+import { pickTrack } from '#lib/audio/samples.js';
+import { formatAttack, formatRatio, formatRelease } from '#lib/format.js';
 import type { CompSpec, PathSpec } from './audio.js';
 
 export type DynamicsMode = 'detect' | 'ratio' | 'attack' | 'release' | 'match';

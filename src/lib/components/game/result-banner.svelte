@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { RoundResult } from '$lib/game/types.js';
+	import type { RoundResult } from '#lib/game/types.js';
 
 	interface Props {
 		result: RoundResult;

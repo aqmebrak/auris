@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Knob from '$lib/components/knob.svelte';
-	import GrMeter from '$lib/components/gr-meter.svelte';
-	import type { CompSpec } from '$lib/games/dynamics/audio.js';
-	import { formatAttack, formatRelease, formatRatio } from '$lib/format.js';
+	import Knob from '#lib/components/knob.svelte';
+	import GrMeter from '#lib/components/gr-meter.svelte';
+	import type { CompSpec } from '#lib/games/dynamics/audio.js';
+	import { formatAttack, formatRelease, formatRatio } from '#lib/format.js';
 
 	interface Props {
 		spec: CompSpec;

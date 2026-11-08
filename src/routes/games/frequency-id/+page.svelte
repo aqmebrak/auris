@@ -1,10 +1,10 @@
 <script lang="ts">
-	import FreqStrip from '$lib/components/freq-strip.svelte';
-	import ChoiceButtons from '$lib/components/game/choice-buttons.svelte';
-	import GameShell from '$lib/components/game/game-shell.svelte';
-	import OptionGroup from '$lib/components/game/option-group.svelte';
-	import { createGameController } from '$lib/stores/game-controller.svelte.js';
-	import type { BoardState } from '$lib/game/board.js';
+	import FreqStrip from '#lib/components/freq-strip.svelte';
+	import ChoiceButtons from '#lib/components/game/choice-buttons.svelte';
+	import GameShell from '#lib/components/game/game-shell.svelte';
+	import OptionGroup from '#lib/components/game/option-group.svelte';
+	import { createGameController } from '#lib/stores/game-controller.svelte.js';
+	import type { BoardState } from '#lib/game/board.js';
 	import {
 		createFreqIdConfig,
 		DEFAULT_OPTIONS,
@@ -14,10 +14,10 @@
 		bandsInZone,
 		type FreqIdRound,
 		type FreqIdOptions
-	} from '$lib/games/freq-id/config.js';
-	import { createFreqIdAudio } from '$lib/games/freq-id/audio.js';
-	import { keys, labelled, numbers } from '$lib/game/options.js';
-	import { formatFreq, formatOctaves } from '$lib/format.js';
+	} from '#lib/games/freq-id/config.js';
+	import { createFreqIdAudio } from '#lib/games/freq-id/audio.js';
+	import { keys, labelled, numbers } from '#lib/game/options.js';
+	import { formatFreq, formatOctaves } from '#lib/format.js';
 
 	const audio = createFreqIdAudio();
 	const ctrl = createGameController<FreqIdRound, number, FreqIdOptions>({

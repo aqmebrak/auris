@@ -3,9 +3,9 @@
  * A mode = dry (bypass). B mode = gain applied.
  */
 
-import { AudioPlayer } from '$lib/audio/player.js';
-import { AudioChain } from '$lib/audio/chain.js';
-import { createGain, type GainHandle } from '$lib/audio/effects.js';
+import { AudioPlayer } from '#lib/audio/player.js';
+import { AudioChain } from '#lib/audio/chain.js';
+import { createGain, type GainHandle } from '#lib/audio/effects.js';
 
 export interface DbChangeAudio {
 	chain: AudioChain;

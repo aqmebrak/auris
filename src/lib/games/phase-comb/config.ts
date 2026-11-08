@@ -7,9 +7,9 @@
  *   delay  identify the delay of a comb
  */
 
-import { defineGame } from '$lib/game/config.js';
-import type { SampleRound } from '$lib/game/types.js';
-import { pickTrack } from '$lib/audio/samples.js';
+import { defineGame } from '#lib/game/config.js';
+import type { SampleRound } from '#lib/game/types.js';
+import { pickTrack } from '#lib/audio/samples.js';
 
 export type PhaseMode = 'type' | 'delay';
 export type PhaseDifficulty = 'easy' | 'medium' | 'hard';

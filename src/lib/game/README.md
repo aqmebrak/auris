@@ -37,8 +37,8 @@ src/lib/components/game/ ← you render these
 ### 1. Round type + config — `src/lib/games/<id>/config.ts`
 
 ```ts
-import { defineGame } from '$lib/game/config.js';
-import type { RoundBase } from '$lib/game/types.js';
+import { defineGame } from '#lib/game/config.js';
+import type { RoundBase } from '#lib/game/types.js';
 
 export interface MyRound extends RoundBase<MyGuess> {
   // game-specific fields the round needs to render and score
@@ -59,9 +59,9 @@ export const myConfig = defineGame<MyRound, MyGuess>({
 ### 2. Audio — `src/lib/games/<id>/audio.ts`
 
 ```ts
-import { AudioPlayer } from '$lib/audio/player.js';
-import { AudioChain } from '$lib/audio/chain.js';
-import { createPeakingEq } from '$lib/audio/effects.js';
+import { AudioPlayer } from '#lib/audio/player.js';
+import { AudioChain } from '#lib/audio/chain.js';
+import { createPeakingEq } from '#lib/audio/effects.js';
 
 export function createMyAudio() {
 	const player = new AudioPlayer();
@@ -81,13 +81,13 @@ owns header + phase switching. The page only supplies snippets.
 
 ```svelte
 <script lang="ts">
-  import GameShell from '$lib/components/game/game-shell.svelte';
-  import OptionGroup from '$lib/components/game/option-group.svelte';
-  import { createGameController } from '$lib/stores/game-controller.svelte.js';
-  import { labelled, numbers } from '$lib/game/options.js';
+  import GameShell from '#lib/components/game/game-shell.svelte';
+  import OptionGroup from '#lib/components/game/option-group.svelte';
+  import { createGameController } from '#lib/stores/game-controller.svelte.js';
+  import { labelled, numbers } from '#lib/game/options.js';
   import { createMyConfig, DEFAULT_OPTIONS, DIFFICULTY_CONFIG, ROUND_COUNT_OPTIONS,
-    type MyRound, type MyOptions } from '$lib/games/my-game/config.js';
-  import { createMyAudio } from '$lib/games/my-game/audio.js';
+    type MyRound, type MyOptions } from '#lib/games/my-game/config.js';
+  import { createMyAudio } from '#lib/games/my-game/audio.js';
 
   const audio = createMyAudio();
   const ctrl = createGameController<MyRound, MyGuess, MyOptions>({

@@ -6,10 +6,10 @@
  * Easy = 1 band, Medium = 2, Hard = 3 (+ Q).
  */
 
-import { defineGame } from '$lib/game/config.js';
-import type { RoundBase } from '$lib/game/types.js';
-import { audibleFreqs, pickSample, type SampleEntry } from '$lib/audio/library.js';
-import { matchScore } from '$lib/audio/eq-math.js';
+import { defineGame } from '#lib/game/config.js';
+import type { RoundBase } from '#lib/game/types.js';
+import { audibleFreqs, pickSample, type SampleEntry } from '#lib/audio/library.js';
+import { matchScore } from '#lib/audio/eq-math.js';
 
 export interface EqBand {
 	freq: number; // Hz

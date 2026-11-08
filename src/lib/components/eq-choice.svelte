@@ -1,7 +1,7 @@
 <script lang="ts">
-	import EqCurve from '$lib/components/eq-curve.svelte';
-	import { formatFreq, formatDb } from '$lib/format.js';
-	import { eqConfigsEqual, type EqConfig } from '$lib/games/eq-guess/config.js';
+	import EqCurve from '#lib/components/eq-curve.svelte';
+	import { formatFreq, formatDb } from '#lib/format.js';
+	import { eqConfigsEqual, type EqConfig } from '#lib/games/eq-guess/config.js';
 
 	interface Props {
 		options: [EqConfig, EqConfig];

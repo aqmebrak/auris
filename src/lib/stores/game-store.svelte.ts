@@ -1,7 +1,7 @@
 /**
  * Reactive game session store — Svelte 5 rune-based factory.
  * Wraps a pure `GameSession<TRound>` in `$state` and exposes transition methods
- * backed by the pure helpers in `$lib/game/session.ts`.
+ * backed by the pure helpers in `#lib/game/session.ts`.
  */
 
 import {
@@ -11,8 +11,8 @@ import {
 	scoreSession,
 	startRound as startRoundPure,
 	submitGuess as submitGuessPure
-} from '$lib/game/session.js';
-import type { GameConfig, GameSession, Phase, RoundBase } from '$lib/game/types.js';
+} from '#lib/game/session.js';
+import type { GameConfig, GameSession, Phase, RoundBase } from '#lib/game/types.js';
 
 export function createGameStore<TR extends RoundBase<TG>, TG>(config: GameConfig<TR, TG>) {
 	let session = $state<GameSession<TR>>(createSession(config));

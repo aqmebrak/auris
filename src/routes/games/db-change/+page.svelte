@@ -1,9 +1,9 @@
 <script lang="ts">
-	import DbChoice from '$lib/components/db-choice.svelte';
-	import GameShell from '$lib/components/game/game-shell.svelte';
-	import OptionGroup from '$lib/components/game/option-group.svelte';
-	import { createGameController } from '$lib/stores/game-controller.svelte.js';
-	import type { BoardState } from '$lib/game/board.js';
+	import DbChoice from '#lib/components/db-choice.svelte';
+	import GameShell from '#lib/components/game/game-shell.svelte';
+	import OptionGroup from '#lib/components/game/option-group.svelte';
+	import { createGameController } from '#lib/stores/game-controller.svelte.js';
+	import type { BoardState } from '#lib/game/board.js';
 	import {
 		createDbChangeConfig,
 		DEFAULT_OPTIONS,
@@ -11,10 +11,10 @@
 		ROUND_COUNT_OPTIONS,
 		type GainRound,
 		type DbChangeOptions
-	} from '$lib/games/db-change/config.js';
-	import { createDbChangeAudio } from '$lib/games/db-change/audio.js';
-	import { labelled, numbers } from '$lib/game/options.js';
-	import { formatDb } from '$lib/format.js';
+	} from '#lib/games/db-change/config.js';
+	import { createDbChangeAudio } from '#lib/games/db-change/audio.js';
+	import { labelled, numbers } from '#lib/game/options.js';
+	import { formatDb } from '#lib/format.js';
 
 	const audio = createDbChangeAudio();
 	const ctrl = createGameController<GainRound, number, DbChangeOptions>({

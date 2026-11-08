@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { ERROR_MARGIN_OCTAVES } from '$lib/games/freq-id/config.js';
-	import { formatFreq } from '$lib/format.js';
+	import { ERROR_MARGIN_OCTAVES } from '#lib/games/freq-id/config.js';
+	import { formatFreq } from '#lib/format.js';
 	import {
 		FREQ_MIN,
 		FREQ_MAX,
@@ -8,7 +8,7 @@
 		freqToPct,
 		posToFreqInRange,
 		freqToPctInRange
-	} from '$lib/frequency.js';
+	} from '#lib/frequency.js';
 
 	interface Props {
 		onSelect: (freq: number) => void;

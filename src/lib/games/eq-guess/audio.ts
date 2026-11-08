@@ -4,9 +4,9 @@
  * Unused filter slots are set to 0 dB gain (transparent).
  */
 
-import { AudioPlayer } from '$lib/audio/player.js';
-import { AudioChain } from '$lib/audio/chain.js';
-import { createPeakingEq, type PeakingEqHandle } from '$lib/audio/effects.js';
+import { AudioPlayer } from '#lib/audio/player.js';
+import { AudioChain } from '#lib/audio/chain.js';
+import { createPeakingEq, type PeakingEqHandle } from '#lib/audio/effects.js';
 import type { EqBand } from './config.js';
 import { Q_DEFAULT } from './config.js';
 

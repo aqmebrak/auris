@@ -4,13 +4,13 @@
  * computed from the sample's spectrum. A = mono original, B = comb.
  */
 
-import { AudioPlayer } from '$lib/audio/player.js';
-import { AudioChain } from '$lib/audio/chain.js';
-import type { Playable } from '$lib/audio/playable.js';
-import { createCompensatedPlayable } from '$lib/audio/compensated-chain.js';
-import { createComb, createGain, type CombHandle, type GainHandle } from '$lib/audio/effects.js';
-import { combResponseDb } from '$lib/audio/eq-math.js';
-import { compensationFromResponse } from '$lib/audio/spectrum.js';
+import { AudioPlayer } from '#lib/audio/player.js';
+import { AudioChain } from '#lib/audio/chain.js';
+import type { Playable } from '#lib/audio/playable.js';
+import { createCompensatedPlayable } from '#lib/audio/compensated-chain.js';
+import { createComb, createGain, type CombHandle, type GainHandle } from '#lib/audio/effects.js';
+import { combResponseDb } from '#lib/audio/eq-math.js';
+import { compensationFromResponse } from '#lib/audio/spectrum.js';
 import type { Polarity } from './config.js';
 
 export interface PhaseCombAudio {

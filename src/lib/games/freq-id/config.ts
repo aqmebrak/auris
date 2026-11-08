@@ -7,11 +7,11 @@
  * 1 at the exact frequency, 0.5 at the error margin, 0 at twice the margin.
  */
 
-import { defineGame } from '$lib/game/config.js';
-import type { SampleRound } from '$lib/game/types.js';
-import { audibleFreqs, pickSample, type SampleEntry } from '$lib/audio/library.js';
-import { logGrid } from '$lib/audio/eq-math.js';
-import { freqScore } from '$lib/frequency.js';
+import { defineGame } from '#lib/game/config.js';
+import type { SampleRound } from '#lib/game/types.js';
+import { audibleFreqs, pickSample, type SampleEntry } from '#lib/audio/library.js';
+import { logGrid } from '#lib/audio/eq-math.js';
+import { freqScore } from '#lib/frequency.js';
 
 export interface FreqIdRound extends SampleRound<number> {
 	targetFreq: number;

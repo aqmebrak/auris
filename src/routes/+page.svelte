@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import DashboardSummary from '$lib/components/dashboard-summary.svelte';
-	import FreqIdHeatmap from '$lib/components/freq-id-heatmap.svelte';
-	import GameCard from '$lib/components/game-card.svelte';
-	import { CATEGORIES, GAMES, gamesByCategory } from '$lib/games/registry.js';
-	import { recommend, summarize, type GameSummary } from '$lib/stats.js';
-	import { createStatsStore } from '$lib/stores/stats-store.svelte.js';
+	import { browser } from '$app/env';
+	import DashboardSummary from '#lib/components/dashboard-summary.svelte';
+	import FreqIdHeatmap from '#lib/components/freq-id-heatmap.svelte';
+	import GameCard from '#lib/components/game-card.svelte';
+	import { CATEGORIES, GAMES, gamesByCategory } from '#lib/games/registry.js';
+	import { recommend, summarize, type GameSummary } from '#lib/stats.js';
+	import { createStatsStore } from '#lib/stores/stats-store.svelte.js';
 
 	const stores = Object.fromEntries(GAMES.map((g) => [g.id, createStatsStore(g.id)]));
 

@@ -4,10 +4,10 @@
  * recording on game over, keyboard shortcuts. Pages only render phases.
  */
 
-import { browser } from '$app/environment';
-import type { AbMode, Playable } from '$lib/audio/playable.js';
-import { keyToAction } from '$lib/game/keys.js';
-import type { GameConfig, SampleRound } from '$lib/game/types.js';
+import { browser } from '$app/env';
+import type { AbMode, Playable } from '#lib/audio/playable.js';
+import { keyToAction } from '#lib/game/keys.js';
+import type { GameConfig, SampleRound } from '#lib/game/types.js';
 import { createGameStore } from './game-store.svelte.js';
 import { createStatsStore } from './stats-store.svelte.js';
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { bandRelDb, isAudible } from '$lib/audio/library.js';
+import { bandRelDb, isAudible } from '#lib/audio/library.js';
 import { generateTarget as eqmTarget } from './eq-matching/config.js';
 import {
 	generateDistractor,

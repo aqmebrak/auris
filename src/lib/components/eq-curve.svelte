@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { responseDb, type PeakingBand as EqBand } from '$lib/audio/eq-math.js';
+	import { responseDb, type PeakingBand as EqBand } from '#lib/audio/eq-math.js';
 
 	interface Props {
 		bands: EqBand[];

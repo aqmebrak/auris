@@ -6,15 +6,15 @@
  * two paths are loudness-matched and differ only in dynamics.
  */
 
-import { AudioPlayer } from '$lib/audio/player.js';
-import type { Playable, AbMode } from '$lib/audio/playable.js';
-import { createCompressorNode, type CompressorNode } from '$lib/audio/compressor-node.js';
+import { AudioPlayer } from '#lib/audio/player.js';
+import type { Playable, AbMode } from '#lib/audio/playable.js';
+import { createCompressorNode, type CompressorNode } from '#lib/audio/compressor-node.js';
 import {
 	BYPASS,
 	autoMakeupDb,
 	thresholdFromLevel,
 	type CompressorParams
-} from '$lib/audio/compressor-dsp.js';
+} from '#lib/audio/compressor-dsp.js';
 
 /** What the player/target controls — everything else is derived per sample. */
 export interface CompSpec {

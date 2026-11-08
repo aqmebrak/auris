@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Knob from '$lib/components/knob.svelte';
-	import { FREQ_STEPS, Q_STEPS, type EqBand } from '$lib/games/eq-matching/config.js';
-	import { formatFreq, formatDb, formatQ } from '$lib/format.js';
+	import Knob from '#lib/components/knob.svelte';
+	import { FREQ_STEPS, Q_STEPS, type EqBand } from '#lib/games/eq-matching/config.js';
+	import { formatFreq, formatDb, formatQ } from '#lib/format.js';
 
 	interface Props {
 		band: EqBand;

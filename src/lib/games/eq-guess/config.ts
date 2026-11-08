@@ -4,9 +4,9 @@
  * shown; the user picks which one matches what they hear.
  */
 
-import { defineGame } from '$lib/game/config.js';
-import type { RoundBase } from '$lib/game/types.js';
-import { audibleFreqs, isAudible, pickSample, type SampleEntry } from '$lib/audio/library.js';
+import { defineGame } from '#lib/game/config.js';
+import type { RoundBase } from '#lib/game/types.js';
+import { audibleFreqs, isAudible, pickSample, type SampleEntry } from '#lib/audio/library.js';
 
 export interface EqBand {
 	freq: number; // Hz

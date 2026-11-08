@@ -7,7 +7,7 @@ import {
 	type WidthDifficulty
 } from './config.js';
 import { widthCompensationDb } from './audio.js';
-import { SAMPLE_LIBRARY } from '$lib/audio/library.js';
+import { SAMPLE_LIBRARY } from '#lib/audio/library.js';
 
 const DIFFS: WidthDifficulty[] = ['easy', 'medium', 'hard'];
 

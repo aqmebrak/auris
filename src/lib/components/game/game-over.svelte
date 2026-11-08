@@ -1,6 +1,6 @@
 <script lang="ts" generics="TRound">
-	import { Button } from '$lib/components/ui/button/index.js';
-	import type { RoundResult } from '$lib/game/types.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import type { RoundResult } from '#lib/game/types.js';
 
 	interface FormattedRow {
 		label: string;

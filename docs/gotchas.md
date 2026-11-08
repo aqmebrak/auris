@@ -15,7 +15,7 @@ Non-obvious facts about this codebase — things the code and config do not say.
 - Serena cannot parse `.svelte` files — use Read/Edit there.
 - pnpm 11: `pnpm update`/`add` writes a placeholder `allowBuilds` entry (`set this to true or false`) into `pnpm-workspace.yaml`; set it to `true` for packages you trust (esbuild, ffmpeg-static).
 - Adding a route can break `svelte-check` in `ui/button/button.svelte` (SvelteKit's `resolve()` route union grows too big for TS). The `href as '/'` cast there is deliberate.
-- Vitest needs the `$lib` alias, defined in `vitest.config.ts`.
+- Vitest needs the `#lib` alias, defined in `vitest.config.ts`.
 - `pkill -f <pattern>` kills your own shell when the pattern appears in the command; use `fuser -k PORT/tcp`.
 
 ## Audio

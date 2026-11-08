@@ -4,9 +4,9 @@
  * just a balance control). B mode = panned signal; the game only plays B.
  */
 
-import { AudioPlayer } from '$lib/audio/player.js';
-import { AudioChain } from '$lib/audio/chain.js';
-import { createMonoSum, createPanner, type PannerHandle } from '$lib/audio/effects.js';
+import { AudioPlayer } from '#lib/audio/player.js';
+import { AudioChain } from '#lib/audio/chain.js';
+import { createMonoSum, createPanner, type PannerHandle } from '#lib/audio/effects.js';
 
 export interface PanningAudio {
 	chain: AudioChain;

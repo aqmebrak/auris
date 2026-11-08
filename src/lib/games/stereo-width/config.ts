@@ -4,9 +4,9 @@
  * real stereo content (a dual-mono "stereo" file can't change width).
  */
 
-import { defineGame } from '$lib/game/config.js';
-import type { SampleRound } from '$lib/game/types.js';
-import { pickSample } from '$lib/audio/library.js';
+import { defineGame } from '#lib/game/config.js';
+import type { SampleRound } from '#lib/game/types.js';
+import { pickSample } from '#lib/audio/library.js';
 
 export type WidthDifficulty = 'easy' | 'medium' | 'hard';
 

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import ChoiceButtons from '$lib/components/game/choice-buttons.svelte';
-	import GameShell from '$lib/components/game/game-shell.svelte';
-	import OptionGroup from '$lib/components/game/option-group.svelte';
-	import { createGameController } from '$lib/stores/game-controller.svelte.js';
-	import type { BoardState } from '$lib/game/board.js';
+	import ChoiceButtons from '#lib/components/game/choice-buttons.svelte';
+	import GameShell from '#lib/components/game/game-shell.svelte';
+	import OptionGroup from '#lib/components/game/option-group.svelte';
+	import { createGameController } from '#lib/stores/game-controller.svelte.js';
+	import type { BoardState } from '#lib/game/board.js';
 	import {
 		createPhaseCombConfig,
 		DEFAULT_OPTIONS,
@@ -15,9 +15,9 @@
 		formatDelay,
 		type PhaseCombOptions,
 		type PhaseCombRound
-	} from '$lib/games/phase-comb/config.js';
-	import { createPhaseCombAudio } from '$lib/games/phase-comb/audio.js';
-	import { labelled, numbers } from '$lib/game/options.js';
+	} from '#lib/games/phase-comb/config.js';
+	import { createPhaseCombAudio } from '#lib/games/phase-comb/audio.js';
+	import { labelled, numbers } from '#lib/game/options.js';
 
 	const audio = createPhaseCombAudio();
 	const ctrl = createGameController<PhaseCombRound, number, PhaseCombOptions>({

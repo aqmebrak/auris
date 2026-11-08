@@ -1,9 +1,9 @@
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import Sparkline from '$lib/components/sparkline.svelte';
-	import type { GameInfo } from '$lib/games/registry.js';
-	import type { GameSummary } from '$lib/stats.js';
+	import * as Card from '#lib/components/ui/card/index.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import Sparkline from '#lib/components/sparkline.svelte';
+	import type { GameInfo } from '#lib/games/registry.js';
+	import type { GameSummary } from '#lib/stats.js';
 
 	interface Props {
 		game: GameInfo;

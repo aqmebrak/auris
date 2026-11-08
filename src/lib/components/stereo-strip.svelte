@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatPan } from '$lib/format.js';
+	import { formatPan } from '#lib/format.js';
 
 	interface Props {
 		onSelect: (pan: number) => void;

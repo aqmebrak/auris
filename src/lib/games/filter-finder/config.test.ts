@@ -8,7 +8,7 @@ import {
 	type FilterChoice,
 	type FilterDifficulty
 } from './config.js';
-import { bandRelDb } from '$lib/audio/library.js';
+import { bandRelDb } from '#lib/audio/library.js';
 
 const DIFFS: FilterDifficulty[] = ['easy', 'medium', 'hard'];
 const RUNS = 200;

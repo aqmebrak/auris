@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index.js';
-	import ChoiceButtons from '$lib/components/game/choice-buttons.svelte';
-	import CompressorPanel from '$lib/components/compressor-panel.svelte';
-	import DynamicsMatchResult from '$lib/components/dynamics-match-result.svelte';
-	import type { BoardState } from '$lib/game/board.js';
-	import GameShell from '$lib/components/game/game-shell.svelte';
-	import OptionGroup from '$lib/components/game/option-group.svelte';
-	import { createGameController } from '$lib/stores/game-controller.svelte.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import ChoiceButtons from '#lib/components/game/choice-buttons.svelte';
+	import CompressorPanel from '#lib/components/compressor-panel.svelte';
+	import DynamicsMatchResult from '#lib/components/dynamics-match-result.svelte';
+	import type { BoardState } from '#lib/game/board.js';
+	import GameShell from '#lib/components/game/game-shell.svelte';
+	import OptionGroup from '#lib/components/game/option-group.svelte';
+	import { createGameController } from '#lib/stores/game-controller.svelte.js';
 	import {
 		createDynamicsConfig,
 		DEFAULT_OPTIONS,
@@ -20,10 +20,10 @@
 		type DynamicsGuess,
 		type DynamicsOptions,
 		type DynamicsRound
-	} from '$lib/games/dynamics/config.js';
-	import { DynamicsAudio, type CompSpec } from '$lib/games/dynamics/audio.js';
-	import { labelled, numbers } from '$lib/game/options.js';
-	import { formatAttack, formatRatio, formatRelease } from '$lib/format.js';
+	} from '#lib/games/dynamics/config.js';
+	import { DynamicsAudio, type CompSpec } from '#lib/games/dynamics/audio.js';
+	import { labelled, numbers } from '#lib/game/options.js';
+	import { formatAttack, formatRatio, formatRelease } from '#lib/format.js';
 
 	const audio = new DynamicsAudio();
 	let userSpec = $state<CompSpec>(defaultSpec(DEFAULT_OPTIONS.difficulty));

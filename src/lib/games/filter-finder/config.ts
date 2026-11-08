@@ -6,11 +6,11 @@
  * sample has energy in the region the filter removes.
  */
 
-import { defineGame } from '$lib/game/config.js';
-import type { SampleRound } from '$lib/game/types.js';
-import { audibleCutoffs, pickSample, type SampleEntry } from '$lib/audio/library.js';
-import { logGrid, type PassSlope, type PassType } from '$lib/audio/eq-math.js';
-import { freqScore } from '$lib/frequency.js';
+import { defineGame } from '#lib/game/config.js';
+import type { SampleRound } from '#lib/game/types.js';
+import { audibleCutoffs, pickSample, type SampleEntry } from '#lib/audio/library.js';
+import { logGrid, type PassSlope, type PassType } from '#lib/audio/eq-math.js';
+import { freqScore } from '#lib/frequency.js';
 
 export type FilterChoice = PassType | 'mixed';
 export type FilterDifficulty = 'easy' | 'medium' | 'hard';

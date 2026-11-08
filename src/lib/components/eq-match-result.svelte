@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { EqBand } from '$lib/games/eq-matching/config.js';
-	import { formatFreq, formatDb, formatQ } from '$lib/format.js';
+	import type { EqBand } from '#lib/games/eq-matching/config.js';
+	import { formatFreq, formatDb, formatQ } from '#lib/format.js';
 
 	interface Props {
 		target: EqBand[];

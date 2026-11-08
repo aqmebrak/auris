@@ -3,9 +3,9 @@
  * Two-alternative forced choice: guess which of two dB values was applied.
  */
 
-import { defineGame } from '$lib/game/config.js';
-import type { RoundBase } from '$lib/game/types.js';
-import { pickTrack } from '$lib/audio/samples.js';
+import { defineGame } from '#lib/game/config.js';
+import type { RoundBase } from '#lib/game/types.js';
+import { pickTrack } from '#lib/audio/samples.js';
 
 export interface GainRound extends RoundBase<number> {
 	targetDb: number; // dB applied, positive = boost, negative = cut

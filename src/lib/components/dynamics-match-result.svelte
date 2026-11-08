@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { CompSpec } from '$lib/games/dynamics/audio.js';
-	import { formatAttack, formatRelease, formatRatio } from '$lib/format.js';
+	import type { CompSpec } from '#lib/games/dynamics/audio.js';
+	import { formatAttack, formatRelease, formatRatio } from '#lib/format.js';
 
 	interface Props {
 		target: CompSpec;

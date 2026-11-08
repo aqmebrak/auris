@@ -1,13 +1,13 @@
 <script lang="ts" generics="TR extends SampleRound<TG>, TG, TO extends { roundCount: number }">
 	import type { Snippet } from 'svelte';
-	import GameHeader from '$lib/components/game/game-header.svelte';
-	import TransportBar from '$lib/components/game/transport-bar.svelte';
-	import ResultBanner from '$lib/components/game/result-banner.svelte';
-	import GameOver from '$lib/components/game/game-over.svelte';
-	import type { GameController } from '$lib/stores/game-controller.svelte.js';
-	import type { SampleRound, RoundResult as Result } from '$lib/game/types.js';
-	import { boardState, type BoardState } from '$lib/game/board.js';
-	import { suggestDifficulty } from '$lib/stats.js';
+	import GameHeader from '#lib/components/game/game-header.svelte';
+	import TransportBar from '#lib/components/game/transport-bar.svelte';
+	import ResultBanner from '#lib/components/game/result-banner.svelte';
+	import GameOver from '#lib/components/game/game-over.svelte';
+	import type { GameController } from '#lib/stores/game-controller.svelte.js';
+	import type { SampleRound, RoundResult as Result } from '#lib/game/types.js';
+	import { boardState, type BoardState } from '#lib/game/board.js';
+	import { suggestDifficulty } from '#lib/stats.js';
 
 	interface Row {
 		label: string;

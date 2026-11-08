@@ -1,10 +1,10 @@
 <script lang="ts">
-	import StereoStrip from '$lib/components/stereo-strip.svelte';
-	import ChoiceButtons from '$lib/components/game/choice-buttons.svelte';
-	import GameShell from '$lib/components/game/game-shell.svelte';
-	import OptionGroup from '$lib/components/game/option-group.svelte';
-	import { createGameController } from '$lib/stores/game-controller.svelte.js';
-	import type { BoardState } from '$lib/game/board.js';
+	import StereoStrip from '#lib/components/stereo-strip.svelte';
+	import ChoiceButtons from '#lib/components/game/choice-buttons.svelte';
+	import GameShell from '#lib/components/game/game-shell.svelte';
+	import OptionGroup from '#lib/components/game/option-group.svelte';
+	import { createGameController } from '#lib/stores/game-controller.svelte.js';
+	import type { BoardState } from '#lib/game/board.js';
 	import {
 		createPanningConfig,
 		DEFAULT_OPTIONS,
@@ -14,10 +14,10 @@
 		positionsInZone,
 		type PanRound,
 		type PanningOptions
-	} from '$lib/games/panning/config.js';
-	import { createPanningAudio } from '$lib/games/panning/audio.js';
-	import { keys, labelled, numbers } from '$lib/game/options.js';
-	import { formatPan } from '$lib/format.js';
+	} from '#lib/games/panning/config.js';
+	import { createPanningAudio } from '#lib/games/panning/audio.js';
+	import { keys, labelled, numbers } from '#lib/game/options.js';
+	import { formatPan } from '#lib/format.js';
 
 	const audio = createPanningAudio();
 	const ctrl = createGameController<PanRound, number, PanningOptions>({

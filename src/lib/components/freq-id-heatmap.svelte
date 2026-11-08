@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { StatsHistoryEntry } from '$lib/stores/stats-store.svelte.js';
+	import type { StatsHistoryEntry } from '#lib/stores/stats-store.svelte.js';
 
 	interface RoundMeta {
 		targetFreq: number;

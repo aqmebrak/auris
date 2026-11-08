@@ -3,7 +3,7 @@
  * Handles entries recorded before graded scoring (no `accuracy`).
  */
 
-import type { StatsHistoryEntry } from '$lib/stores/stats-store.svelte.js';
+import type { StatsHistoryEntry } from '#lib/stores/stats-store.svelte.js';
 
 export type DifficultyName = 'easy' | 'medium' | 'hard';
 const LADDER: DifficultyName[] = ['easy', 'medium', 'hard'];

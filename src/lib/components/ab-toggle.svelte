@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { AbMode } from '$lib/audio/playable.js';
+	import type { AbMode } from '#lib/audio/playable.js';
 
 	interface Props {
 		mode: AbMode;

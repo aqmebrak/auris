@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends string | number">
-	import { Button } from '$lib/components/ui/button/index.js';
+	import { Button } from '#lib/components/ui/button/index.js';
 
 	interface Props {
 		label: string;

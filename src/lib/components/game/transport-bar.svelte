@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index.js';
-	import AbToggle from '$lib/components/ab-toggle.svelte';
-	import type { AbMode } from '$lib/audio/playable.js';
-	import type { Phase } from '$lib/game/types.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import AbToggle from '#lib/components/ab-toggle.svelte';
+	import type { AbMode } from '#lib/audio/playable.js';
+	import type { Phase } from '#lib/game/types.js';
 
 	interface Props {
 		phase: Exclude<Phase, 'gameOver'>;

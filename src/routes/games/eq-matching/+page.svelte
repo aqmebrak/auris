@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index.js';
-	import EqBandKnobs from '$lib/components/eq-band-knobs.svelte';
-	import EqCurve from '$lib/components/eq-curve.svelte';
-	import EqMatchResult from '$lib/components/eq-match-result.svelte';
-	import type { BoardState } from '$lib/game/board.js';
-	import GameShell from '$lib/components/game/game-shell.svelte';
-	import OptionGroup from '$lib/components/game/option-group.svelte';
-	import { createGameController } from '$lib/stores/game-controller.svelte.js';
+	import { Button } from '#lib/components/ui/button/index.js';
+	import EqBandKnobs from '#lib/components/eq-band-knobs.svelte';
+	import EqCurve from '#lib/components/eq-curve.svelte';
+	import EqMatchResult from '#lib/components/eq-match-result.svelte';
+	import type { BoardState } from '#lib/game/board.js';
+	import GameShell from '#lib/components/game/game-shell.svelte';
+	import OptionGroup from '#lib/components/game/option-group.svelte';
+	import { createGameController } from '#lib/stores/game-controller.svelte.js';
 	import {
 		createEqMatchingConfig,
 		DEFAULT_OPTIONS,
@@ -16,10 +16,10 @@
 		type EqBand,
 		type EqMatchingRound,
 		type EqMatchingOptions
-	} from '$lib/games/eq-matching/config.js';
-	import { EqMatchingAudio } from '$lib/games/eq-matching/audio.js';
-	import { numbers } from '$lib/game/options.js';
-	import { formatFreq, formatDb } from '$lib/format.js';
+	} from '#lib/games/eq-matching/config.js';
+	import { EqMatchingAudio } from '#lib/games/eq-matching/audio.js';
+	import { numbers } from '#lib/game/options.js';
+	import { formatFreq, formatDb } from '#lib/format.js';
 
 	const audio = new EqMatchingAudio();
 	let userBands = $state<EqBand[]>(

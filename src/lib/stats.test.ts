@@ -6,7 +6,7 @@ import {
 	summarize,
 	type GameSummary
 } from './stats.js';
-import type { StatsHistoryEntry } from '$lib/stores/stats-store.svelte.js';
+import type { StatsHistoryEntry } from '#lib/stores/stats-store.svelte.js';
 
 const entry = (
 	over: Partial<StatsHistoryEntry> & { meta?: Record<string, unknown> }

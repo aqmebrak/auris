@@ -7,13 +7,13 @@
  * the loaded sample, so A/B differences are tonal, not "louder = better".
  */
 
-import { AudioPlayer } from '$lib/audio/player.js';
+import { AudioPlayer } from '#lib/audio/player.js';
 import {
 	averageSpectrum,
 	compensationGainDb,
 	monoMix,
 	type BandSpectrum
-} from '$lib/audio/spectrum.js';
+} from '#lib/audio/spectrum.js';
 import type { EqBand } from './config.js';
 import { MAX_BANDS } from './config.js';
 

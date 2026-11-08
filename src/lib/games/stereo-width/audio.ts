@@ -5,15 +5,15 @@
  * cancelled so only the *width* differs.
  */
 
-import { AudioPlayer } from '$lib/audio/player.js';
-import { AudioChain } from '$lib/audio/chain.js';
-import type { Playable } from '$lib/audio/playable.js';
+import { AudioPlayer } from '#lib/audio/player.js';
+import { AudioChain } from '#lib/audio/chain.js';
+import type { Playable } from '#lib/audio/playable.js';
 import {
 	createGain,
 	createStereoWidth,
 	type GainHandle,
 	type StereoWidthHandle
-} from '$lib/audio/effects.js';
+} from '#lib/audio/effects.js';
 
 export interface StereoWidthAudio {
 	playable: Playable;

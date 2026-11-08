@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatDb } from '$lib/format.js';
+	import { formatDb } from '#lib/format.js';
 
 	interface Props {
 		options: [number, number];

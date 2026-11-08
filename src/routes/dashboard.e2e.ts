@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { GAMES } from '$lib/games/registry.js';
+import { GAMES } from '../lib/games/registry.js';
 
 test('dashboard lists every registered game, grouped, each with a PLAY link', async ({ page }) => {
 	await page.goto('/');

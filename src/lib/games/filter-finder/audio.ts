@@ -3,18 +3,18 @@
  * loudness-compensation gain. A = dry, B = filtered and level-matched.
  */
 
-import { AudioPlayer } from '$lib/audio/player.js';
-import { AudioChain } from '$lib/audio/chain.js';
-import type { Playable } from '$lib/audio/playable.js';
-import { createCompensatedPlayable } from '$lib/audio/compensated-chain.js';
+import { AudioPlayer } from '#lib/audio/player.js';
+import { AudioChain } from '#lib/audio/chain.js';
+import type { Playable } from '#lib/audio/playable.js';
+import { createCompensatedPlayable } from '#lib/audio/compensated-chain.js';
 import {
 	createGain,
 	createPassFilter,
 	type GainHandle,
 	type PassFilterHandle
-} from '$lib/audio/effects.js';
-import { passResponseDb, type PassSlope, type PassType } from '$lib/audio/eq-math.js';
-import { compensationFromResponse } from '$lib/audio/spectrum.js';
+} from '#lib/audio/effects.js';
+import { passResponseDb, type PassSlope, type PassType } from '#lib/audio/eq-math.js';
+import { compensationFromResponse } from '#lib/audio/spectrum.js';
 
 export interface FilterFinderAudio {
 	playable: Playable;

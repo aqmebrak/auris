@@ -1,9 +1,9 @@
 <script lang="ts">
-	import ChoiceButtons from '$lib/components/game/choice-buttons.svelte';
-	import GameShell from '$lib/components/game/game-shell.svelte';
-	import OptionGroup from '$lib/components/game/option-group.svelte';
-	import { createGameController } from '$lib/stores/game-controller.svelte.js';
-	import type { BoardState } from '$lib/game/board.js';
+	import ChoiceButtons from '#lib/components/game/choice-buttons.svelte';
+	import GameShell from '#lib/components/game/game-shell.svelte';
+	import OptionGroup from '#lib/components/game/option-group.svelte';
+	import { createGameController } from '#lib/stores/game-controller.svelte.js';
+	import type { BoardState } from '#lib/game/board.js';
 	import {
 		createStereoWidthConfig,
 		DEFAULT_OPTIONS,
@@ -12,9 +12,9 @@
 		formatWidth,
 		type StereoWidthOptions,
 		type WidthRound
-	} from '$lib/games/stereo-width/config.js';
-	import { createStereoWidthAudio } from '$lib/games/stereo-width/audio.js';
-	import { labelled, numbers } from '$lib/game/options.js';
+	} from '#lib/games/stereo-width/config.js';
+	import { createStereoWidthAudio } from '#lib/games/stereo-width/audio.js';
+	import { labelled, numbers } from '#lib/game/options.js';
 
 	const audio = createStereoWidthAudio();
 	const ctrl = createGameController<WidthRound, number, StereoWidthOptions>({

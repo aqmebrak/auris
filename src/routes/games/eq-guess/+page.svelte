@@ -1,9 +1,9 @@
 <script lang="ts">
-	import EqChoice from '$lib/components/eq-choice.svelte';
-	import GameShell from '$lib/components/game/game-shell.svelte';
-	import OptionGroup from '$lib/components/game/option-group.svelte';
-	import { createGameController } from '$lib/stores/game-controller.svelte.js';
-	import type { BoardState } from '$lib/game/board.js';
+	import EqChoice from '#lib/components/eq-choice.svelte';
+	import GameShell from '#lib/components/game/game-shell.svelte';
+	import OptionGroup from '#lib/components/game/option-group.svelte';
+	import { createGameController } from '#lib/stores/game-controller.svelte.js';
+	import type { BoardState } from '#lib/game/board.js';
 	import {
 		createEqGuessConfig,
 		DEFAULT_OPTIONS,
@@ -13,10 +13,10 @@
 		type EqGuessRound,
 		type EqConfig,
 		type EqGuessOptions
-	} from '$lib/games/eq-guess/config.js';
-	import { createEqGuessAudio } from '$lib/games/eq-guess/audio.js';
-	import { labelled, numbers } from '$lib/game/options.js';
-	import { formatFreq, formatDb } from '$lib/format.js';
+	} from '#lib/games/eq-guess/config.js';
+	import { createEqGuessAudio } from '#lib/games/eq-guess/audio.js';
+	import { labelled, numbers } from '#lib/game/options.js';
+	import { formatFreq, formatDb } from '#lib/format.js';
 
 	const audio = createEqGuessAudio();
 	const ctrl = createGameController<EqGuessRound, EqConfig, EqGuessOptions>({

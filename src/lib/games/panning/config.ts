@@ -6,9 +6,9 @@
  * strip. Scored by distance: 1 exact, 0.5 at the error margin, 0 at twice it.
  */
 
-import { defineGame } from '$lib/game/config.js';
-import type { SampleRound } from '$lib/game/types.js';
-import { pickTrack } from '$lib/audio/samples.js';
+import { defineGame } from '#lib/game/config.js';
+import type { SampleRound } from '#lib/game/types.js';
+import { pickTrack } from '#lib/audio/samples.js';
 
 export interface PanRound extends SampleRound<number> {
 	targetPan: number; // -1 (full left) to +1 (full right)
