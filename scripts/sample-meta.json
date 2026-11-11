@@ -1,42 +1,217 @@
 {
 	"mix_badoink_140_rockin": {
-		"credit": "freesound.org #568755 \u2014 badoink",
+		"credit": "freesound.org #568755 — badoink",
 		"license": "unverified",
 		"tags": ["rock"]
 	},
 	"mix_bainmack_0_metal-song-short": {
-		"credit": "freesound.org #614732 \u2014 bainmack",
+		"credit": "freesound.org #614732 — bainmack",
 		"license": "unverified",
 		"tags": ["metal"]
 	},
 	"mix_badoink_120_industrial-metal-fusion": {
-		"credit": "freesound.org #566057 \u2014 badoink",
+		"credit": "freesound.org #566057 — badoink",
 		"license": "unverified",
 		"tags": ["metal"]
 	},
 	"drums_theflakesmaster_120_drumbeat": {
-		"credit": "freesound.org #400993 \u2014 theflakesmaster",
+		"credit": "freesound.org #400993 — theflakesmaster",
 		"license": "unverified",
 		"tags": ["drums"]
 	},
 	"mix_badoink_0_suburbs": {
-		"credit": "freesound.org #535231 \u2014 badoink",
+		"credit": "freesound.org #535231 — badoink",
 		"license": "unverified",
 		"tags": ["rock"]
 	},
 	"mix_badoink_170_rock-seq": {
-		"credit": "freesound.org #569299 \u2014 badoink",
+		"credit": "freesound.org #569299 — badoink",
 		"license": "unverified",
 		"tags": ["rock"]
 	},
 	"mix_johntrap_130_housing-loop": {
-		"credit": "freesound.org #528906 \u2014 johntrap",
+		"credit": "freesound.org #528906 — johntrap",
 		"license": "unverified",
 		"tags": ["loop"]
 	},
 	"mix_digimistic_0_metal-2-step-intro": {
-		"credit": "freesound.org #558206 \u2014 digimistic",
+		"credit": "freesound.org #558206 — digimistic",
 		"license": "unverified",
 		"tags": ["metal"]
+	},
+	"mix_alice-in-chains_122_nutshell-full": {
+		"credit": "Alice In Chains — Nutshell (2:56.2)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_alice-in-chains_94_down-in-a-hole-full": {
+		"credit": "Alice In Chains — Down In A Hole (3:55.1)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_ghost_130_con-clavi-con-dio-full": {
+		"credit": "Ghost — Con Clavi Con Dio (1:38.0)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_ghost_135_genesis-drums-guitar": {
+		"credit": "Ghost — Genesis (2:49.1)",
+		"license": "personal use only",
+		"tags": ["rock", "drums-guitar"]
+	},
+	"mix_ghost_135_genesis-guitar": {
+		"credit": "Ghost — Genesis (3:26.4)",
+		"license": "personal use only",
+		"tags": ["rock", "guitar"]
+	},
+	"mix_gojira_100_only-pain-inst": {
+		"credit": "Gojira — Only Pain (0:09.8)",
+		"license": "personal use only",
+		"tags": ["metal", "instrumental"]
+	},
+	"mix_gojira_100_the-heaviest-matter-of-the-universe-full": {
+		"credit": "Gojira — The Heaviest Matter Of The Universe (2:18.6)",
+		"license": "personal use only",
+		"tags": ["metal", "full-band"]
+	},
+	"mix_gojira_100_the-heaviest-matter-of-the-universe-inst": {
+		"credit": "Gojira — The Heaviest Matter Of The Universe (0:13.9)",
+		"license": "personal use only",
+		"tags": ["metal", "instrumental"]
+	},
+	"mix_gojira_101_only-pain-full": {
+		"credit": "Gojira — Only Pain (2:29.7)",
+		"license": "personal use only",
+		"tags": ["metal", "full-band"]
+	},
+	"mix_gojira_87_backbone-inst": {
+		"credit": "Gojira — Backbone (3:27.3)",
+		"license": "personal use only",
+		"tags": ["metal", "instrumental"]
+	},
+	"mix_gojira_94_global-warming-full": {
+		"credit": "Gojira — Global Warming (1:03.5)",
+		"license": "personal use only",
+		"tags": ["metal", "full-band"]
+	},
+	"mix_gojira_94_global-warming-inst": {
+		"credit": "Gojira — Global Warming (4:46.7)",
+		"license": "personal use only",
+		"tags": ["metal", "instrumental"]
+	},
+	"mix_meshuggah_85_demiurge-full": {
+		"credit": "Meshuggah — Demiurge (2:49.8)",
+		"license": "personal use only",
+		"tags": ["metal", "full-band"]
+	},
+	"mix_meshuggah_85_demiurge-inst": {
+		"credit": "Meshuggah — Demiurge (0:22.9)",
+		"license": "personal use only",
+		"tags": ["metal", "instrumental"]
+	},
+	"mix_metallica_100_my-apocalypse-full": {
+		"credit": "Metallica — My Apocalypse (3:47.2)",
+		"license": "personal use only",
+		"tags": ["metal", "full-band"]
+	},
+	"mix_metallica_100_my-apocalypse-inst": {
+		"credit": "Metallica — My Apocalypse (2:25.5)",
+		"license": "personal use only",
+		"tags": ["metal", "instrumental"]
+	},
+	"mix_metallica_115_broken-beat-scarred-full": {
+		"credit": "Metallica — Broken, Beat & Scarred (1:18.1)",
+		"license": "personal use only",
+		"tags": ["metal", "full-band"]
+	},
+	"mix_metallica_120_the-day-that-never-comes-full": {
+		"credit": "Metallica — The Day That Never Comes (1:27.9)",
+		"license": "personal use only",
+		"tags": ["metal", "full-band"]
+	},
+	"mix_metallica_124_hell-and-back-full": {
+		"credit": "Metallica — Hell And Back (2:31.9)",
+		"license": "personal use only",
+		"tags": ["metal", "full-band"]
+	},
+	"mix_metallica_183_the-judas-kiss-full": {
+		"credit": "Metallica — The Judas Kiss (7:11.7)",
+		"license": "personal use only",
+		"tags": ["metal", "full-band"]
+	},
+	"mix_metallica_187_the-judas-kiss-inst": {
+		"credit": "Metallica — The Judas Kiss (4:50.1)",
+		"license": "personal use only",
+		"tags": ["metal", "instrumental"]
+	},
+	"mix_petrucci_119_tunnel-vision-drums-guitar": {
+		"credit": "John Petrucci — Tunnel Vision (2:44.1)",
+		"license": "personal use only",
+		"tags": ["metal", "drums-guitar"]
+	},
+	"mix_petrucci_119_tunnel-vision-inst": {
+		"credit": "John Petrucci — Tunnel Vision (5:49.7)",
+		"license": "personal use only",
+		"tags": ["metal", "instrumental"]
+	},
+	"mix_qotsa_110_keep-your-eyes-peeled-full": {
+		"credit": "Queens of the Stone Age — Keep Your Eyes Peeled (3:18.0)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_qotsa_112_un-reborn-again-full": {
+		"credit": "Queens of the Stone Age — Un-Reborn Again (0:49.6)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_qotsa_113_un-reborn-again-guitar-vocals": {
+		"credit": "Queens of the Stone Age — Un-Reborn Again (5:06.9)",
+		"license": "personal use only",
+		"tags": ["rock", "guitar-vocals"]
+	},
+	"mix_qotsa_142_the-vampyre-of-time-and-memory-full": {
+		"credit": "Queens of the Stone Age — The Vampyre Of Time And Memory (2:14.5)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_qotsa_142_the-vampyre-of-time-and-memory-guitar-vocals": {
+		"credit": "Queens of the Stone Age — The Vampyre Of Time And Memory (0:29.6)",
+		"license": "personal use only",
+		"tags": ["rock", "guitar-vocals"]
+	},
+	"mix_qotsa_142_the-vampyre-of-time-and-memory-guitar": {
+		"credit": "Queens of the Stone Age — The Vampyre Of Time And Memory (0:03.1)",
+		"license": "personal use only",
+		"tags": ["rock", "guitar"]
+	},
+	"mix_qotsa_165_my-god-is-the-sun-full": {
+		"credit": "Queens of the Stone Age — My God Is The Sun (2:10.7)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_qotsa_94_fairweather-friends-full": {
+		"credit": "Queens of the Stone Age — Fairweather Friends (1:29.5)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_van-halen_126_hot-for-teacher-full": {
+		"credit": "Van Halen — Hot For Teacher (2:28.1)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_van-halen_128_jump-full": {
+		"credit": "Van Halen — Jump (1:05.0)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
+	},
+	"mix_van-halen_129_hot-for-teacher-drums": {
+		"credit": "Van Halen — Hot For Teacher (0:09.0)",
+		"license": "personal use only",
+		"tags": ["rock", "drums"]
+	},
+	"mix_van-halen_142_panama-full": {
+		"credit": "Van Halen — Panama (2:45.2)",
+		"license": "personal use only",
+		"tags": ["rock", "full-band"]
 	}
 }
