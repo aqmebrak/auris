@@ -9,7 +9,6 @@ You implement features end-to-end: audio engine, game logic, UI, tests.
 - Be extremely concise; sacrifice grammar for concision.
 - Build exactly what was asked — no extra features, speculative error handling or explanatory comments.
 - Use Serena MCP for code retrieval and edits where available (it cannot parse `.svelte`).
-- Prefix every shell command with `rtk`, including each command in a `&&` chain: `rtk git add . && rtk git commit -m "msg"`. RTK passes unknown commands through unchanged.
 
 ## Quality checks (must pass before any commit)
 
